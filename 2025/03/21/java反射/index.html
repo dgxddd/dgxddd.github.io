@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="java反射1.基本定义Java反射机制是在运行状态时，对于任意一个类，都能够获取到这个类的所有属性和方法， 对于任意一个对象，都能够调用它的任意一个方法和属性(包括私有的方法和属性)，这种动态获取的信息以及动态调用对象的方法的功能就称为java语言的反射机制。 可以说为对象可以通过反射获取他的类，类可以通过反射拿到所有⽅法（包括私有） 通过java语言中的反射机制可以操作字节码文件，可以读和修改">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JAVA反射">
+<meta property="og:url" content="https://dgxddd.github.io/2025/03/21/java%E5%8F%8D%E5%B0%84/">
+<meta property="og:site_name" content="jxdgx">
+<meta property="og:description" content="java反射1.基本定义Java反射机制是在运行状态时，对于任意一个类，都能够获取到这个类的所有属性和方法， 对于任意一个对象，都能够调用它的任意一个方法和属性(包括私有的方法和属性)，这种动态获取的信息以及动态调用对象的方法的功能就称为java语言的反射机制。 可以说为对象可以通过反射获取他的类，类可以通过反射拿到所有⽅法（包括私有） 通过java语言中的反射机制可以操作字节码文件，可以读和修改">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/2860184-20230416160635952-145448021.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/2860184-20230416160419536-629993700.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/2860184-20230416160431943-187954601.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/2860184-20230416160442218-817881344.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/2860184-20230415221155285-1513863103.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/2860184-20230415221132513-2044421737.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/2860184-20230416160823607-400859883.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/2860184-20230416160839520-1214863975.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/2860184-20230416160852715-1712532435.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/2860184-20230416160904060-267305664.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20251118212545071.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/2860184-20230416160930162-872620378.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/2860184-20230416155746070-416303608.png">
+<meta property="article:published_time" content="2025-03-21T14:10:55.000Z">
+<meta property="article:modified_time" content="2026-04-22T15:16:34.218Z">
+<meta property="article:author" content="jxdgx">
+<meta property="article:tag" content="java基础">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/2860184-20230416160635952-145448021.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/logo.png">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/logo.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/logo.png">
+        
+      
+    
+    <!-- title -->
+    <title>JAVA反射 | jxdgx</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 8.1.0"></head>
+
+<body class="max-width mx-auto px3 ltr is-post-page">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="顶部" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/tags/">标签</a></li><!--
+     --><!--
+       --><li><a href="/categories/">分类</a></li><!--
+     --><!--
+       --><li><a href="/links/">links</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="上一篇" href="/2025/04/22/Commons-Collection01/"><i class="fa-solid fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="下一篇" href="/2023/03/21/stardust/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="返回顶部" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="分享文章" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://dgxddd.github.io/2025/03/21/java%E5%8F%8D%E5%B0%84/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://dgxddd.github.io/2025/03/21/java%E5%8F%8D%E5%B0%84/&text=JAVA反射"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://dgxddd.github.io/2025/03/21/java%E5%8F%8D%E5%B0%84/&title=JAVA反射"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://dgxddd.github.io/2025/03/21/java%E5%8F%8D%E5%B0%84/&is_video=false&description=JAVA反射"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=JAVA反射&body=Check out this article: https://dgxddd.github.io/2025/03/21/java%E5%8F%8D%E5%B0%84/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://dgxddd.github.io/2025/03/21/java%E5%8F%8D%E5%B0%84/&title=JAVA反射"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://dgxddd.github.io/2025/03/21/java%E5%8F%8D%E5%B0%84/&title=JAVA反射"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://dgxddd.github.io/2025/03/21/java%E5%8F%8D%E5%B0%84/&title=JAVA反射"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://dgxddd.github.io/2025/03/21/java%E5%8F%8D%E5%B0%84/&title=JAVA反射"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://dgxddd.github.io/2025/03/21/java%E5%8F%8D%E5%B0%84/&name=JAVA反射&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://dgxddd.github.io/2025/03/21/java%E5%8F%8D%E5%B0%84/&t=JAVA反射"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#java%E5%8F%8D%E5%B0%84"><span class="toc-number">1.</span> <span class="toc-text">java反射</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E5%9F%BA%E6%9C%AC%E5%AE%9A%E4%B9%89"><span class="toc-number">1.1.</span> <span class="toc-text">1.基本定义</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E8%8E%B7%E5%8F%96%E7%B1%BB"><span class="toc-number">1.2.</span> <span class="toc-text">2.获取类</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-forname-%E6%96%B9%E6%B3%95"><span class="toc-number">1.2.1.</span> <span class="toc-text">1.forname()方法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-class%E7%9B%B4%E6%8E%A5%E8%8E%B7%E5%BE%97"><span class="toc-number">1.2.2.</span> <span class="toc-text">2.class直接获得</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-getClass-%E6%96%B9%E6%B3%95"><span class="toc-number">1.2.3.</span> <span class="toc-text">3.getClass() 方法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-getSystemClassLoader-loadClass-%E6%96%B9%E6%B3%95"><span class="toc-number">1.2.4.</span> <span class="toc-text">4.getSystemClassLoader().loadClass()方法</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E8%8E%B7%E5%8F%96%E7%B1%BB%E6%96%B9%E6%B3%95"><span class="toc-number">1.3.</span> <span class="toc-text">3. 获取类方法</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-getDeclaredMethods"><span class="toc-number">1.3.1.</span> <span class="toc-text">1.getDeclaredMethods</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-getDeclaredMethod"><span class="toc-number">1.3.2.</span> <span class="toc-text">2.getDeclaredMethod()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-getMethods-%E6%96%B9%E6%B3%95"><span class="toc-number">1.3.3.</span> <span class="toc-text">3.getMethods()方法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-getMethod"><span class="toc-number">1.3.4.</span> <span class="toc-text">4.getMethod</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-%E5%8C%BA%E5%88%AB"><span class="toc-number">1.3.5.</span> <span class="toc-text">5.区别</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#getMethod%E5%92%8CgetDeclaredMethod"><span class="toc-number">1.3.5.1.</span> <span class="toc-text">getMethod和getDeclaredMethod</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#getDeclaredMethods%E5%92%8CgetMethods"><span class="toc-number">1.3.5.2.</span> <span class="toc-text">getDeclaredMethods和getMethods</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E8%8E%B7%E5%8F%96%E6%88%90%E5%91%98%E5%8F%98%E9%87%8F"><span class="toc-number">1.4.</span> <span class="toc-text">4.获取成员变量</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-getDeclaredFields"><span class="toc-number">1.4.1.</span> <span class="toc-text">1. getDeclaredFields</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-getDeclaredField-String-name"><span class="toc-number">1.4.2.</span> <span class="toc-text">2.getDeclaredField(String name)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-getFields"><span class="toc-number">1.4.3.</span> <span class="toc-text">3.getFields()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-getField"><span class="toc-number">1.4.4.</span> <span class="toc-text">4.getField</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-%E8%8E%B7%E5%8F%96%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0Constructor"><span class="toc-number">1.5.</span> <span class="toc-text">5. 获取构造函数Constructor</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-%E5%8F%8D%E5%B0%84%E5%88%9B%E5%BB%BA%E7%B1%BB%E5%AF%B9%E8%B1%A1"><span class="toc-number">1.6.</span> <span class="toc-text">6. 反射创建类对象</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-newInstance"><span class="toc-number">1.6.1.</span> <span class="toc-text">1.newInstance</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E9%80%9A%E8%BF%87-Constructor-%E7%9A%84-newInstance-%E6%96%B9%E6%B3%95"><span class="toc-number">1.6.2.</span> <span class="toc-text">2.通过 Constructor 的 newInstance() 方法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-invoke"><span class="toc-number">1.6.3.</span> <span class="toc-text">3.invoke</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#7-Runtime%E7%9A%84rce%E4%BE%8B%E5%AD%90%EF%BC%88%E8%AE%BF%E9%97%AE%E9%99%90%E5%88%B6%E7%AA%81%E7%A0%B4%EF%BC%89"><span class="toc-number">1.7.</span> <span class="toc-text">7.Runtime的rce例子（访问限制突破）</span></a></li></ol></li></ol>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        JAVA反射
+    </h1>
+
+
+
+    <div class="meta meta-post">
+      
+    <div class="postdate">
+      
+        <time datetime="2025-03-21T14:10:55.000Z" class="dt-published" itemprop="datePublished">2025-03-21</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fa-solid fa-archive"></i>
+        <a class="category-link" href="/categories/JAVA%E5%AE%89%E5%85%A8/">JAVA安全</a>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/tags/java%E5%9F%BA%E7%A1%80/" rel="tag">java基础</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <h1 id="java反射"><a href="#java反射" class="headerlink" title="java反射"></a>java反射</h1><h2 id="1-基本定义"><a href="#1-基本定义" class="headerlink" title="1.基本定义"></a>1.基本定义</h2><p>Java反射机制是在运行状态时，对于任意一个类，都能够获取到这个类的所有属性和方法，</p>
+<p>对于任意一个对象，都能够调用它的任意一个方法和属性(包括私有的方法和属性)，这种动态获取的信息以及动态调用对象的方法的功能就称为java语言的反射机制。</p>
+<p>可以说为对象可以通过反射获取他的类，类可以通过反射拿到所有⽅法（包括私有） 通过java语言中的反射机制可以操作字节码文件，可以读和修改字节码文件</p>
+<h2 id="2-获取类"><a href="#2-获取类" class="headerlink" title="2.获取类"></a>2.获取类</h2><h3 id="1-forname-方法"><a href="#1-forname-方法" class="headerlink" title="1.forname()方法"></a>1.forname()方法</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">package reflect;</span><br><span class="line"></span><br><span class="line">//获取类</span><br><span class="line">public class forName&#123;</span><br><span class="line">   public static void main(String[] args) throws ClassNotFoundException &#123;</span><br><span class="line">        Class name = Class.forName(&quot;java.lang.Runtime&quot;);//获取类</span><br><span class="line">        System.out.println(name);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>运行结果:</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/2860184-20230416160635952-145448021.png" alt="image-20230416160634419"></p>
+<blockquote>
+<p>其中，<code>className</code>是要加载的类的完整限定名，例如<code>java.lang.Runtime</code>。调用<code>forName()</code>方法后，会返回一个<code>Class</code>对象，该对象包含了被加载的类的所有信息，包括类的构造函数、方法、字段等。</p>
+</blockquote>
+<h3 id="2-class直接获得"><a href="#2-class直接获得" class="headerlink" title="2.class直接获得"></a>2.class直接获得</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">package reflect;</span><br><span class="line"></span><br><span class="line">//获取类</span><br><span class="line">public class forName&#123;</span><br><span class="line">   public static void main(String[] args) throws ClassNotFoundException &#123;</span><br><span class="line">        Class&lt;?&gt; name = Runtime.class;//用.class获取对象</span><br><span class="line">        System.out.println(name);</span><br><span class="line">        &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行结果:</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/2860184-20230416160419536-629993700.png" alt="image-20230416160418109"></p>
+<blockquote>
+<p>这就是Runtime.class中直接获取Runtime的实例</p>
+</blockquote>
+<h3 id="3-getClass-方法"><a href="#3-getClass-方法" class="headerlink" title="3.getClass() 方法"></a>3.getClass() 方法</h3><p><code>obj.getClass()</code> 如果上下⽂中存在某个类的实例 obj ，那么我们可以直接通过 obj.getClass() 来获取它的类</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">package reflect;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">//获取类</span><br><span class="line">public class forName&#123;</span><br><span class="line">   public static void main(String[] args) throws ClassNotFoundException &#123;</span><br><span class="line">           Runtime rt = Runtime.getRuntime();</span><br><span class="line">           Class&lt;?&gt; name = rt.getClass();</span><br><span class="line">           System.out.println(name);</span><br><span class="line">           &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行结果：</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/2860184-20230416160431943-187954601.png" alt="image-20230416160430654"></p>
+<p>因为上面出现了Runtime的实例我们通过rt.getClass()来获取从而获得了Runtime的类</p>
+<h3 id="4-getSystemClassLoader-loadClass-方法"><a href="#4-getSystemClassLoader-loadClass-方法" class="headerlink" title="4.getSystemClassLoader().loadClass()方法"></a>4.getSystemClassLoader().loadClass()方法</h3><blockquote>
+<p>forName类似，只要有类名就可以了，但是区别在于，forName的静态JVM会装载类，并执行static()中的代码</p>
+</blockquote>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">package reflect;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">//获取类</span><br><span class="line">public class forName&#123;</span><br><span class="line">   public static void main(String[] args) throws ClassNotFoundException &#123;</span><br><span class="line">         Class&lt;?&gt; name = ClassLoader.getSystemClassLoader().loadClass(&quot;java.lang.Runtime&quot;);           System.out.println(name);</span><br><span class="line">         &#125;&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行结果：</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/2860184-20230416160442218-817881344.png" alt="image-20230416160440966"></p>
+<h2 id="3-获取类方法"><a href="#3-获取类方法" class="headerlink" title="3. 获取类方法"></a>3. 获取类方法</h2><h3 id="1-getDeclaredMethods"><a href="#1-getDeclaredMethods" class="headerlink" title="1.getDeclaredMethods"></a>1.getDeclaredMethods</h3><p>返回类或接口声明的所有方法，包括public、protected、private和默认方法，但是不包括继承的方法</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">package reflect;</span><br><span class="line"></span><br><span class="line">import java.lang.reflect.Method;</span><br><span class="line">//返回类或接口声明的所有方法，包括public、protected、private和默认方法，但是不包括继承的方法</span><br><span class="line">public class getDeclaredMethods &#123;</span><br><span class="line">    public static void main(String[] args) throws ClassNotFoundException &#123;</span><br><span class="line">        Class&lt;?&gt; name = Class.forName(&quot;java.lang.Runtime&quot;);</span><br><span class="line">        System.out.println(name);//获取类</span><br><span class="line">        Method[] m = name. getDeclaredMethods();//返回类或接口声明的所有方法，包括public、protected、private和默认方法，但是不包括继承的方法</span><br><span class="line">        for(Method x:m)</span><br><span class="line">            System.out.println(x);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>运行结果:</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/2860184-20230415221155285-1513863103.png" alt="image-20230415221153147"></p>
+<h3 id="2-getDeclaredMethod"><a href="#2-getDeclaredMethod" class="headerlink" title="2.getDeclaredMethod()"></a>2.getDeclaredMethod()</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">获取特定的方法，第一个参数是方法名，第二个参数是该方法的参数对应的class对象，例如这里Runtime的exec方法参数为一个String，所以这里的第二个参数是String.class</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">import java.lang.reflect.Method;</span><br><span class="line"></span><br><span class="line">public class getDeclaredMethod &#123;</span><br><span class="line">    public static void main(String[] args) throws ClassNotFoundException, NoSuchMethodException &#123;</span><br><span class="line">        Class&lt;?&gt; name = Class.forName(&quot;java.lang.Runtime&quot;);</span><br><span class="line">        Method m = name.getDeclaredMethod(&quot;exec&quot;,String.class);</span><br><span class="line">        System.out.println(m);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>运行结果</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">public java.lang.Process java.lang.Runtime.exec(java.lang.String) throws java.io.IOException</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">package reflect;</span><br><span class="line"></span><br><span class="line">import java.lang.reflect.Method;</span><br><span class="line">//获取特定的方法，第一个参数是方法名，第二个参数是该方法的参数对应的class对象，</span><br><span class="line">// 例如这里Runtime的exec方法参数为一个String，所以这里的第二个参数是String.class</span><br><span class="line">public class getDeclaredMethod &#123;</span><br><span class="line">    public static void main(String[] args) throws ClassNotFoundException, NoSuchMethodException &#123;</span><br><span class="line">        Class&lt;?&gt; name = Class.forName(&quot;java.lang.Runtime&quot;);</span><br><span class="line">        Method m = name.getDeclaredMethod(&quot;exec&quot;,java.lang.String[].class);</span><br><span class="line">        System.out.println(m);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>运行结果</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">public java.lang.Process java.lang.Runtime.exec(java.lang.String[]) throws java.io.IOException</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-getMethods-方法"><a href="#3-getMethods-方法" class="headerlink" title="3.getMethods()方法"></a>3.getMethods()方法</h3><blockquote>
+<p>返回某个类所有的public方法，包括继承类的public方法</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> reflect;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.lang.reflect.Method;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">getMethods</span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> ClassNotFoundException &#123;</span><br><span class="line">        Class&lt;?&gt; name = Class.forName(<span class="string">&quot;java.lang.Runtime&quot;</span>);</span><br><span class="line">        System.out.println(name);</span><br><span class="line">        Method[] m = name.getMethods();<span class="comment">//返回某个类所有的public方法，包括继承类的public方法</span></span><br><span class="line">        <span class="keyword">for</span>(Method x:m)</span><br><span class="line">            System.out.println(x);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行结果</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/2860184-20230415221132513-2044421737.png" alt="image-20230415221110006"></p>
+<h3 id="4-getMethod"><a href="#4-getMethod" class="headerlink" title="4.getMethod"></a>4.getMethod</h3><blockquote>
+<p>&#x2F;&#x2F;getMethod第一个参数是方法名，第二个参数是该方法的参类型，<br>&#x2F;&#x2F;因为存在同方法名不同参数这种情况，所以只有同时指定方法名和参数类型才能唯一确定一个方法</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> reflect;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.lang.reflect.Method;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">getMethod</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> ClassNotFoundException, NoSuchMethodException &#123;</span><br><span class="line">        Class&lt;?&gt; name = Class.forName(<span class="string">&quot;java.lang.Runtime&quot;</span>);</span><br><span class="line">        <span class="type">Method</span> <span class="variable">m</span> <span class="operator">=</span> name.getMethod(<span class="string">&quot;exec&quot;</span>,String.class);<span class="comment">//数//getMethod第一个参数是方法名，第二个参数是该方法的参类型，</span></span><br><span class="line"><span class="comment">//因为存在同方法名不同参数这种情况，所以只有同时指定方法名和参数类型才能唯一确定一个方法</span></span><br><span class="line">        System.out.println(m);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行结果</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/2860184-20230416160823607-400859883.png" alt="image-20230416160822310"></p>
+<h3 id="5-区别"><a href="#5-区别" class="headerlink" title="5.区别"></a>5.区别</h3><h4 id="getMethod和getDeclaredMethod"><a href="#getMethod和getDeclaredMethod" class="headerlink" title="getMethod和getDeclaredMethod"></a>getMethod和getDeclaredMethod</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">//getMethod（）：获取自身能用所有的公共方法。1.类本身的public 2.继承父类的public 3.实现接口的public</span><br><span class="line">//getDeclaredMethod（）：获取类自身声明的所有方法。</span><br></pre></td></tr></table></figure>
+
+<h4 id="getDeclaredMethods和getMethods"><a href="#getDeclaredMethods和getMethods" class="headerlink" title="getDeclaredMethods和getMethods"></a>getDeclaredMethods和getMethods</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">//返回类或接口声明的所有方法，包括public、protected、private和默认方法，但是不包括继承的方法</span><br><span class="line">//返回某个类所有的public方法，包括继承类的public方法</span><br></pre></td></tr></table></figure>
+
+<h2 id="4-获取成员变量"><a href="#4-获取成员变量" class="headerlink" title="4.获取成员变量"></a>4.获取成员变量</h2><h3 id="1-getDeclaredFields"><a href="#1-getDeclaredFields" class="headerlink" title="1. getDeclaredFields"></a>1. getDeclaredFields</h3><blockquote>
+<p>获取类的成员的所有变量数组，但是不包括父类的</p>
+</blockquote>
+<p>myclass类</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">public class MyClass &#123;</span><br><span class="line">    private int myInt;</span><br><span class="line">    public String myString;</span><br><span class="line">    protected boolean myBoolean;</span><br><span class="line"></span><br><span class="line">    // ...其他代码...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>main类</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">package reflect;</span><br><span class="line"></span><br><span class="line">import java.lang.reflect.Field;</span><br><span class="line">//使用该方法需要先获取目标类的Class对象，然后调用该对象的getDeclaredFields方法即可。</span><br><span class="line">// 需要注意的是，该方法只能获取该类中声明的字段，而无法获取父类中的字段。</span><br><span class="line">public class Main &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        Class&lt;MyClass&gt; cls = MyClass.class;//调用了MyClass的对象，其中.class是为了获取对象</span><br><span class="line">        Field[] fields = cls.getDeclaredFields();</span><br><span class="line">        for (Field field : fields) &#123;</span><br><span class="line">            System.out.println(field.getName());</span><br><span class="line">        &#125;&#125;&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行结果</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/2860184-20230416160839520-1214863975.png" alt="image-20230416160837936"></p>
+<h3 id="2-getDeclaredField-String-name"><a href="#2-getDeclaredField-String-name" class="headerlink" title="2.getDeclaredField(String name)"></a>2.getDeclaredField(String name)</h3><blockquote>
+<p> &#x2F;&#x2F;使用该方法需要先获取目标类的Class对象，然后调用该对象的getDeclaredField方法并传入字段名称即可<br>        &#x2F;&#x2F;获取了MyClass中定义的成员变量</p>
+</blockquote>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">public class Main &#123;</span><br><span class="line">    public static void main(String[] args) throws NoSuchFieldException &#123;</span><br><span class="line">        Class&lt;MyClass&gt; cls = MyClass.class;//获取了Myclass的对象</span><br><span class="line">        Field field = cls.getDeclaredField(&quot;myInt&quot;)</span><br><span class="line">        //使用该方法需要先获取目标类的Class对象，然后调用该对象的getDeclaredField方法并传入字段名称即可</span><br><span class="line">        //获取了MyClass中定义的成员变量</span><br><span class="line">        System.out.println(field.getName()); // 输出 &quot;myInt&quot;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行结果</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/2860184-20230416160852715-1712532435.png" alt="image-20230416160851245"></p>
+<h3 id="3-getFields"><a href="#3-getFields" class="headerlink" title="3.getFields()"></a>3.getFields()</h3><blockquote>
+<p>只能获得public的，但是包括了父类的</p>
+</blockquote>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">public class Main &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        Class&lt;MyClass&gt; cls = MyClass.class;</span><br><span class="line">        Field[] fields = cls.getFields();</span><br><span class="line">        for (Field field : fields) &#123;</span><br><span class="line">            //使用该方法需要先获取目标类的Class对象，然后调用该对象的getFields方法即可。</span><br><span class="line">            // 需要注意的是，该方法只能获取该类及其父类中声明为公共的字段</span><br><span class="line">            System.out.println(field);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行结果</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/2860184-20230416160904060-267305664.png" alt="image-20230416160902422"></p>
+<h3 id="4-getField"><a href="#4-getField" class="headerlink" title="4.getField"></a>4.getField</h3><blockquote>
+<p>用于获取一个类中指定名称的公共字段（即公共成员变量）。</p>
+</blockquote>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">public class Main &#123;</span><br><span class="line">    public static void main(String[] args) throws ClassNotFoundException, NoSuchFieldException &#123;</span><br><span class="line">        Class&lt;MyClass&gt; cls = MyClass.class;</span><br><span class="line">        Field field = cls.getField(&quot;myString&quot;);</span><br><span class="line">        //使用该方法需要先获取目标类的Class对象，然后调用该对象的getField方法并传入字段名称即可</span><br><span class="line">        //获取了MyClass中定义的成员变量</span><br><span class="line">        System.out.println(field.getName()); // 输出 &quot;myString&quot;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行结果</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20251118212545071.png" alt="image-20251118212545071"></p>
+<h2 id="5-获取构造函数Constructor"><a href="#5-获取构造函数Constructor" class="headerlink" title="5. 获取构造函数Constructor"></a>5. 获取构造函数Constructor</h2><blockquote>
+<ol>
+<li><code>Constructor&lt;?&gt;[] getConstructors()</code>: 该方法返回当前类或接口的所有 <code>public</code> 构造函数，包括从超类继承的构造函数，但不包括 <code>private</code> 和受保护的构造函数。这个方法可以用于获取当前类可被外部访问到的、创建对象的构造函数。</li>
+<li><code>Constructor&lt;?&gt;[] getDeclaredConstructors()</code>: 该方法返回当前类或接口声明的所有构造函数，包括 <code>public</code>、<code>protected</code>、<code>default（默认）</code>和 <code>private</code> 修饰符的构造函数，但不包括从超类继承的构造函数。这个方法可以用于获取所有在当前类中声明的构造函数。</li>
+<li><code>Constructor&lt;T&gt; getConstructor(Class&lt;?&gt;... parameterTypes)</code>: 该方法返回一个 <code>public</code> 构造函数，其中参数 <code>parameterTypes</code> 指定了要匹配的构造函数的参数类型。如果没有相应的构造函数，则会抛出 <code>NoSuchMethodException</code> 异常。这个方法可以用于获取指定参数类型的 <code>public</code> 的构造函数，方便我们通过反射机制创建 Object 对象时指定特定参数的构造函数。</li>
+<li><code>Constructor&lt;T&gt; getDeclaredConstructor(Class&lt;?&gt;... parameterTypes)</code>: 该方法返回一个由参数 <code>parameterTypes</code> 指定的构造函数对象，包括 <code>public</code>、<code>protected</code>、<code>default（默认）</code>和 <code>private</code> 修饰符的构造函数。这个方法可以用于获取指定参数类型的构造函数，而不必考虑其访问修饰符</li>
+</ol>
+</blockquote>
+<h2 id="6-反射创建类对象"><a href="#6-反射创建类对象" class="headerlink" title="6. 反射创建类对象"></a>6. 反射创建类对象</h2><h3 id="1-newInstance"><a href="#1-newInstance" class="headerlink" title="1.newInstance"></a>1.newInstance</h3><p>可以通过反射来生成实例化对象，一般我们使用Class对象的<code>newInstance()</code>方法来进行创建类对象</p>
+<p>创建的方法就是：只需要通过forname方法获取到的class对象中进行newInstance方法创建即可</p>
+<blockquote>
+<p><code>Class.newInstance()</code> 是 Class 类的一个方法，它会调用目标类的无参构造方法创建一个新的对象。使用该方法创建对象时，要求目标类必须有一个无参构造方法</p>
+</blockquote>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">package reflect;</span><br><span class="line">import java.lang.reflect.Constructor;</span><br><span class="line"></span><br><span class="line">public class MyClass &#123;</span><br><span class="line">    private int value;</span><br><span class="line"></span><br><span class="line">    public MyClass() &#123;</span><br><span class="line">        this.value = 0;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public int getValue() &#123;</span><br><span class="line">        return value;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) throws Exception &#123;</span><br><span class="line">        Class&lt;?&gt; cls = MyClass.class;</span><br><span class="line">        System.out.println(cls);</span><br><span class="line">        MyClass obj = (MyClass) cls.newInstance();</span><br><span class="line">        System.out.println(obj);</span><br><span class="line">        System.out.println(obj.getValue());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">我们首先获取了 MyClass 类的 Class 对象，然后使用 newInstance() 方法创建一个 MyClass 对象实例，并调用 getValue() 方法输出对象实例的值。由于 MyClass 类中存在默认构造函数，因此可以直接使用 newInstance() 方法创建对象实例。</span><br></pre></td></tr></table></figure>
+
+<p>运行结果</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/2860184-20230416160930162-872620378.png" alt="image-20230416160928737"></p>
+<h3 id="2-通过-Constructor-的-newInstance-方法"><a href="#2-通过-Constructor-的-newInstance-方法" class="headerlink" title="2.通过 Constructor 的 newInstance() 方法"></a>2.通过 Constructor 的 <code>newInstance()</code> 方法</h3><blockquote>
+<p><code>Constructor.newInstance()</code> 是 Constructor 类的一个方法，它可以调用任意一个构造方法来创建对象。使用该方法创建对象时，需要指定构造方法的参数列表就是42</p>
+</blockquote>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">package reflect;</span><br><span class="line">import java.lang.reflect.Constructor;</span><br><span class="line"></span><br><span class="line">public class MyClass &#123;</span><br><span class="line">    private int value;</span><br><span class="line"></span><br><span class="line">    public MyClass() &#123;</span><br><span class="line">        this.value = 0;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public MyClass(int value) &#123;</span><br><span class="line">        this.value = value;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public int getValue() &#123;</span><br><span class="line">        return value;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) throws Exception &#123;</span><br><span class="line">        Class&lt;?&gt; cls = MyClass.class;</span><br><span class="line">        Constructor&lt;?&gt; constructor = cls.getConstructor(int.class);</span><br><span class="line">        MyClass obj = (MyClass) constructor.newInstance(42);</span><br><span class="line">        System.out.println(obj.getValue());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>我们首先获取了 <code>MyClass</code> 类的 <code>int</code> 参数构造函数，然后使用 <code>newInstance()</code> 方法创建一个 <code>MyClass</code> 对象实例，并将参数 <code>42</code> 传递给构造函数。最后，我们调用 <code>getValue()</code> 方法输出对象实例的值。</p>
+</blockquote>
+<h3 id="3-invoke"><a href="#3-invoke" class="headerlink" title="3.invoke"></a>3.invoke</h3><p>invoke方法位于java.lang.reflect.Method类中，用于执行某个的对象的目标方法,一般会和getMethod方法配合进行调用。</p>
+<p>使用用法：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">public Object invoke(Object obj, Object... args)</span><br></pre></td></tr></table></figure>
+
+<p>第一个参数为类的实例，第二个参数为相应函数中的参数</p>
+<p>obj：从中调用底层方法的对象，必须是实例化对象 args： 用于方法的调用，是一个object的数组，参数有可能是多个</p>
+<p>但需要注意的是，invoke方法第一个参数并不是固定的：</p>
+<ul>
+<li><strong>如果调用这个方法是普通方法，第一个参数就是类对象；</strong></li>
+<li><strong>如果调用这个方法是静态方法，第一个参数就是类；</strong></li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">package reflect;</span><br><span class="line"></span><br><span class="line">import java.lang.reflect.InvocationTargetException;</span><br><span class="line">import java.lang.reflect.Method;</span><br><span class="line"></span><br><span class="line">public class Invoke &#123;</span><br><span class="line">    public static void main(String[] args) throws ClassNotFoundException, InstantiationException, IllegalAccessException, NoSuchMethodException, InvocationTargetException &#123;</span><br><span class="line">        Class c = Class.forName(&quot;reflect.Invoke&quot;); // 修改类名为 reflect.Invoke</span><br><span class="line">        Object o = c.newInstance();</span><br><span class="line">        Method m = c.getMethod(&quot;test&quot;);</span><br><span class="line">        m.invoke(o);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public void test()&#123;</span><br><span class="line">        System.out.println(&quot;测试成功&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>先forName拿到Class，再newInstance获取类对象，再getMethod获取方法，然后调用</p>
+</blockquote>
+<h2 id="7-Runtime的rce例子（访问限制突破）"><a href="#7-Runtime的rce例子（访问限制突破）" class="headerlink" title="7.Runtime的rce例子（访问限制突破）"></a>7.Runtime的rce例子（访问限制突破）</h2><p>Runtime类里面有一个exec方法，可以执行命令</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">package reflect;</span><br><span class="line"></span><br><span class="line">import java.lang.reflect.Constructor;</span><br><span class="line">import java.lang.reflect.InvocationTargetException;</span><br><span class="line">import java.lang.reflect.Method;</span><br><span class="line"></span><br><span class="line">public class Exec &#123;</span><br><span class="line">    public static void main(String[] args) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, IllegalAccessException, InstantiationException &#123;</span><br><span class="line">        Class c = Class.forName(&quot;java.lang.Runtime&quot;);//获取类</span><br><span class="line">        Object o = c.newInstance();//创建类的对象</span><br><span class="line">        Method m = c.getMethod(&quot;exec&quot;,String.class);//获取public的属性,不可以获取私有属性，调用了exec方法</span><br><span class="line">        m.invoke(o, &quot;C:\\Windows\\System32\\calc.exe&quot;);//获取从c.newInstance();得到的类的实例，</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行结果报错</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Exception in thread &quot;main&quot; java.lang.IllegalAccessException: class reflect.Exec cannot access a member of class java.lang.Runtime (in module java.base) with modifiers &quot;private&quot;</span><br><span class="line">        at java.base/jdk.internal.reflect.Reflection.newIllegalAccessException(Reflection.java:361)</span><br><span class="line">        at java.base/jdk.internal.reflect.Reflection.ensureMemberAccess(Reflection.java:99)</span><br><span class="line">        at java.base/java.lang.Class.newInstance(Class.java:579)</span><br><span class="line">        at reflect.Exec.main(Exec.java:10)</span><br></pre></td></tr></table></figure>
+
+<p>出现这个问题的原因：</p>
+<blockquote>
+<ol>
+<li>使用的类没有无参构造函数</li>
+<li>使用的类构造函数是私有的</li>
+</ol>
+</blockquote>
+<p>因为获取的类是私有的属性而getMethod只能获取公共属性</p>
+<p>那么解决方案就是<code>setAccessible(true);</code>，用这个去突破访问限制</p>
+<blockquote>
+<p>Java.lang.reflect.AccessibleObject类是Field，Method和Constructor类对象的基类，可以提供将反射对象标记为使用它抑制摸人Java访问控制检查的功能，同时上述的反射类中的Field，Method和Constructor继承自AccessibleObject。所以我们在这些类方法基础上调用setAccessible()方法，既可对这些私有字段进行操作</p>
+</blockquote>
+<p>私有的属性、方法、构造方法，可以通过这个去突破限制，<code>xxx.setAccessible(true)</code> 可以看到Runtime的构造方法是private的</p>
+<p>那么这里我们就可以这么去突破限制 先获取构造方法，然后setAccessible获取访问权限 然后再最后invoke里面，第一个参数写成con.newInstance()</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">import java.lang.reflect.Constructor;</span><br><span class="line">import java.lang.reflect.InvocationTargetException;</span><br><span class="line">import java.lang.reflect.Method;</span><br><span class="line"></span><br><span class="line">public class Exec &#123;</span><br><span class="line">    public static void main(String[] args) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, IllegalAccessException, InstantiationException &#123;</span><br><span class="line">        Class c = Class.forName(&quot;java.lang.Runtime&quot;);//获取类</span><br><span class="line">        Constructor con = c.getDeclaredConstructor();//获取类的私有构造函数</span><br><span class="line">        con.setAccessible(true); // 允许访问私有成员变量</span><br><span class="line">        Method m = c.getMethod(&quot;exec&quot;,String.class);//使用exec中的私有属性，本身getMethod不可以调用</span><br><span class="line">        m.invoke(con.newInstance(),&quot;C:\\Windows\\System32\\calc.exe&quot;);//con.newInstance()是调用任意的构造方法</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">在命令行中输入java --add-opens java.base/java.lang=ALL-UNNAMED Exec.java来执行</span><br></pre></td></tr></table></figure>
+
+<p>运行结果</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/2860184-20230416155746070-416303608.png" alt="image-20230416155740802"></p>
+<p>执行成功得到了计算器</p>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">首页</a></li>
+        
+          <li><a href="/archives/">归档</a></li>
+        
+          <li><a href="/tags/">标签</a></li>
+        
+          <li><a href="/categories/">分类</a></li>
+        
+          <li><a href="/links/">links</a></li>
+        
+          <li><a href="/about/">关于</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#java%E5%8F%8D%E5%B0%84"><span class="toc-number">1.</span> <span class="toc-text">java反射</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E5%9F%BA%E6%9C%AC%E5%AE%9A%E4%B9%89"><span class="toc-number">1.1.</span> <span class="toc-text">1.基本定义</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E8%8E%B7%E5%8F%96%E7%B1%BB"><span class="toc-number">1.2.</span> <span class="toc-text">2.获取类</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-forname-%E6%96%B9%E6%B3%95"><span class="toc-number">1.2.1.</span> <span class="toc-text">1.forname()方法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-class%E7%9B%B4%E6%8E%A5%E8%8E%B7%E5%BE%97"><span class="toc-number">1.2.2.</span> <span class="toc-text">2.class直接获得</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-getClass-%E6%96%B9%E6%B3%95"><span class="toc-number">1.2.3.</span> <span class="toc-text">3.getClass() 方法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-getSystemClassLoader-loadClass-%E6%96%B9%E6%B3%95"><span class="toc-number">1.2.4.</span> <span class="toc-text">4.getSystemClassLoader().loadClass()方法</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E8%8E%B7%E5%8F%96%E7%B1%BB%E6%96%B9%E6%B3%95"><span class="toc-number">1.3.</span> <span class="toc-text">3. 获取类方法</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-getDeclaredMethods"><span class="toc-number">1.3.1.</span> <span class="toc-text">1.getDeclaredMethods</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-getDeclaredMethod"><span class="toc-number">1.3.2.</span> <span class="toc-text">2.getDeclaredMethod()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-getMethods-%E6%96%B9%E6%B3%95"><span class="toc-number">1.3.3.</span> <span class="toc-text">3.getMethods()方法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-getMethod"><span class="toc-number">1.3.4.</span> <span class="toc-text">4.getMethod</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-%E5%8C%BA%E5%88%AB"><span class="toc-number">1.3.5.</span> <span class="toc-text">5.区别</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#getMethod%E5%92%8CgetDeclaredMethod"><span class="toc-number">1.3.5.1.</span> <span class="toc-text">getMethod和getDeclaredMethod</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#getDeclaredMethods%E5%92%8CgetMethods"><span class="toc-number">1.3.5.2.</span> <span class="toc-text">getDeclaredMethods和getMethods</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E8%8E%B7%E5%8F%96%E6%88%90%E5%91%98%E5%8F%98%E9%87%8F"><span class="toc-number">1.4.</span> <span class="toc-text">4.获取成员变量</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-getDeclaredFields"><span class="toc-number">1.4.1.</span> <span class="toc-text">1. getDeclaredFields</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-getDeclaredField-String-name"><span class="toc-number">1.4.2.</span> <span class="toc-text">2.getDeclaredField(String name)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-getFields"><span class="toc-number">1.4.3.</span> <span class="toc-text">3.getFields()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-getField"><span class="toc-number">1.4.4.</span> <span class="toc-text">4.getField</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-%E8%8E%B7%E5%8F%96%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0Constructor"><span class="toc-number">1.5.</span> <span class="toc-text">5. 获取构造函数Constructor</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-%E5%8F%8D%E5%B0%84%E5%88%9B%E5%BB%BA%E7%B1%BB%E5%AF%B9%E8%B1%A1"><span class="toc-number">1.6.</span> <span class="toc-text">6. 反射创建类对象</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-newInstance"><span class="toc-number">1.6.1.</span> <span class="toc-text">1.newInstance</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E9%80%9A%E8%BF%87-Constructor-%E7%9A%84-newInstance-%E6%96%B9%E6%B3%95"><span class="toc-number">1.6.2.</span> <span class="toc-text">2.通过 Constructor 的 newInstance() 方法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-invoke"><span class="toc-number">1.6.3.</span> <span class="toc-text">3.invoke</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#7-Runtime%E7%9A%84rce%E4%BE%8B%E5%AD%90%EF%BC%88%E8%AE%BF%E9%97%AE%E9%99%90%E5%88%B6%E7%AA%81%E7%A0%B4%EF%BC%89"><span class="toc-number">1.7.</span> <span class="toc-text">7.Runtime的rce例子（访问限制突破）</span></a></li></ol></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://dgxddd.github.io/2025/03/21/java%E5%8F%8D%E5%B0%84/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://dgxddd.github.io/2025/03/21/java%E5%8F%8D%E5%B0%84/&text=JAVA反射"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://dgxddd.github.io/2025/03/21/java%E5%8F%8D%E5%B0%84/&title=JAVA反射"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://dgxddd.github.io/2025/03/21/java%E5%8F%8D%E5%B0%84/&is_video=false&description=JAVA反射"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=JAVA反射&body=Check out this article: https://dgxddd.github.io/2025/03/21/java%E5%8F%8D%E5%B0%84/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://dgxddd.github.io/2025/03/21/java%E5%8F%8D%E5%B0%84/&title=JAVA反射"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://dgxddd.github.io/2025/03/21/java%E5%8F%8D%E5%B0%84/&title=JAVA反射"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://dgxddd.github.io/2025/03/21/java%E5%8F%8D%E5%B0%84/&title=JAVA反射"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://dgxddd.github.io/2025/03/21/java%E5%8F%8D%E5%B0%84/&title=JAVA反射"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://dgxddd.github.io/2025/03/21/java%E5%8F%8D%E5%B0%84/&name=JAVA反射&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://dgxddd.github.io/2025/03/21/java%E5%8F%8D%E5%B0%84/&t=JAVA反射"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2016-2026
+    jxdgx
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/tags/">标签</a></li><!--
+     --><!--
+       --><li><a href="/categories/">分类</a></li><!--
+     --><!--
+       --><li><a href="/links/">links</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+<link rel="stylesheet" href="/css/custom.css">
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"复制到粘贴板！\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "复制成功！");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<script src="/js/custom.js"></script>
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+
+</body>
+</html>

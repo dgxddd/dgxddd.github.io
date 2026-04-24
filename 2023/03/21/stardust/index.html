@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="hackmyvm-stardust网路环境kali : 10.0.2.8 靶机： 10.0.2.34  信息收集端口探测 目录扫描 我们访问10.0.2.34从而得到一个登录页面  漏洞利用GLPI框架我们知道了这是一个GLPI框架 我们在网上搜索他的默认密码和账户 glpi&#x2F;glpi 我们登录进行后在http:&#x2F;&#x2F;10.0.2.34&#x2F;front&#x2F;ticket.form.php?id&#x3D;6">
+<meta property="og:type" content="article">
+<meta property="og:title" content="stardust">
+<meta property="og:url" content="https://dgxddd.github.io/2023/03/21/stardust/">
+<meta property="og:site_name" content="jxdgx">
+<meta property="og:description" content="hackmyvm-stardust网路环境kali : 10.0.2.8 靶机： 10.0.2.34  信息收集端口探测 目录扫描 我们访问10.0.2.34从而得到一个登录页面  漏洞利用GLPI框架我们知道了这是一个GLPI框架 我们在网上搜索他的默认密码和账户 glpi&#x2F;glpi 我们登录进行后在http:&#x2F;&#x2F;10.0.2.34&#x2F;front&#x2F;ticket.form.php?id&#x3D;6">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/2860184-20230729084318546-1733807526.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/2860184-20230729141542109-1070112803.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/2860184-20230729141750883-1388903042.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/2860184-20230729142647772-1807308268.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/2860184-20230729142839638-307753770.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/2860184-20230729091348172-424973831.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/2860184-20230729091425716-1853345351.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/2860184-20230729091532566-13846388.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/2860184-20230730171447213-138064709.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/2860184-20230730172542385-850868122.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/2860184-20230730172754468-174985911.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/2860184-20230730175234067-1480880865.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/2860184-20230730175225411-697489994.png">
+<meta property="article:published_time" content="2023-03-21T14:10:55.000Z">
+<meta property="article:modified_time" content="2026-04-22T15:16:34.205Z">
+<meta property="article:author" content="jxdgx">
+<meta property="article:tag" content="GLPI框架">
+<meta property="article:tag" content="文件上传">
+<meta property="article:tag" content="渗透测试">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/2860184-20230729084318546-1733807526.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/logo.png">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/logo.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/logo.png">
+        
+      
+    
+    <!-- title -->
+    <title>stardust | jxdgx</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 8.1.0"></head>
+
+<body class="max-width mx-auto px3 ltr is-post-page">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="顶部" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/tags/">标签</a></li><!--
+     --><!--
+       --><li><a href="/categories/">分类</a></li><!--
+     --><!--
+       --><li><a href="/links/">links</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="上一篇" href="/2025/03/21/java%E5%8F%8D%E5%B0%84/"><i class="fa-solid fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="返回顶部" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="分享文章" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://dgxddd.github.io/2023/03/21/stardust/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://dgxddd.github.io/2023/03/21/stardust/&text=stardust"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://dgxddd.github.io/2023/03/21/stardust/&title=stardust"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://dgxddd.github.io/2023/03/21/stardust/&is_video=false&description=stardust"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=stardust&body=Check out this article: https://dgxddd.github.io/2023/03/21/stardust/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://dgxddd.github.io/2023/03/21/stardust/&title=stardust"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://dgxddd.github.io/2023/03/21/stardust/&title=stardust"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://dgxddd.github.io/2023/03/21/stardust/&title=stardust"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://dgxddd.github.io/2023/03/21/stardust/&title=stardust"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://dgxddd.github.io/2023/03/21/stardust/&name=stardust&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://dgxddd.github.io/2023/03/21/stardust/&t=stardust"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#hackmyvm-stardust"><span class="toc-number">1.</span> <span class="toc-text">hackmyvm-stardust</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BD%91%E8%B7%AF%E7%8E%AF%E5%A2%83"><span class="toc-number">1.1.</span> <span class="toc-text">网路环境</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BF%A1%E6%81%AF%E6%94%B6%E9%9B%86"><span class="toc-number">1.2.</span> <span class="toc-text">信息收集</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AB%AF%E5%8F%A3%E6%8E%A2%E6%B5%8B"><span class="toc-number">1.2.1.</span> <span class="toc-text">端口探测</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%9B%AE%E5%BD%95%E6%89%AB%E6%8F%8F"><span class="toc-number">1.2.2.</span> <span class="toc-text">目录扫描</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%BC%8F%E6%B4%9E%E5%88%A9%E7%94%A8"><span class="toc-number">1.3.</span> <span class="toc-text">漏洞利用</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#GLPI%E6%A1%86%E6%9E%B6"><span class="toc-number">1.3.1.</span> <span class="toc-text">GLPI框架</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0"><span class="toc-number">1.3.2.</span> <span class="toc-text">文件上传</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8F%8D%E5%BC%B9shell"><span class="toc-number">1.3.3.</span> <span class="toc-text">反弹shell</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9D%83%E9%99%90%E6%8F%90%E5%8D%87"><span class="toc-number">1.4.</span> <span class="toc-text">权限提升</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#tally%E5%AF%86%E7%A0%81%E7%88%86%E7%A0%B4"><span class="toc-number">1.4.1.</span> <span class="toc-text">tally密码爆破</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ssh%E8%BF%9E%E6%8E%A5"><span class="toc-number">1.4.2.</span> <span class="toc-text">ssh连接</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A7%81%E9%92%A5%E8%BF%9E%E6%8E%A5%E5%88%B0root"><span class="toc-number">1.4.3.</span> <span class="toc-text">私钥连接到root</span></a></li></ol></li></ol></li></ol>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        stardust
+    </h1>
+
+
+
+    <div class="meta meta-post">
+      
+    <div class="postdate">
+      
+        <time datetime="2023-03-21T14:10:55.000Z" class="dt-published" itemprop="datePublished">2023-03-21</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fa-solid fa-archive"></i>
+        <a class="category-link" href="/categories/hackmyvm/">hackmyvm</a>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/tags/GLPI%E6%A1%86%E6%9E%B6/" rel="tag">GLPI框架</a>, <a class="p-category" href="/tags/%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0/" rel="tag">文件上传</a>, <a class="p-category" href="/tags/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/" rel="tag">渗透测试</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <h1 id="hackmyvm-stardust"><a href="#hackmyvm-stardust" class="headerlink" title="hackmyvm-stardust"></a>hackmyvm-stardust</h1><h2 id="网路环境"><a href="#网路环境" class="headerlink" title="网路环境"></a>网路环境</h2><p>kali : 10.0.2.8</p>
+<p>靶机： 10.0.2.34 </p>
+<h2 id="信息收集"><a href="#信息收集" class="headerlink" title="信息收集"></a>信息收集</h2><h3 id="端口探测"><a href="#端口探测" class="headerlink" title="端口探测"></a>端口探测</h3><p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/2860184-20230729084318546-1733807526.png" alt="image-20230729084315604"></p>
+<h3 id="目录扫描"><a href="#目录扫描" class="headerlink" title="目录扫描"></a>目录扫描</h3><p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/2860184-20230729141542109-1070112803.png" alt="image-20230729141539001"></p>
+<p>我们访问10.0.2.34从而得到一个登录页面</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/2860184-20230729141750883-1388903042.png" alt="image-20230729141747735"></p>
+<h2 id="漏洞利用"><a href="#漏洞利用" class="headerlink" title="漏洞利用"></a>漏洞利用</h2><h3 id="GLPI框架"><a href="#GLPI框架" class="headerlink" title="GLPI框架"></a>GLPI框架</h3><p>我们知道了这是一个GLPI框架</p>
+<p>我们在网上搜索他的默认密码和账户</p>
+<p>glpi&#x2F;glpi</p>
+<p>我们登录进行后在<a target="_blank" rel="noopener" href="http://10.0.2.34/front/ticket.form.php?id=6%E4%B8%8B%E9%9D%A2%E5%BE%97%E5%88%B0%E4%BA%86%E6%8F%90%E7%A4%BA">http://10.0.2.34/front/ticket.form.php?id=6下面得到了提示</a></p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/2860184-20230729142647772-1807308268.png" alt="image-20230729142642889"></p>
+<p>这说我们的备份服务器改为了intranetik.stardust.hmv</p>
+<p>我们将此在&#x2F;etc&#x2F;hosts中添加进去</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/2860184-20230729142839638-307753770.png" alt="image-20230729142837689"></p>
+<p>我们访问intranetik.stardust.hmv目录</p>
+<h3 id="文件上传"><a href="#文件上传" class="headerlink" title="文件上传"></a>文件上传</h3><p>我们在intranetik.stardust.hmv目录下，知道了可以文件上传</p>
+<p>我们先上传.htaccess</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/2860184-20230729091348172-424973831.png" alt="image-20230729091345126"></p>
+<p>然后上传1.jpg,这个时候会将1.jpg当成php来解析</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/2860184-20230729091425716-1853345351.png" alt="image-20230729091423128"></p>
+<p>我们发现执行成功</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/2860184-20230729091532566-13846388.png" alt="image-20230729091530223"></p>
+<h3 id="反弹shell"><a href="#反弹shell" class="headerlink" title="反弹shell"></a>反弹shell</h3><p>我们在本机上开启</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nc -lvnp 6666   </span><br></pre></td></tr></table></figure>
+
+<p>这里我们使用nc反弹到本机上去</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/2860184-20230730171447213-138064709.png" alt="image-20230730171445671"></p>
+<h2 id="权限提升"><a href="#权限提升" class="headerlink" title="权限提升"></a>权限提升</h2><h3 id="tally密码爆破"><a href="#tally密码爆破" class="headerlink" title="tally密码爆破"></a>tally密码爆破</h3><p>这个时候我们对tally用户密码进行爆破</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/2860184-20230730172542385-850868122.png" alt="image-20230730172540726"></p>
+<p>得到密码bonita</p>
+<h3 id="ssh连接"><a href="#ssh连接" class="headerlink" title="ssh连接"></a>ssh连接</h3><p>我们进行ssh的连接</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/2860184-20230730172754468-174985911.png" alt="image-20230730172753043"></p>
+<p>我们在&#x2F;opt目录下得到提示在</p>
+<p>在经纬度大于1000的时候下雨会将&#x2F;root压缩到backup.tar下</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/2860184-20230730175234067-1480880865.png" alt="image-20230730174920446"></p>
+<h3 id="私钥连接到root"><a href="#私钥连接到root" class="headerlink" title="私钥连接到root"></a>私钥连接到root</h3><p>这个时候我们发现解压了backup.tar文件。我们进入到root目录下用私钥连接</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/2860184-20230730175225411-697489994.png" alt="image-20230730175201506"></p>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">首页</a></li>
+        
+          <li><a href="/archives/">归档</a></li>
+        
+          <li><a href="/tags/">标签</a></li>
+        
+          <li><a href="/categories/">分类</a></li>
+        
+          <li><a href="/links/">links</a></li>
+        
+          <li><a href="/about/">关于</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#hackmyvm-stardust"><span class="toc-number">1.</span> <span class="toc-text">hackmyvm-stardust</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BD%91%E8%B7%AF%E7%8E%AF%E5%A2%83"><span class="toc-number">1.1.</span> <span class="toc-text">网路环境</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BF%A1%E6%81%AF%E6%94%B6%E9%9B%86"><span class="toc-number">1.2.</span> <span class="toc-text">信息收集</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AB%AF%E5%8F%A3%E6%8E%A2%E6%B5%8B"><span class="toc-number">1.2.1.</span> <span class="toc-text">端口探测</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%9B%AE%E5%BD%95%E6%89%AB%E6%8F%8F"><span class="toc-number">1.2.2.</span> <span class="toc-text">目录扫描</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%BC%8F%E6%B4%9E%E5%88%A9%E7%94%A8"><span class="toc-number">1.3.</span> <span class="toc-text">漏洞利用</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#GLPI%E6%A1%86%E6%9E%B6"><span class="toc-number">1.3.1.</span> <span class="toc-text">GLPI框架</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0"><span class="toc-number">1.3.2.</span> <span class="toc-text">文件上传</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8F%8D%E5%BC%B9shell"><span class="toc-number">1.3.3.</span> <span class="toc-text">反弹shell</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9D%83%E9%99%90%E6%8F%90%E5%8D%87"><span class="toc-number">1.4.</span> <span class="toc-text">权限提升</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#tally%E5%AF%86%E7%A0%81%E7%88%86%E7%A0%B4"><span class="toc-number">1.4.1.</span> <span class="toc-text">tally密码爆破</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ssh%E8%BF%9E%E6%8E%A5"><span class="toc-number">1.4.2.</span> <span class="toc-text">ssh连接</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A7%81%E9%92%A5%E8%BF%9E%E6%8E%A5%E5%88%B0root"><span class="toc-number">1.4.3.</span> <span class="toc-text">私钥连接到root</span></a></li></ol></li></ol></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://dgxddd.github.io/2023/03/21/stardust/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://dgxddd.github.io/2023/03/21/stardust/&text=stardust"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://dgxddd.github.io/2023/03/21/stardust/&title=stardust"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://dgxddd.github.io/2023/03/21/stardust/&is_video=false&description=stardust"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=stardust&body=Check out this article: https://dgxddd.github.io/2023/03/21/stardust/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://dgxddd.github.io/2023/03/21/stardust/&title=stardust"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://dgxddd.github.io/2023/03/21/stardust/&title=stardust"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://dgxddd.github.io/2023/03/21/stardust/&title=stardust"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://dgxddd.github.io/2023/03/21/stardust/&title=stardust"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://dgxddd.github.io/2023/03/21/stardust/&name=stardust&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://dgxddd.github.io/2023/03/21/stardust/&t=stardust"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2016-2026
+    jxdgx
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/tags/">标签</a></li><!--
+     --><!--
+       --><li><a href="/categories/">分类</a></li><!--
+     --><!--
+       --><li><a href="/links/">links</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+<link rel="stylesheet" href="/css/custom.css">
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"复制到粘贴板！\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "复制成功！");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<script src="/js/custom.js"></script>
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+
+</body>
+</html>

