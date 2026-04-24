@@ -266,6 +266,10 @@ html[data-theme="dark"] hr {
   width: 240px;
 }
 
+.post-sidebar-toc-locked {
+  display: none;
+}
+
 .post-sidebar-toc-inner {
   max-height: calc(100vh - 10rem);
   overflow: auto;
