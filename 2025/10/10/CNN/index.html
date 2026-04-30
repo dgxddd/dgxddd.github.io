@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="CNN卷积神经网络（Convolutional Neural Network，简称 CNN），是一种专为处理「网格状数据」（最典型就是图像）设计的深度学习模型。它通过「局部卷积运算 + 参数共享」，自动从数据中学习空间层次化特征（比如图像里的边缘、纹理、形状），是计算机视觉任务的基础模型。 总结结构图可以如下所示 1输入图像 → 卷积层1 → 池化层1 → 卷积层2 → 池化层2 → 展平层 →">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CNN">
+<meta property="og:url" content="https://dgxddd.github.io/2025/10/10/CNN/">
+<meta property="og:site_name" content="jxdgx">
+<meta property="og:description" content="CNN卷积神经网络（Convolutional Neural Network，简称 CNN），是一种专为处理「网格状数据」（最典型就是图像）设计的深度学习模型。它通过「局部卷积运算 + 参数共享」，自动从数据中学习空间层次化特征（比如图像里的边缘、纹理、形状），是计算机视觉任务的基础模型。 总结结构图可以如下所示 1输入图像 → 卷积层1 → 池化层1 → 卷积层2 → 池化层2 → 展平层 →">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260430133103378.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/Code_Generated_Image%20(1).gif">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260430194145623.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260430194417498.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260430194542727.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260430194858454.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260430203928134.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260430213828295.png">
+<meta property="article:published_time" content="2025-10-10T13:31:06.000Z">
+<meta property="article:modified_time" content="2026-04-30T13:38:40.433Z">
+<meta property="article:author" content="jxdgx">
+<meta property="article:tag" content="CNN">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260430133103378.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/logo.png">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/logo.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/logo.png">
+        
+      
+    
+    <!-- title -->
+    <title>CNN | jxdgx</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 8.1.0"></head>
+
+<body class="max-width mx-auto px3 ltr is-post-page">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="顶部" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/tags/">标签</a></li><!--
+     --><!--
+       --><li><a href="/categories/">分类</a></li><!--
+     --><!--
+       --><li><a href="/links/">links</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="上一篇" href="/2025/10/29/Transformer/"><i class="fa-solid fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="下一篇" href="/2025/07/26/HW%E6%8A%80%E6%88%98%E6%B3%953/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="返回顶部" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="分享文章" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://dgxddd.github.io/2025/10/10/CNN/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://dgxddd.github.io/2025/10/10/CNN/&text=CNN"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://dgxddd.github.io/2025/10/10/CNN/&title=CNN"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://dgxddd.github.io/2025/10/10/CNN/&is_video=false&description=CNN"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=CNN&body=Check out this article: https://dgxddd.github.io/2025/10/10/CNN/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://dgxddd.github.io/2025/10/10/CNN/&title=CNN"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://dgxddd.github.io/2025/10/10/CNN/&title=CNN"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://dgxddd.github.io/2025/10/10/CNN/&title=CNN"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://dgxddd.github.io/2025/10/10/CNN/&title=CNN"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://dgxddd.github.io/2025/10/10/CNN/&name=CNN&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://dgxddd.github.io/2025/10/10/CNN/&t=CNN"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#CNN"><span class="toc-number">1.</span> <span class="toc-text">CNN</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E5%8D%B7%E7%A7%AF%E5%B1%82"><span class="toc-number">1.1.</span> <span class="toc-text">1.卷积层</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-ReLU%E6%BF%80%E6%B4%BB"><span class="toc-number">1.2.</span> <span class="toc-text">2.ReLU激活</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E6%B1%A0%E5%8C%96%E5%B1%82"><span class="toc-number">1.3.</span> <span class="toc-text">3.池化层</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E5%B1%95%E5%B9%B3%E5%B1%82"><span class="toc-number">1.4.</span> <span class="toc-text">4.展平层</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-%E5%85%A8%E8%BF%9E%E6%8E%A5%E5%B1%82"><span class="toc-number">1.5.</span> <span class="toc-text">5.全连接层</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-%E5%B0%8F%E7%BB%93"><span class="toc-number">1.6.</span> <span class="toc-text">6.小结</span></a></li></ol></li></ol>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        
+<div class="post-layout">
+  <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+    <header>
+      
+    <h1 class="posttitle p-name" itemprop="name headline">
+        CNN
+    </h1>
+
+
+
+      <div class="meta meta-post">
+        
+    <div class="postdate">
+      
+        <time datetime="2025-10-10T13:31:06.000Z" class="dt-published" itemprop="datePublished">2025-10-10</time>
+        
+      
+    </div>
+
+
+        
+    <div class="article-category">
+        <i class="fa-solid fa-archive"></i>
+        <a class="category-link" href="/categories/AI%E5%AE%89%E5%85%A8/">AI安全</a>
+    </div>
+
+
+        
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/tags/CNN/" rel="tag">CNN</a>
+    </div>
+
+
+      </div>
+    </header>
+    
+
+    <div class="content e-content" itemprop="articleBody">
+      <h1 id="CNN"><a href="#CNN" class="headerlink" title="CNN"></a>CNN</h1><p><strong>卷积神经网络（Convolutional Neural Network，简称 CNN）</strong>，是一种<strong>专为处理「网格状数据」（最典型就是图像）设计的深度学习模型</strong>。它通过「局部卷积运算 + 参数共享」，自动从数据中学习空间层次化特征（比如图像里的边缘、纹理、形状），是计算机视觉任务的基础模型。</p>
+<p>总结结构图可以如下所示</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">输入图像 → 卷积层1 → 池化层1 → 卷积层2 → 池化层2 → 展平层 → 全连接层 → 分类输出</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260430133103378.png" alt="image-20260430133103378"></p>
+<h2 id="1-卷积层"><a href="#1-卷积层" class="headerlink" title="1.卷积层"></a>1.卷积层</h2><p>先看图片里的手写数字<strong>9</strong>，<strong>黄色小方块</strong>框住图片里<strong>一小块区域</strong>，这一小块区域，跟<strong>卷积核</strong>对应位置相乘、再加起来，算出<strong>一个数</strong>，</p>
+<p>黄色小方块<strong>从左往右、从上往下 逐个滑动移动</strong>，每滑一次算一个数，全部算完，就拼成了一张<strong>卷积特征图</strong><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/Code_Generated_Image%20(1).gif" alt="Code_Generated_Image (1)"></p>
+<p>在这种A就是上面<strong>9</strong>的黄色方块，而B是卷积核，得到的C是蓝色上的小黄点</p>
+<h2 id="2-ReLU激活"><a href="#2-ReLU激活" class="headerlink" title="2.ReLU激活"></a>2.ReLU激活</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">RelU(x)=max(0,x)</span><br></pre></td></tr></table></figure>
+
+<p>左边是<strong>卷积层计算完成后输出的原始特征图</strong>，右边是经过 <strong>ReLU 激活后的结果</strong>。很多特征会被置 0，让网络变得更稀疏，减少参数冗余，一定程度上能防止过拟合。</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260430194145623.png" alt="image-20260430194145623"></p>
+<h2 id="3-池化层"><a href="#3-池化层" class="headerlink" title="3.池化层"></a>3.池化层</h2><p>我们可以根据上面RelU输出的结果进行池化</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260430194417498.png" alt="image-20260430194417498"></p>
+<p>这个时候我们可以使用重叠 最常用：2×2 窗口 + 步长 &#x3D; 1（重叠池化）</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260430194542727.png" alt="image-20260430194542727"></p>
+<p>池化的作用：保留主要特征的同时减少参数和计算量，防止过拟合</p>
+<h2 id="4-展平层"><a href="#4-展平层" class="headerlink" title="4.展平层"></a>4.展平层</h2><p>展平层的核心是：<strong>把二维特征图 “拉直” 成一维向量</strong>，不改变数据本身，只改变数据的排列方式。如下图所示</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260430194858454.png" alt="image-20260430194858454"></p>
+<h2 id="5-全连接层"><a href="#5-全连接层" class="headerlink" title="5.全连接层"></a>5.<strong>全连接层</strong></h2><p>它把展平后的一维向量（比如你的 <code>[38, 38, 18, 27]</code>）里的所有特征，<strong>全部连接起来</strong>（这就是 “全连接” 的含义）；</p>
+<p>通过加权求和，把分散的局部特征组合成一个全局的特征表示，判断 “这些特征组合起来，是什么物体 &#x2F; 类别”。</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260430203928134.png" alt="image-20260430203928134"></p>
+<p>其中W为权重矩阵，b为偏移矩阵，最后一层<strong>不用 ReLU</strong>，直接输出分类分数y，然后经过sofxmax输出概率最高的并最终来进行预测出9<br><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260430213828295.png" alt="image-20260430213828295"></p>
+<h2 id="6-小结"><a href="#6-小结" class="headerlink" title="6.小结"></a>6.小结</h2><p>CNN 擅长捕捉<strong>静态、空间局部特征</strong>，但难以处理<strong>带时间前后依赖的序列数据</strong>，无法理解时序关联与动态变化，处理语音、文本、股票、视频时序等任务时，更适合用 RNN 等循环神经网络。下节我们来讲解一下RNN。</p>
+
+    </div>
+  </article>
+  
+    <aside class="post-sidebar-toc">
+      <div class="post-sidebar-toc-inner">
+        <div class="post-sidebar-toc-title">Contents</div>
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#CNN"><span class="toc-number">1.</span> <span class="toc-text">CNN</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E5%8D%B7%E7%A7%AF%E5%B1%82"><span class="toc-number">1.1.</span> <span class="toc-text">1.卷积层</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-ReLU%E6%BF%80%E6%B4%BB"><span class="toc-number">1.2.</span> <span class="toc-text">2.ReLU激活</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E6%B1%A0%E5%8C%96%E5%B1%82"><span class="toc-number">1.3.</span> <span class="toc-text">3.池化层</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E5%B1%95%E5%B9%B3%E5%B1%82"><span class="toc-number">1.4.</span> <span class="toc-text">4.展平层</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-%E5%85%A8%E8%BF%9E%E6%8E%A5%E5%B1%82"><span class="toc-number">1.5.</span> <span class="toc-text">5.全连接层</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-%E5%B0%8F%E7%BB%93"><span class="toc-number">1.6.</span> <span class="toc-text">6.小结</span></a></li></ol></li></ol>
+      </div>
+    </aside>
+  
+</div>
+
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">首页</a></li>
+        
+          <li><a href="/archives/">归档</a></li>
+        
+          <li><a href="/tags/">标签</a></li>
+        
+          <li><a href="/categories/">分类</a></li>
+        
+          <li><a href="/links/">links</a></li>
+        
+          <li><a href="/about/">关于</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#CNN"><span class="toc-number">1.</span> <span class="toc-text">CNN</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E5%8D%B7%E7%A7%AF%E5%B1%82"><span class="toc-number">1.1.</span> <span class="toc-text">1.卷积层</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-ReLU%E6%BF%80%E6%B4%BB"><span class="toc-number">1.2.</span> <span class="toc-text">2.ReLU激活</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E6%B1%A0%E5%8C%96%E5%B1%82"><span class="toc-number">1.3.</span> <span class="toc-text">3.池化层</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E5%B1%95%E5%B9%B3%E5%B1%82"><span class="toc-number">1.4.</span> <span class="toc-text">4.展平层</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-%E5%85%A8%E8%BF%9E%E6%8E%A5%E5%B1%82"><span class="toc-number">1.5.</span> <span class="toc-text">5.全连接层</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-%E5%B0%8F%E7%BB%93"><span class="toc-number">1.6.</span> <span class="toc-text">6.小结</span></a></li></ol></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://dgxddd.github.io/2025/10/10/CNN/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://dgxddd.github.io/2025/10/10/CNN/&text=CNN"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://dgxddd.github.io/2025/10/10/CNN/&title=CNN"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://dgxddd.github.io/2025/10/10/CNN/&is_video=false&description=CNN"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=CNN&body=Check out this article: https://dgxddd.github.io/2025/10/10/CNN/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://dgxddd.github.io/2025/10/10/CNN/&title=CNN"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://dgxddd.github.io/2025/10/10/CNN/&title=CNN"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://dgxddd.github.io/2025/10/10/CNN/&title=CNN"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://dgxddd.github.io/2025/10/10/CNN/&title=CNN"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://dgxddd.github.io/2025/10/10/CNN/&name=CNN&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://dgxddd.github.io/2025/10/10/CNN/&t=CNN"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2016-2026
+    jxdgx
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/tags/">标签</a></li><!--
+     --><!--
+       --><li><a href="/categories/">分类</a></li><!--
+     --><!--
+       --><li><a href="/links/">links</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+<link rel="stylesheet" href="/css/custom.css">
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"复制到粘贴板！\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "复制成功！");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<script src="/js/custom.js"></script>
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+
+</body>
+</html>
