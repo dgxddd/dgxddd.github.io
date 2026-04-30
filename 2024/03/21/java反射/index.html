@@ -9,7 +9,7 @@
     <meta name="description" content="java反射1.基本定义Java反射机制是在运行状态时，对于任意一个类，都能够获取到这个类的所有属性和方法， 对于任意一个对象，都能够调用它的任意一个方法和属性(包括私有的方法和属性)，这种动态获取的信息以及动态调用对象的方法的功能就称为java语言的反射机制。 可以说为对象可以通过反射获取他的类，类可以通过反射拿到所有⽅法（包括私有） 通过java语言中的反射机制可以操作字节码文件，可以读和修改">
 <meta property="og:type" content="article">
 <meta property="og:title" content="JAVA反射">
-<meta property="og:url" content="https://dgxddd.github.io/2025/03/21/java%E5%8F%8D%E5%B0%84/">
+<meta property="og:url" content="https://dgxddd.github.io/2024/03/21/java%E5%8F%8D%E5%B0%84/">
 <meta property="og:site_name" content="jxdgx">
 <meta property="og:description" content="java反射1.基本定义Java反射机制是在运行状态时，对于任意一个类，都能够获取到这个类的所有属性和方法， 对于任意一个对象，都能够调用它的任意一个方法和属性(包括私有的方法和属性)，这种动态获取的信息以及动态调用对象的方法的功能就称为java语言的反射机制。 可以说为对象可以通过反射获取他的类，类可以通过反射拿到所有⽅法（包括私有） 通过java语言中的反射机制可以操作字节码文件，可以读和修改">
 <meta property="og:locale" content="zh_CN">
@@ -26,8 +26,8 @@
 <meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20251118212545071.png">
 <meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/2860184-20230416160930162-872620378.png">
 <meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/2860184-20230416155746070-416303608.png">
-<meta property="article:published_time" content="2025-03-21T14:10:55.000Z">
-<meta property="article:modified_time" content="2026-04-22T15:16:34.218Z">
+<meta property="article:published_time" content="2024-03-21T14:10:55.000Z">
+<meta property="article:modified_time" content="2026-04-30T00:39:58.750Z">
 <meta property="article:author" content="jxdgx">
 <meta property="article:tag" content="java基础">
 <meta name="twitter:card" content="summary">
@@ -116,17 +116,17 @@
     <br/>
     <div id="share" style="display: none">
       <ul>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://dgxddd.github.io/2025/03/21/java%E5%8F%8D%E5%B0%84/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://dgxddd.github.io/2025/03/21/java%E5%8F%8D%E5%B0%84/&text=JAVA反射"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://dgxddd.github.io/2025/03/21/java%E5%8F%8D%E5%B0%84/&title=JAVA反射"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://dgxddd.github.io/2025/03/21/java%E5%8F%8D%E5%B0%84/&is_video=false&description=JAVA反射"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="mailto:?subject=JAVA反射&body=Check out this article: https://dgxddd.github.io/2025/03/21/java%E5%8F%8D%E5%B0%84/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://dgxddd.github.io/2025/03/21/java%E5%8F%8D%E5%B0%84/&title=JAVA反射"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://dgxddd.github.io/2025/03/21/java%E5%8F%8D%E5%B0%84/&title=JAVA反射"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://dgxddd.github.io/2025/03/21/java%E5%8F%8D%E5%B0%84/&title=JAVA反射"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://dgxddd.github.io/2025/03/21/java%E5%8F%8D%E5%B0%84/&title=JAVA反射"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://dgxddd.github.io/2025/03/21/java%E5%8F%8D%E5%B0%84/&name=JAVA反射&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://dgxddd.github.io/2025/03/21/java%E5%8F%8D%E5%B0%84/&t=JAVA反射"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://dgxddd.github.io/2024/03/21/java%E5%8F%8D%E5%B0%84/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://dgxddd.github.io/2024/03/21/java%E5%8F%8D%E5%B0%84/&text=JAVA反射"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://dgxddd.github.io/2024/03/21/java%E5%8F%8D%E5%B0%84/&title=JAVA反射"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://dgxddd.github.io/2024/03/21/java%E5%8F%8D%E5%B0%84/&is_video=false&description=JAVA反射"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=JAVA反射&body=Check out this article: https://dgxddd.github.io/2024/03/21/java%E5%8F%8D%E5%B0%84/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://dgxddd.github.io/2024/03/21/java%E5%8F%8D%E5%B0%84/&title=JAVA反射"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://dgxddd.github.io/2024/03/21/java%E5%8F%8D%E5%B0%84/&title=JAVA反射"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://dgxddd.github.io/2024/03/21/java%E5%8F%8D%E5%B0%84/&title=JAVA反射"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://dgxddd.github.io/2024/03/21/java%E5%8F%8D%E5%B0%84/&title=JAVA反射"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://dgxddd.github.io/2024/03/21/java%E5%8F%8D%E5%B0%84/&name=JAVA反射&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://dgxddd.github.io/2024/03/21/java%E5%8F%8D%E5%B0%84/&t=JAVA反射"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
 </ul>
 
     </div>
@@ -158,7 +158,7 @@
         
     <div class="postdate">
       
-        <time datetime="2025-03-21T14:10:55.000Z" class="dt-published" itemprop="datePublished">2025-03-21</time>
+        <time datetime="2024-03-21T14:10:55.000Z" class="dt-published" itemprop="datePublished">2024-03-21</time>
         
       
     </div>
@@ -396,17 +396,17 @@
 
     <div id="share-footer" style="display: none">
       <ul>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://dgxddd.github.io/2025/03/21/java%E5%8F%8D%E5%B0%84/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://dgxddd.github.io/2025/03/21/java%E5%8F%8D%E5%B0%84/&text=JAVA反射"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://dgxddd.github.io/2025/03/21/java%E5%8F%8D%E5%B0%84/&title=JAVA反射"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://dgxddd.github.io/2025/03/21/java%E5%8F%8D%E5%B0%84/&is_video=false&description=JAVA反射"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="mailto:?subject=JAVA反射&body=Check out this article: https://dgxddd.github.io/2025/03/21/java%E5%8F%8D%E5%B0%84/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://dgxddd.github.io/2025/03/21/java%E5%8F%8D%E5%B0%84/&title=JAVA反射"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://dgxddd.github.io/2025/03/21/java%E5%8F%8D%E5%B0%84/&title=JAVA反射"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://dgxddd.github.io/2025/03/21/java%E5%8F%8D%E5%B0%84/&title=JAVA反射"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://dgxddd.github.io/2025/03/21/java%E5%8F%8D%E5%B0%84/&title=JAVA反射"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://dgxddd.github.io/2025/03/21/java%E5%8F%8D%E5%B0%84/&name=JAVA反射&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://dgxddd.github.io/2025/03/21/java%E5%8F%8D%E5%B0%84/&t=JAVA反射"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://dgxddd.github.io/2024/03/21/java%E5%8F%8D%E5%B0%84/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://dgxddd.github.io/2024/03/21/java%E5%8F%8D%E5%B0%84/&text=JAVA反射"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://dgxddd.github.io/2024/03/21/java%E5%8F%8D%E5%B0%84/&title=JAVA反射"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://dgxddd.github.io/2024/03/21/java%E5%8F%8D%E5%B0%84/&is_video=false&description=JAVA反射"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=JAVA反射&body=Check out this article: https://dgxddd.github.io/2024/03/21/java%E5%8F%8D%E5%B0%84/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://dgxddd.github.io/2024/03/21/java%E5%8F%8D%E5%B0%84/&title=JAVA反射"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://dgxddd.github.io/2024/03/21/java%E5%8F%8D%E5%B0%84/&title=JAVA反射"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://dgxddd.github.io/2024/03/21/java%E5%8F%8D%E5%B0%84/&title=JAVA反射"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://dgxddd.github.io/2024/03/21/java%E5%8F%8D%E5%B0%84/&title=JAVA反射"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://dgxddd.github.io/2024/03/21/java%E5%8F%8D%E5%B0%84/&name=JAVA反射&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://dgxddd.github.io/2024/03/21/java%E5%8F%8D%E5%B0%84/&t=JAVA反射"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
 </ul>
 
     </div>
