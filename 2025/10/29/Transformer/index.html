@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="transformerTransformer 是2017 年由 Google 团队在论文《Attention Is All You Need》[1706.03762] 注意力就是你所需要的全部下载地址中提出的深度学习模型，它完全基于自注意力机制构建，摒弃了传统 RNN&#x2F;CNN 的串行计算模式，可实现并行处理、长距离依赖捕捉，是当前大语言模型（GPT、LLaMA）、BERT、ViT 等 A">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Transformer">
+<meta property="og:url" content="https://dgxddd.github.io/2025/10/29/Transformer/">
+<meta property="og:site_name" content="jxdgx">
+<meta property="og:description" content="transformerTransformer 是2017 年由 Google 团队在论文《Attention Is All You Need》[1706.03762] 注意力就是你所需要的全部下载地址中提出的深度学习模型，它完全基于自注意力机制构建，摒弃了传统 RNN&#x2F;CNN 的串行计算模式，可实现并行处理、长距离依赖捕捉，是当前大语言模型（GPT、LLaMA）、BERT、ViT 等 A">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260429195619100.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/%E6%97%A0%E6%A0%87%E9%A2%98-2026-04-29-2026.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260429205815341.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260429210309061.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/QKV.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260429212819991.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/Q.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260429215043683.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260429223917104.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260429220726776.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260429224218564.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260429232809108.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260429233253462.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260429234140307.png">
+<meta property="article:published_time" content="2025-10-29T00:28:16.000Z">
+<meta property="article:modified_time" content="2026-04-30T00:31:32.491Z">
+<meta property="article:author" content="jxdgx">
+<meta property="article:tag" content="transformer">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260429195619100.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/logo.png">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/logo.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/logo.png">
+        
+      
+    
+    <!-- title -->
+    <title>Transformer | jxdgx</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 8.1.0"></head>
+
+<body class="max-width mx-auto px3 ltr is-post-page">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="顶部" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/tags/">标签</a></li><!--
+     --><!--
+       --><li><a href="/categories/">分类</a></li><!--
+     --><!--
+       --><li><a href="/links/">links</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="上一篇" href="/2026/04/28/AegisForge/"><i class="fa-solid fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="下一篇" href="/2025/07/26/HW%E6%8A%80%E6%88%98%E6%B3%953/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="返回顶部" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="分享文章" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://dgxddd.github.io/2025/10/29/Transformer/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://dgxddd.github.io/2025/10/29/Transformer/&text=Transformer"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://dgxddd.github.io/2025/10/29/Transformer/&title=Transformer"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://dgxddd.github.io/2025/10/29/Transformer/&is_video=false&description=Transformer"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Transformer&body=Check out this article: https://dgxddd.github.io/2025/10/29/Transformer/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://dgxddd.github.io/2025/10/29/Transformer/&title=Transformer"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://dgxddd.github.io/2025/10/29/Transformer/&title=Transformer"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://dgxddd.github.io/2025/10/29/Transformer/&title=Transformer"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://dgxddd.github.io/2025/10/29/Transformer/&title=Transformer"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://dgxddd.github.io/2025/10/29/Transformer/&name=Transformer&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://dgxddd.github.io/2025/10/29/Transformer/&t=Transformer"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#transformer"><span class="toc-number">1.</span> <span class="toc-text">transformer</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-Transformer-%E6%95%B4%E4%BD%93%E7%BB%93%E6%9E%84"><span class="toc-number">1.1.</span> <span class="toc-text">1.Transformer 整体结构</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-Transformer-%E7%9A%84%E8%BE%93%E5%85%A5"><span class="toc-number">1.2.</span> <span class="toc-text">2. Transformer 的输入</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1%E8%AF%8D%E5%90%91%E9%87%8F"><span class="toc-number">1.2.1.</span> <span class="toc-text">2.1词向量</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2%E4%BD%8D%E7%BD%AE%E5%90%91%E9%87%8F"><span class="toc-number">1.2.2.</span> <span class="toc-text">2.2位置向量</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-Multi-Head-Attention"><span class="toc-number">1.3.</span> <span class="toc-text">3. Multi-Head Attention</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-Q-K-V-%E7%9A%84%E8%AE%A1%E7%AE%97"><span class="toc-number">1.3.1.</span> <span class="toc-text">3.1 Q, K, V 的计算</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-Self-Attention-%E7%9A%84%E8%BE%93%E5%87%BA"><span class="toc-number">1.3.2.</span> <span class="toc-text">3.2 Self-Attention 的输出</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-Add-Norm"><span class="toc-number">1.4.</span> <span class="toc-text">4 Add &amp; Norm</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-FeedForward"><span class="toc-number">1.5.</span> <span class="toc-text">5.FeedForward</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-Masked-Multi-Head-Attention"><span class="toc-number">1.6.</span> <span class="toc-text">6.Masked Multi-Head Attention</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#7-Decoder-%E7%BB%93%E6%9E%84Multi-Head-Attention"><span class="toc-number">1.7.</span> <span class="toc-text">7.Decoder 结构Multi-Head Attention</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#8-%E6%80%BB%E7%BB%93"><span class="toc-number">1.8.</span> <span class="toc-text">8.总结</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#9-%E5%8F%82%E8%80%83%E6%96%87%E7%AB%A0"><span class="toc-number">1.9.</span> <span class="toc-text">9.参考文章</span></a></li></ol></li></ol>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        
+<div class="post-layout">
+  <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+    <header>
+      
+    <h1 class="posttitle p-name" itemprop="name headline">
+        Transformer
+    </h1>
+
+
+
+      <div class="meta meta-post">
+        
+    <div class="postdate">
+      
+        <time datetime="2025-10-29T00:28:16.000Z" class="dt-published" itemprop="datePublished">2025-10-29</time>
+        
+      
+    </div>
+
+
+        
+    <div class="article-category">
+        <i class="fa-solid fa-archive"></i>
+        <a class="category-link" href="/categories/AI%E5%AE%89%E5%85%A8/">AI安全</a>
+    </div>
+
+
+        
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/tags/transformer/" rel="tag">transformer</a>
+    </div>
+
+
+      </div>
+    </header>
+    
+
+    <div class="content e-content" itemprop="articleBody">
+      <h1 id="transformer"><a href="#transformer" class="headerlink" title="transformer"></a>transformer</h1><p>Transformer 是<strong>2017 年由 Google 团队</strong>在论文《Attention Is All You Need》[<a target="_blank" rel="noopener" href="https://arxiv.org/abs/1706.03762">1706.03762] 注意力就是你所需要的全部</a>下载地址中提出的深度学习模型，它<strong>完全基于自注意力机制</strong>构建，摒弃了传统 RNN&#x2F;CNN 的串行计算模式，可实现并行处理、长距离依赖捕捉，是当前大语言模型（GPT、LLaMA）、BERT、ViT 等 AI 模型的<strong>基础架构</strong>，彻底革新了自然语言处理与计算机视觉领域。</p>
+<h2 id="1-Transformer-整体结构"><a href="#1-Transformer-整体结构" class="headerlink" title="1.Transformer 整体结构"></a>1.Transformer 整体结构</h2><p>Transformer 分为<strong>编码器（Encoder）<strong>与</strong>解码器（Decoder）</strong> 两部分，编码器主要进行理解，而解码器进行预测</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260429195619100.png" alt="image-20260429195619100"></p>
+<h2 id="2-Transformer-的输入"><a href="#2-Transformer-的输入" class="headerlink" title="2. Transformer 的输入"></a>2. Transformer 的输入</h2><p>Transformer 不会直接把单词输入模型，而是会把每个词转换成一个同时包含<strong>语义信息 + 位置信息</strong>的向量，这个向量就是模型的最终输入，它由两部分相加得到：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Transformer 输入向量 x = 词 Embedding（Word Embedding） + 位置 Embedding（Positional Encoding）</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/%E6%97%A0%E6%A0%87%E9%A2%98-2026-04-29-2026.png" alt="无标题-2026-04-29-2026"></p>
+<p>上述图清晰展示了 Transformer 模型的输入构建过程：以 “早八学生” 这句话为例，模型会先将每个词转换为包含语义信息的词向量，再加上标记语序的位置向量，二者按元素相加后，得到同时包含语义和位置信息的输入向量，最后拼接成完整矩阵，作为模型后续处理的基础数据。</p>
+<h3 id="2-1词向量"><a href="#2-1词向量" class="headerlink" title="2.1词向量"></a>2.1词向量</h3><p>词向量不是凭空生成的，它的核心是<strong>通过算法把 “语义” 转换成模型能处理的向量</strong>，在这里就是讲<code>早八学生</code></p>
+<h3 id="2-2位置向量"><a href="#2-2位置向量" class="headerlink" title="2.2位置向量"></a>2.2位置向量</h3><p>对于句子中第<code>pos</code>个位置的词，在向量的第<code>2i</code>和<code>2i+1</code>维度上，位置编码的计算方式是：</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260429205815341.png" alt="image-20260429205815341"></p>
+<p>其中：</p>
+<ul>
+<li><code>pos</code>：词在句子中的位置（比如 “早” 是第 1 个词，<code>pos=0</code>或<code>1</code>，看索引定义）；</li>
+<li><code>d_model</code>：词向量的维度（比如你图里每个向量是 5 维，<code>d_model=5</code>）；</li>
+<li><code>i</code>：向量维度的索引（比如<code>i=0</code>对应第 0&#x2F;1 维，<code>i=1</code>对应第 2&#x2F;3 维）</li>
+</ul>
+<p>下面我们讲解完这个开始重头戏多头注意力机制</p>
+<h2 id="3-Multi-Head-Attention"><a href="#3-Multi-Head-Attention" class="headerlink" title="3. Multi-Head Attention"></a>3. Multi-Head Attention</h2><p> <strong>Multi-Head Attention</strong>，是由多个 <strong>Self-Attention</strong>组成的，所以我们了解Multi-Head Attention就需要了解Self-Attention就行了</p>
+<p>在文章中作者给出了Self-Attention的结构图我们进行讲解</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260429210309061.png" alt="image-20260429210309061"></p>
+<p>我们已经知道，每个词的最终输入是<strong>融合了词向量与位置向量的输入向量 x</strong>，以句子 “早八学生” 为例，4 个词会生成一个由 x₁、x₂、x₃、x₄组成的输入矩阵 X。而 Transformer 自注意力层中的<strong>Q（查询向量）、K（键向量）、V（值向量）</strong>，正是由这个输入矩阵 X，通过三次独立的线性变换直接得到的。</p>
+<h3 id="3-1-Q-K-V-的计算"><a href="#3-1-Q-K-V-的计算" class="headerlink" title="3.1 Q, K, V 的计算"></a>3.1 Q, K, V 的计算</h3><p>我们定义三个可训练的权重矩阵 Wq、Wk、Wv（参数由模型训练过程自动学习），通过三次独立的矩阵乘法（线性变换），即 Q&#x3D;X×Wq、K&#x3D;X×Wk、V&#x3D;X×Wv，将每个词的输入向量 xᵢ映射为对应的查询向量 qᵢ、键向量 kᵢ、值向量 vᵢ，最终拼接得到整个句子的 Q、K、V 矩阵，如下图所示</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/QKV.png" alt="QKV"></p>
+<h3 id="3-2-Self-Attention-的输出"><a href="#3-2-Self-Attention-的输出" class="headerlink" title="3.2 Self-Attention 的输出"></a>3.2 Self-Attention 的输出</h3><p>在我们得到Q，K，V矩阵后就可以来计算Self-Attention 的输出，在原文中是下面这样</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260429212819991.png" alt="image-20260429212819991"></p>
+<p>Q×Kᵀ得到的结果如图所示</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/Q.png" alt="Q"></p>
+<p><code>Q×Kᵀ</code> 这一步，把 “早八学生” 的 4 个词向量，转换成了一个 4×4 的 “词间关联度矩阵”，让模型明确知道 “学” 和 “生” 是强关联，而 “早” 和 “生” 关联很弱，这是 Transformer 理解上下文语义的核心一步</p>
+<p>其中<code>d_k</code> 是 Q和K 向量的维度，在我们 “早八学生” 的例子里，每个词的 Q&#x2F;K 向量是 5 维，所以 <code>d_k=5</code>，缩放系数就是 <code>√5</code>。</p>
+<p>然后讲得到的结果进行SoftMax 归一化得到注意力权重，如下图</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260429215043683.png" alt="image-20260429215043683"></p>
+<p>注意力权重矩阵与值矩阵 <code>V</code> 相乘，生成融合了上下文信息的新向量。最后为下一次Self-Attention的输入最后成为Multi-Head Attentionr然后进行下一步。其中下图中有两个公式分别是对后面那个高亮的显示也就是相关性比较高</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260429223917104.png" alt="image-20260429223917104"></p>
+<p>而 Multi-Head Attention 是由多个 Self-Attention 组合形成的，下图是论文中 Multi-Head Attention 的结构图。</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260429220726776.png" alt="image-20260429220726776"></p>
+<p> Multi-Head Attention 包含多个 Self-Attention 层，首先将输入<strong>X</strong>分别传递到 h 个不同的 Self-Attention 中，计算得到 h 个输出矩阵<strong>Z</strong>。下图是 h&#x3D;8 时候的情况，此时会得到 4 个输出矩阵<strong>c</strong>。然后4个c进行拼接成<strong>Concat</strong>，在后面传入一个<strong>Linear</strong>相乘最后得到C</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260429224218564.png" alt="image-20260429224218564"></p>
+<h2 id="4-Add-Norm"><a href="#4-Add-Norm" class="headerlink" title="4 Add &amp; Norm"></a>4 Add &amp; Norm</h2><p>这个主要在进行残差（关于这个我们讲ResNet 会进行讲解）和层归一化这个，其中主要设计两个公式，第一个是在我们注意层的</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">LayerNorm( X + MultiHeadAttention(X) )</span><br></pre></td></tr></table></figure>
+
+<p><code>X</code>：多头注意力层的<strong>原始输入</strong>，<code>MultiHeadAttention(X)</code>：多头注意力的输出。<code>X + MultiHeadAttention(X)</code>：这就是<strong>残差连接（Add）</strong>，把原始输入和注意力输出直接相加。目的是防止深层网络训练时梯度消失，保留最原始的信息，LayerNorm 是 “每个词自己的归一化</p>
+<p>第二个公式：前馈网络层后的 Add &amp; Norm</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">LayerNorm( X + FeedForward(X) )</span><br></pre></td></tr></table></figure>
+
+<p><code>X</code>：经过上一步（注意力层 Add &amp; Norm）的输出，<code>FeedForward(X)</code>：前馈网络的输出，<code>X + FeedForward(X)</code>：同样是<strong>残差连接</strong>，把前馈网络的输出和它的输入直接相加。LayerNorm 是 “每个词自己的归一化</p>
+<h2 id="5-FeedForward"><a href="#5-FeedForward" class="headerlink" title="5.FeedForward"></a>5.FeedForward</h2><p>就一个公式其中就是</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">FFN(x) = max(0, xW₁ + b₁)W₂ + b₂</span><br></pre></td></tr></table></figure>
+
+<p>这是一个两层的全连接网络，带 ReLU 激活，分为三步：</p>
+<p>第一层线性变换：<code>xW₁ + b₁</code> 其中这个x就是前面输出向量，而W₁权重矩阵，通常会进行升高维度，而b是偏移矩阵。这个作用是增强模型的表达能力</p>
+<p>然后经历ReLU 激活其中如果xW₁ + b₁为负数那就取0可以说取最大值，是为了引入非线性，让模型能学习更复杂的特征</p>
+<p>第二层线性变换：<code>W₂</code>：可训练权重矩阵，进行对刚刚升的维度进行降维<code>b₂</code>：偏置项，让其保持保持输入输出维度一致。</p>
+<p>最后输出的就是解码器的结果</p>
+<h2 id="6-Masked-Multi-Head-Attention"><a href="#6-Masked-Multi-Head-Attention" class="headerlink" title="6.Masked Multi-Head Attention"></a>6.Masked Multi-Head Attention</h2><p>首先前面的这个都是一样的主要是掩码矩阵这个主要是在Q×Kᵀ上进行加掩码然后进行sofxmax后乘V</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260429232809108.png" alt="image-20260429232809108"></p>
+<p>最后mask矩阵和V相乘可以得到C1</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260429233253462.png" alt="image-20260429233253462"></p>
+<p>然后经过多个C1进行拼接然后进行和<strong>Linear</strong>相乘最后得到最后的C，后面都一样了这个时候讲解一下Decoder 结构Multi-Head Attention</p>
+<h2 id="7-Decoder-结构Multi-Head-Attention"><a href="#7-Decoder-结构Multi-Head-Attention" class="headerlink" title="7.Decoder 结构Multi-Head Attention"></a>7.Decoder 结构Multi-Head Attention</h2><p>其中这个主要是k和V用的 Encoder，而Q来自于自己，可以这样来说，解码器拿着自己的 “问题”（Q），去编码器的 “知识库”（K 和 V）里找答案。它以解码器上一层掩码自注意力的输出作为查询向量 Q，直接使用编码器处理完 “早八学生” 后得到的上下文表示作为键 K 和值 V，通过标准的缩放点积注意力计算，让解码器在生成每个词时，都能动态关注到输入句子的全部信息，确保生成内容与原文语义紧密关联，最终输出融合了输入上下文的解码器表示。用下面的公式说</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260429234140307.png" alt="image-20260429234140307"></p>
+<p><strong>查询向量 Q</strong>：由解码器上一层（掩码自注意力模块）的输出线性变换得到</p>
+<p><strong>键向量 K 和值向量 V</strong>：直接来自编码器的最终输出</p>
+<p>后面都一样了，然后说一下最后的sofxmax就是输出每个词的概率即使我们”早八学生“这个，谁的概率高输出谁然后进行下一轮训练，掩码矩阵就可以看到更多了。</p>
+<h2 id="8-总结"><a href="#8-总结" class="headerlink" title="8.总结"></a>8.总结</h2><p>Transformer它摒弃了 RNN（循环神经网络）串行处理序列的固有模式，通过自注意力机制实现全局并行建模，解决了 RNN 在长序列依赖建模、训练效率与并行化方面的核心痛点。从而为后来AI时代中大模型的奠基之作。</p>
+<h2 id="9-参考文章"><a href="#9-参考文章" class="headerlink" title="9.参考文章"></a>9.参考文章</h2><p>[<a target="_blank" rel="noopener" href="https://arxiv.org/abs/1706.03762">1706.03762] 注意力就是你所需要的全部</a></p>
+<p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/338817680">Transformer模型详解（图解最完整版） - 知乎</a></p>
+
+    </div>
+  </article>
+  
+    <aside class="post-sidebar-toc">
+      <div class="post-sidebar-toc-inner">
+        <div class="post-sidebar-toc-title">Contents</div>
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#transformer"><span class="toc-number">1.</span> <span class="toc-text">transformer</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-Transformer-%E6%95%B4%E4%BD%93%E7%BB%93%E6%9E%84"><span class="toc-number">1.1.</span> <span class="toc-text">1.Transformer 整体结构</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-Transformer-%E7%9A%84%E8%BE%93%E5%85%A5"><span class="toc-number">1.2.</span> <span class="toc-text">2. Transformer 的输入</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1%E8%AF%8D%E5%90%91%E9%87%8F"><span class="toc-number">1.2.1.</span> <span class="toc-text">2.1词向量</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2%E4%BD%8D%E7%BD%AE%E5%90%91%E9%87%8F"><span class="toc-number">1.2.2.</span> <span class="toc-text">2.2位置向量</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-Multi-Head-Attention"><span class="toc-number">1.3.</span> <span class="toc-text">3. Multi-Head Attention</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-Q-K-V-%E7%9A%84%E8%AE%A1%E7%AE%97"><span class="toc-number">1.3.1.</span> <span class="toc-text">3.1 Q, K, V 的计算</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-Self-Attention-%E7%9A%84%E8%BE%93%E5%87%BA"><span class="toc-number">1.3.2.</span> <span class="toc-text">3.2 Self-Attention 的输出</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-Add-Norm"><span class="toc-number">1.4.</span> <span class="toc-text">4 Add &amp; Norm</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-FeedForward"><span class="toc-number">1.5.</span> <span class="toc-text">5.FeedForward</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-Masked-Multi-Head-Attention"><span class="toc-number">1.6.</span> <span class="toc-text">6.Masked Multi-Head Attention</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#7-Decoder-%E7%BB%93%E6%9E%84Multi-Head-Attention"><span class="toc-number">1.7.</span> <span class="toc-text">7.Decoder 结构Multi-Head Attention</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#8-%E6%80%BB%E7%BB%93"><span class="toc-number">1.8.</span> <span class="toc-text">8.总结</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#9-%E5%8F%82%E8%80%83%E6%96%87%E7%AB%A0"><span class="toc-number">1.9.</span> <span class="toc-text">9.参考文章</span></a></li></ol></li></ol>
+      </div>
+    </aside>
+  
+</div>
+
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">首页</a></li>
+        
+          <li><a href="/archives/">归档</a></li>
+        
+          <li><a href="/tags/">标签</a></li>
+        
+          <li><a href="/categories/">分类</a></li>
+        
+          <li><a href="/links/">links</a></li>
+        
+          <li><a href="/about/">关于</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#transformer"><span class="toc-number">1.</span> <span class="toc-text">transformer</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-Transformer-%E6%95%B4%E4%BD%93%E7%BB%93%E6%9E%84"><span class="toc-number">1.1.</span> <span class="toc-text">1.Transformer 整体结构</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-Transformer-%E7%9A%84%E8%BE%93%E5%85%A5"><span class="toc-number">1.2.</span> <span class="toc-text">2. Transformer 的输入</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1%E8%AF%8D%E5%90%91%E9%87%8F"><span class="toc-number">1.2.1.</span> <span class="toc-text">2.1词向量</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2%E4%BD%8D%E7%BD%AE%E5%90%91%E9%87%8F"><span class="toc-number">1.2.2.</span> <span class="toc-text">2.2位置向量</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-Multi-Head-Attention"><span class="toc-number">1.3.</span> <span class="toc-text">3. Multi-Head Attention</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-Q-K-V-%E7%9A%84%E8%AE%A1%E7%AE%97"><span class="toc-number">1.3.1.</span> <span class="toc-text">3.1 Q, K, V 的计算</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-Self-Attention-%E7%9A%84%E8%BE%93%E5%87%BA"><span class="toc-number">1.3.2.</span> <span class="toc-text">3.2 Self-Attention 的输出</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-Add-Norm"><span class="toc-number">1.4.</span> <span class="toc-text">4 Add &amp; Norm</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-FeedForward"><span class="toc-number">1.5.</span> <span class="toc-text">5.FeedForward</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-Masked-Multi-Head-Attention"><span class="toc-number">1.6.</span> <span class="toc-text">6.Masked Multi-Head Attention</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#7-Decoder-%E7%BB%93%E6%9E%84Multi-Head-Attention"><span class="toc-number">1.7.</span> <span class="toc-text">7.Decoder 结构Multi-Head Attention</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#8-%E6%80%BB%E7%BB%93"><span class="toc-number">1.8.</span> <span class="toc-text">8.总结</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#9-%E5%8F%82%E8%80%83%E6%96%87%E7%AB%A0"><span class="toc-number">1.9.</span> <span class="toc-text">9.参考文章</span></a></li></ol></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://dgxddd.github.io/2025/10/29/Transformer/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://dgxddd.github.io/2025/10/29/Transformer/&text=Transformer"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://dgxddd.github.io/2025/10/29/Transformer/&title=Transformer"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://dgxddd.github.io/2025/10/29/Transformer/&is_video=false&description=Transformer"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Transformer&body=Check out this article: https://dgxddd.github.io/2025/10/29/Transformer/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://dgxddd.github.io/2025/10/29/Transformer/&title=Transformer"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://dgxddd.github.io/2025/10/29/Transformer/&title=Transformer"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://dgxddd.github.io/2025/10/29/Transformer/&title=Transformer"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://dgxddd.github.io/2025/10/29/Transformer/&title=Transformer"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://dgxddd.github.io/2025/10/29/Transformer/&name=Transformer&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://dgxddd.github.io/2025/10/29/Transformer/&t=Transformer"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2016-2026
+    jxdgx
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/tags/">标签</a></li><!--
+     --><!--
+       --><li><a href="/categories/">分类</a></li><!--
+     --><!--
+       --><li><a href="/links/">links</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+<link rel="stylesheet" href="/css/custom.css">
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"复制到粘贴板！\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "复制成功！");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<script src="/js/custom.js"></script>
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+
+</body>
+</html>
