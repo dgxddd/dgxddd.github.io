@@ -19,6 +19,48 @@ $(document).ready(function() {
     $("#header > #nav > ul").toggleClass("responsive");
   });
 
+  /**
+   * TOC Collapsible functionality
+   */
+  (function setupTocCollapsible() {
+    // Find all TOC items that have children
+    $('.toc-item').each(function() {
+      var $item = $(this);
+      var $childList = $item.children('.toc-child');
+
+      if ($childList.length > 0) {
+        // Add toggle button before the link
+        var $link = $item.children('.toc-link');
+        var $toggle = $('<span class="toc-toggle collapsed"></span>');
+        $link.before($toggle);
+
+        // Initially collapse child list (except for level 1)
+        if ($item.hasClass('toc-level-1')) {
+          $childList.addClass('expanded');
+          $toggle.addClass('expanded').removeClass('collapsed');
+        } else {
+          $childList.addClass('collapsed');
+        }
+
+        // Toggle on click
+        $toggle.on('click', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          $toggle.toggleClass('collapsed expanded');
+          $childList.toggleClass('collapsed expanded');
+        });
+
+        // Also allow clicking on the link text to toggle if it has children
+        $link.on('click', function(e) {
+          // Don't prevent default - let the anchor work
+          // Just toggle the children
+          $toggle.toggleClass('collapsed expanded');
+          $childList.toggleClass('collapsed expanded');
+        });
+      }
+    });
+  })();
+
 
   /**
    * Controls the different versions of  the menu in blog post articles 

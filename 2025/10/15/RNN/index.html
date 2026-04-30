@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="RNNRNN 的 “循环连接” 是在「时间维度」传递信息，通过隐藏状态 (h_t)，把前面所有时间步的信息一步步传递下去，自然就能理解 “上一个词是什么，下一个词该接什么” 这种时序关联。 1.RNN 的“随身笔记”：读心术的来源 RNN 之所以能预测你下一个字想打什么，是因为它比普通 AI 多了一个“随身笔记本”，专业术语叫 隐藏状态 ($h_t$)。每当你输入一个词，它都会进行一次“头脑风暴”">
+<meta property="og:type" content="article">
+<meta property="og:title" content="RNN">
+<meta property="og:url" content="https://dgxddd.github.io/2025/10/15/RNN/">
+<meta property="og:site_name" content="jxdgx">
+<meta property="og:description" content="RNNRNN 的 “循环连接” 是在「时间维度」传递信息，通过隐藏状态 (h_t)，把前面所有时间步的信息一步步传递下去，自然就能理解 “上一个词是什么，下一个词该接什么” 这种时序关联。 1.RNN 的“随身笔记”：读心术的来源 RNN 之所以能预测你下一个字想打什么，是因为它比普通 AI 多了一个“随身笔记本”，专业术语叫 隐藏状态 ($h_t$)。每当你输入一个词，它都会进行一次“头脑风暴”">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260430225954435.png">
+<meta property="article:published_time" content="2025-10-15T15:39:15.000Z">
+<meta property="article:modified_time" content="2026-04-30T15:40:11.984Z">
+<meta property="article:author" content="jxdgx">
+<meta property="article:tag" content="RNN">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260430225954435.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/logo.png">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/logo.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/logo.png">
+        
+      
+    
+    <!-- title -->
+    <title>RNN | jxdgx</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+<!-- mathjax -->
+
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+        inlineMath: [['$','$']],
+        displayMath: [['$$','$$'], ['\[','\]']]
+      }
+    });
+  </script>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML' async></script>
+
+<meta name="generator" content="Hexo 8.1.0"></head>
+
+<body class="max-width mx-auto px3 ltr is-post-page">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="顶部" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/tags/">标签</a></li><!--
+     --><!--
+       --><li><a href="/categories/">分类</a></li><!--
+     --><!--
+       --><li><a href="/links/">links</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="上一篇" href="/2025/10/29/Transformer/"><i class="fa-solid fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="下一篇" href="/2025/10/10/CNN/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="返回顶部" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="分享文章" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://dgxddd.github.io/2025/10/15/RNN/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://dgxddd.github.io/2025/10/15/RNN/&text=RNN"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://dgxddd.github.io/2025/10/15/RNN/&title=RNN"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://dgxddd.github.io/2025/10/15/RNN/&is_video=false&description=RNN"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=RNN&body=Check out this article: https://dgxddd.github.io/2025/10/15/RNN/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://dgxddd.github.io/2025/10/15/RNN/&title=RNN"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://dgxddd.github.io/2025/10/15/RNN/&title=RNN"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://dgxddd.github.io/2025/10/15/RNN/&title=RNN"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://dgxddd.github.io/2025/10/15/RNN/&title=RNN"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://dgxddd.github.io/2025/10/15/RNN/&name=RNN&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://dgxddd.github.io/2025/10/15/RNN/&t=RNN"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#RNN"><span class="toc-number">1.</span> <span class="toc-text">RNN</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-RNN-%E7%9A%84%E2%80%9C%E9%9A%8F%E8%BA%AB%E7%AC%94%E8%AE%B0%E2%80%9D%EF%BC%9A%E8%AF%BB%E5%BF%83%E6%9C%AF%E7%9A%84%E6%9D%A5%E6%BA%90"><span class="toc-number">1.1.</span> <span class="toc-text">1.RNN 的“随身笔记”：读心术的来源</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E5%AE%83%E6%98%AF%E6%80%8E%E4%B9%88%E7%8C%9C%E4%BD%A0%E5%BF%83%E6%80%9D%E7%9A%84%EF%BC%9F"><span class="toc-number">1.2.</span> <span class="toc-text">2.它是怎么猜你心思的？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-RNN%E7%9A%84%E4%B8%8D%E8%B6%B3"><span class="toc-number">1.3.</span> <span class="toc-text">3.RNN的不足</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#3-1-RNN%E7%9A%84%E8%AE%B0%E5%BF%86%E9%97%AE%E9%A2%98"><span class="toc-number">1.3.1.</span> <span class="toc-text">3.1 RNN的记忆问题</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-2-RNN%E7%9A%84%E9%80%9F%E5%BA%A6%E9%97%AE%E9%A2%98"><span class="toc-number">1.3.2.</span> <span class="toc-text">3.2 RNN的速度问题</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B0%8F%E7%BB%93"><span class="toc-number">1.4.</span> <span class="toc-text">小结</span></a></li></ol></li></ol>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        
+<div class="post-layout">
+  <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+    <header>
+      
+    <h1 class="posttitle p-name" itemprop="name headline">
+        RNN
+    </h1>
+
+
+
+      <div class="meta meta-post">
+        
+    <div class="postdate">
+      
+        <time datetime="2025-10-15T15:39:15.000Z" class="dt-published" itemprop="datePublished">2025-10-15</time>
+        
+      
+    </div>
+
+
+        
+    <div class="article-category">
+        <i class="fa-solid fa-archive"></i>
+        <a class="category-link" href="/categories/AI%E5%AE%89%E5%85%A8/">AI安全</a>
+    </div>
+
+
+        
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/tags/RNN/" rel="tag">RNN</a>
+    </div>
+
+
+      </div>
+    </header>
+    
+
+    <div class="content e-content" itemprop="articleBody">
+      <h2 id="RNN"><a href="#RNN" class="headerlink" title="RNN"></a>RNN</h2><p>RNN 的 “循环连接” 是在「时间维度」传递信息，通过隐藏状态 (h_t)，把前面所有时间步的信息一步步传递下去，自然就能理解 “上一个词是什么，下一个词该接什么” 这种时序关联。</p>
+<h3 id="1-RNN-的“随身笔记”：读心术的来源"><a href="#1-RNN-的“随身笔记”：读心术的来源" class="headerlink" title="1.RNN 的“随身笔记”：读心术的来源"></a>1.RNN 的“随身笔记”：读心术的来源</h3><p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260430225954435.png" alt="image-20260430225954435"></p>
+<p>RNN 之所以能预测你下一个字想打什么，是因为它比普通 AI 多了一个“随身笔记本”，专业术语叫 <strong>隐藏状态 ($h_t$)</strong>。每当你输入一个词，它都会进行一次“头脑风暴”：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">hₜ = tanh( Wₓₕ · xₜ + Wₕₕ · hₜ₋₁ + bₕ )</span><br><span class="line"></span><br><span class="line">hₜ：当前时间步的隐藏状态 = RNN 的当前记忆</span><br><span class="line"></span><br><span class="line">xₜ：当前时间步的输入（比如第 t 个词、第 t 帧语音）</span><br><span class="line"></span><br><span class="line">hₜ₋₁：上一步的记忆（把过去信息传过来，时序依赖的关键）</span><br><span class="line"></span><br><span class="line">Wₓₕ：输入 → 隐藏层 的权重</span><br><span class="line"></span><br><span class="line">Wₕₕ：隐藏层 → 隐藏层 的循环权重（所有时间步共享）</span><br><span class="line"></span><br><span class="line">bₕ：偏置（微调数值）</span><br><span class="line"></span><br><span class="line">tanh：激活函数，把结果压到 -1 ~ 1，让训练更稳定</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-它是怎么猜你心思的？"><a href="#2-它是怎么猜你心思的？" class="headerlink" title="2.它是怎么猜你心思的？"></a>2.它是怎么猜你心思的？</h3><p>有了隐藏状态 ($h_t$)我们就可以进行信心满满地做出预测 ($y_t$) 了：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">yₜ = Softmax( Wₕᵧ · hₜ + bᵧ )</span><br><span class="line">yₜ：当前时间步的输出 / 预测结果（你要的 y）</span><br><span class="line">hₜ：当前记忆（用记忆做预测）</span><br><span class="line">Wₕᵧ：隐藏层 → 输出层 的权重</span><br><span class="line">bᵧ：输出偏置</span><br><span class="line">Softmax：把输出转成概率（分类任务专用，比如预测下一个词）</span><br></pre></td></tr></table></figure>
+
+<p>最后看哪个预测的值最高进行输出</p>
+<h3 id="3-RNN的不足"><a href="#3-RNN的不足" class="headerlink" title="3.RNN的不足"></a>3.RNN的不足</h3><h4 id="3-1-RNN的记忆问题"><a href="#3-1-RNN的记忆问题" class="headerlink" title="3.1 RNN的记忆问题"></a>3.1 RNN的记忆问题</h4><p>虽然 RNN 开启了序列建模的大门，但在处理复杂任务时，它就像一个<strong>记性不好且动作缓慢</strong>的打字员</p>
+<p>在传递信息时，记忆 $h_{t-1}$ 需要不断乘以循环权重 $W_{hh}$。如果 $W_{hh}$ 稍微小一点，经过几十次相乘，信息就几乎变成 0（梯度消失）；如果稍微大一点，数值就会飞到天上去（梯度爆炸）</p>
+<p>这个就会导致我们输出50个句子的时候就忘记了前面的话了。为了处理这个记忆我们引入了<strong>LSTM</strong>后面讲解</p>
+<h4 id="3-2-RNN的速度问题"><a href="#3-2-RNN的速度问题" class="headerlink" title="3.2 RNN的速度问题"></a>3.2 RNN的速度问题</h4><p>由于 $h_t$ 必须依赖 $h_{t-1}$，这意味着它必须<strong>一步一步</strong>算。这个时候我们引入了<strong>transformer</strong>来解决这个计算慢的问题，来进行并行计算加快了效率</p>
+<h3 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h3><p>RNN首次提出了这种时序关联为后面的方法也提供了帮助</p>
+
+    </div>
+  </article>
+  
+    <aside class="post-sidebar-toc">
+      <div class="post-sidebar-toc-inner">
+        <div class="post-sidebar-toc-title">Contents</div>
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#RNN"><span class="toc-number">1.</span> <span class="toc-text">RNN</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-RNN-%E7%9A%84%E2%80%9C%E9%9A%8F%E8%BA%AB%E7%AC%94%E8%AE%B0%E2%80%9D%EF%BC%9A%E8%AF%BB%E5%BF%83%E6%9C%AF%E7%9A%84%E6%9D%A5%E6%BA%90"><span class="toc-number">1.1.</span> <span class="toc-text">1.RNN 的“随身笔记”：读心术的来源</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E5%AE%83%E6%98%AF%E6%80%8E%E4%B9%88%E7%8C%9C%E4%BD%A0%E5%BF%83%E6%80%9D%E7%9A%84%EF%BC%9F"><span class="toc-number">1.2.</span> <span class="toc-text">2.它是怎么猜你心思的？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-RNN%E7%9A%84%E4%B8%8D%E8%B6%B3"><span class="toc-number">1.3.</span> <span class="toc-text">3.RNN的不足</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#3-1-RNN%E7%9A%84%E8%AE%B0%E5%BF%86%E9%97%AE%E9%A2%98"><span class="toc-number">1.3.1.</span> <span class="toc-text">3.1 RNN的记忆问题</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-2-RNN%E7%9A%84%E9%80%9F%E5%BA%A6%E9%97%AE%E9%A2%98"><span class="toc-number">1.3.2.</span> <span class="toc-text">3.2 RNN的速度问题</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B0%8F%E7%BB%93"><span class="toc-number">1.4.</span> <span class="toc-text">小结</span></a></li></ol></li></ol>
+      </div>
+    </aside>
+  
+</div>
+
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">首页</a></li>
+        
+          <li><a href="/archives/">归档</a></li>
+        
+          <li><a href="/tags/">标签</a></li>
+        
+          <li><a href="/categories/">分类</a></li>
+        
+          <li><a href="/links/">links</a></li>
+        
+          <li><a href="/about/">关于</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#RNN"><span class="toc-number">1.</span> <span class="toc-text">RNN</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-RNN-%E7%9A%84%E2%80%9C%E9%9A%8F%E8%BA%AB%E7%AC%94%E8%AE%B0%E2%80%9D%EF%BC%9A%E8%AF%BB%E5%BF%83%E6%9C%AF%E7%9A%84%E6%9D%A5%E6%BA%90"><span class="toc-number">1.1.</span> <span class="toc-text">1.RNN 的“随身笔记”：读心术的来源</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E5%AE%83%E6%98%AF%E6%80%8E%E4%B9%88%E7%8C%9C%E4%BD%A0%E5%BF%83%E6%80%9D%E7%9A%84%EF%BC%9F"><span class="toc-number">1.2.</span> <span class="toc-text">2.它是怎么猜你心思的？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-RNN%E7%9A%84%E4%B8%8D%E8%B6%B3"><span class="toc-number">1.3.</span> <span class="toc-text">3.RNN的不足</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#3-1-RNN%E7%9A%84%E8%AE%B0%E5%BF%86%E9%97%AE%E9%A2%98"><span class="toc-number">1.3.1.</span> <span class="toc-text">3.1 RNN的记忆问题</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-2-RNN%E7%9A%84%E9%80%9F%E5%BA%A6%E9%97%AE%E9%A2%98"><span class="toc-number">1.3.2.</span> <span class="toc-text">3.2 RNN的速度问题</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B0%8F%E7%BB%93"><span class="toc-number">1.4.</span> <span class="toc-text">小结</span></a></li></ol></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://dgxddd.github.io/2025/10/15/RNN/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://dgxddd.github.io/2025/10/15/RNN/&text=RNN"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://dgxddd.github.io/2025/10/15/RNN/&title=RNN"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://dgxddd.github.io/2025/10/15/RNN/&is_video=false&description=RNN"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=RNN&body=Check out this article: https://dgxddd.github.io/2025/10/15/RNN/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://dgxddd.github.io/2025/10/15/RNN/&title=RNN"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://dgxddd.github.io/2025/10/15/RNN/&title=RNN"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://dgxddd.github.io/2025/10/15/RNN/&title=RNN"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://dgxddd.github.io/2025/10/15/RNN/&title=RNN"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://dgxddd.github.io/2025/10/15/RNN/&name=RNN&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://dgxddd.github.io/2025/10/15/RNN/&t=RNN"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2016-2026
+    jxdgx
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/tags/">标签</a></li><!--
+     --><!--
+       --><li><a href="/categories/">分类</a></li><!--
+     --><!--
+       --><li><a href="/links/">links</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+<link rel="stylesheet" href="/css/custom.css">
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"复制到粘贴板！\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "复制成功！");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<script src="/js/custom.js"></script>
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+
+</body>
+</html>

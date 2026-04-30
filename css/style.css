@@ -909,6 +909,53 @@ body {
     display: none;
   }
 }
+.post-sidebar-toc .toc {
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
+}
+.post-sidebar-toc .toc-item {
+  position: relative;
+  margin: 4px 0;
+}
+.post-sidebar-toc .toc-child {
+  list-style: none;
+  padding-left: 1.2em;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+}
+.post-sidebar-toc .toc-child.collapsed {
+  max-height: 0;
+}
+.post-sidebar-toc .toc-child.expanded {
+  max-height: 500px;
+}
+.post-sidebar-toc .toc-toggle {
+  display: inline-block;
+  width: 0;
+  height: 0;
+  margin-right: 6px;
+  cursor: pointer;
+  border-left: 5px solid #505050;
+  border-top: 4px solid transparent;
+  border-bottom: 4px solid transparent;
+  transition: transform 0.2s ease;
+  vertical-align: middle;
+}
+.post-sidebar-toc .toc-toggle.expanded {
+  transform: rotate(90deg);
+}
+.post-sidebar-toc .toc-toggle.collapsed {
+  transform: rotate(0deg);
+}
+.post-sidebar-toc .toc-link {
+  display: inline;
+  color: inherit;
+  text-decoration: none;
+}
+.post-sidebar-toc .toc-link:hover {
+  color: #202020;
+}
 #footer-post {
   position: fixed;
   right: 0;
