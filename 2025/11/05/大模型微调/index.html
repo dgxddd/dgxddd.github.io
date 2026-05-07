@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="大模型微调首先我们思考一个问题为啥要有大模型微调？在回答这个问题之前我们先去思考大模型是如何训练更新的，是为啥可以像一个“老师”一样啥都懂。 首先大模型会经历预训练，而在预训练中会经历一下几个阶段 1.数据准备：这个时候会给大模型准备好成千上万的知识来帮助其学习 2.模型初始化：随机初始化模型的所有参数 3.自监督学习：这是预训练最核心的机制。模型通过 “预测下一个 token” 的任务来学习 而">
+<meta property="og:type" content="article">
+<meta property="og:title" content="大模型微调">
+<meta property="og:url" content="https://dgxddd.github.io/2025/11/05/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%BE%AE%E8%B0%83/">
+<meta property="og:site_name" content="jxdgx">
+<meta property="og:description" content="大模型微调首先我们思考一个问题为啥要有大模型微调？在回答这个问题之前我们先去思考大模型是如何训练更新的，是为啥可以像一个“老师”一样啥都懂。 首先大模型会经历预训练，而在预训练中会经历一下几个阶段 1.数据准备：这个时候会给大模型准备好成千上万的知识来帮助其学习 2.模型初始化：随机初始化模型的所有参数 3.自监督学习：这是预训练最核心的机制。模型通过 “预测下一个 token” 的任务来学习 而">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260507142713599.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260507143637062.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260507160019824.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260507193933958.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260507194424825.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260507195416404.png">
+<meta property="article:published_time" content="2025-11-05T11:59:41.000Z">
+<meta property="article:modified_time" content="2026-05-07T12:00:57.265Z">
+<meta property="article:author" content="jxdgx">
+<meta property="article:tag" content="LORA">
+<meta property="article:tag" content="微调">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260507142713599.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/logo.png">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/logo.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/logo.png">
+        
+      
+    
+    <!-- title -->
+    <title>大模型微调 | jxdgx</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+<!-- mathjax -->
+
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+        inlineMath: [['$','$']],
+        displayMath: [['$$','$$'], ['\[','\]']]
+      }
+    });
+  </script>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML' async></script>
+
+<meta name="generator" content="Hexo 8.1.0"></head>
+
+<body class="max-width mx-auto px3 ltr is-post-page">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="顶部" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/tags/">标签</a></li><!--
+     --><!--
+       --><li><a href="/categories/">分类</a></li><!--
+     --><!--
+       --><li><a href="/links/">links</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="上一篇" href="/2026/04/28/AegisForge/"><i class="fa-solid fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="下一篇" href="/2025/10/29/Transformer/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="返回顶部" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="分享文章" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://dgxddd.github.io/2025/11/05/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%BE%AE%E8%B0%83/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://dgxddd.github.io/2025/11/05/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%BE%AE%E8%B0%83/&text=大模型微调"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://dgxddd.github.io/2025/11/05/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%BE%AE%E8%B0%83/&title=大模型微调"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://dgxddd.github.io/2025/11/05/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%BE%AE%E8%B0%83/&is_video=false&description=大模型微调"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=大模型微调&body=Check out this article: https://dgxddd.github.io/2025/11/05/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%BE%AE%E8%B0%83/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://dgxddd.github.io/2025/11/05/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%BE%AE%E8%B0%83/&title=大模型微调"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://dgxddd.github.io/2025/11/05/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%BE%AE%E8%B0%83/&title=大模型微调"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://dgxddd.github.io/2025/11/05/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%BE%AE%E8%B0%83/&title=大模型微调"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://dgxddd.github.io/2025/11/05/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%BE%AE%E8%B0%83/&title=大模型微调"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://dgxddd.github.io/2025/11/05/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%BE%AE%E8%B0%83/&name=大模型微调&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://dgxddd.github.io/2025/11/05/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%BE%AE%E8%B0%83/&t=大模型微调"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%BE%AE%E8%B0%83"><span class="toc-number">1.</span> <span class="toc-text">大模型微调</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%BE%AE%E8%B0%83%E4%B9%8B%E5%85%A8%E9%87%8F%E5%BE%AE%E8%B0%83"><span class="toc-number">1.1.</span> <span class="toc-text">大模型微调之全量微调</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%BE%AE%E8%B0%83%E4%B9%8BLORA"><span class="toc-number">1.2.</span> <span class="toc-text">大模型微调之LORA</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%BE%AE%E8%B0%83%E4%B9%8BQLORA"><span class="toc-number">1.3.</span> <span class="toc-text">大模型微调之QLORA</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#4-bit-NF4-%E9%87%8F%E5%8C%96%E7%9A%84%E5%A4%84%E7%90%86"><span class="toc-number">1.3.1.</span> <span class="toc-text">4-bit NF4 量化的处理</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BA%8C%E9%87%8D%E9%87%8F%E5%8C%96"><span class="toc-number">1.3.2.</span> <span class="toc-text">二重量化</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%88%86%E9%A1%B5%E4%BC%98%E5%8C%96%E5%99%A8%E7%9A%84%E4%BD%BF%E7%94%A8"><span class="toc-number">1.3.3.</span> <span class="toc-text">分页优化器的使用</span></a></li></ol></li></ol></li></ol>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        
+<div class="post-layout">
+  <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+    <header>
+      
+    <h1 class="posttitle p-name" itemprop="name headline">
+        大模型微调
+    </h1>
+
+
+
+      <div class="meta meta-post">
+        
+    <div class="postdate">
+      
+        <time datetime="2025-11-05T11:59:41.000Z" class="dt-published" itemprop="datePublished">2025-11-05</time>
+        
+      
+    </div>
+
+
+        
+    <div class="article-category">
+        <i class="fa-solid fa-archive"></i>
+        <a class="category-link" href="/categories/AI%E5%AE%89%E5%85%A8/">AI安全</a>
+    </div>
+
+
+        
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/tags/LORA/" rel="tag">LORA</a>, <a class="p-category" href="/tags/%E5%BE%AE%E8%B0%83/" rel="tag">微调</a>
+    </div>
+
+
+      </div>
+    </header>
+    
+
+    <div class="content e-content" itemprop="articleBody">
+      <h2 id="大模型微调"><a href="#大模型微调" class="headerlink" title="大模型微调"></a>大模型微调</h2><p>首先我们思考一个问题为啥要有大模型微调？在回答这个问题之前我们先去思考大模型是如何训练更新的，是为啥可以像一个“老师”一样啥都懂。</p>
+<p>首先大模型会经历预训练，而在预训练中会经历一下几个阶段</p>
+<p>1.数据准备：这个时候会给大模型准备好成千上万的知识来帮助其学习</p>
+<p>2.模型初始化：随机初始化模型的所有参数</p>
+<p>3.自监督学习：这是预训练最核心的机制。模型通过 “预测下一个 token” 的任务来学习</p>
+<p>而在这个过程中大模型的预训练就会出现问题比如虽然大模型学习了许多知识但是这个时候呢他还是会有能力边界，这个大家应该有体会在我们问大模型的时候会胡乱说，还有对于某个专业的知识不足等。</p>
+<p>这个时候我们就可以回答了上一个问题，微调的本质，就是在预训练模型的基础上，使用特定任务的数据集进行进一步训练，让其更专业</p>
+<p>当然在让大模型适应特定任务还有提示词工程，还有RAG这个我们不在这里讲。</p>
+<p>为啥要微调呢，这个时候我们从训练需要的显存开始说，</p>
+<p>1.加载模型权重 → 2. 前向传播（算激活值）→ 3. 算损失 → 4. 反向传播（算梯度）→ 5. 优化器更新权重</p>
+<p>其中模型权重就是预训练大模型的全部可学习参数。</p>
+<p>激活值就是前向传播时，模型每一层的中间输出结果。你可以理解这个是为了来计算梯度的</p>
+<h3 id="大模型微调之全量微调"><a href="#大模型微调之全量微调" class="headerlink" title="大模型微调之全量微调"></a>大模型微调之全量微调</h3><p>首先我们先讲解一下全量微调，这个就是意思我们在每次更新预训练模型的所有参数，虽然这样效果最好但是太消耗显存了，这也是我们成本大幅度增加。 这个时候我们就想到了LORA，让其训练量少了很多。</p>
+<h3 id="大模型微调之LORA"><a href="#大模型微调之LORA" class="headerlink" title="大模型微调之LORA"></a>大模型微调之LORA</h3><p>既然全量微调成本太高，那有没有一种方法，既能让模型适配特定任务，又能节省资源？当然有——LORA，全称 Low-Rank Adaptation（低秩适应），就是为解决全量微调的痛点而生的。这个是通过调节模型参数来降低显存的使用。</p>
+<p>我们可以将其看成是矩阵的乘法,本质上如下图所示</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260507142713599.png" alt="image-20260507142713599"></p>
+<p>LoRA 不是改动原有大模型权重，而是额外插入两个低秩小矩阵，维度做成 n×k,k×m用这两个小矩阵去近似模拟原大矩阵的更新量，<br>原模型全部参数直接冻结不动。</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260507143637062.png" alt="image-20260507143637062"></p>
+<p>其中这个r就是我们中间的k，即设置的小矩阵中间维度，α：缩放超参数，一般初始设成和 r 一样大。</p>
+<p>前向传播：原输出 + AB 乘积融合，Y&#x3D;XW+X⋅AB⋅ a&#x2F;r，这样我们就只需要n<em>k+k</em>m的参数量 ，就能以极低资源消耗，逼近全量微调的任务适配效果</p>
+<h3 id="大模型微调之QLORA"><a href="#大模型微调之QLORA" class="headerlink" title="大模型微调之QLORA"></a>大模型微调之QLORA</h3><p>lora虽然降低了更新的参数但是其原来本身的参数没有降低，基座模型还是 16-bit 全精度存储，为了解决这个问题，<strong>QLoRA</strong> 才应运而生。它在 LoRA 的基础上，把基座模型用 <strong>4-bit 量化</strong>存储，配合 NF4 量化、双重量化和分页优化器技术，大幅度的降低了显存。对比图如下所示。</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260507160019824.png" alt="image-20260507160019824"></p>
+<p>其中主要来解决3个问题，第一个是基础模型16bit改为4bit。第二个是量化后缩放因子占用额外显存，这个时候我们进行二次量化。第三个是微调时 Adam 优化器会太多我们使用分页优化器把优化器状态分页存到 CPU 内存，GPU 按需加载。</p>
+<h4 id="4-bit-NF4-量化的处理"><a href="#4-bit-NF4-量化的处理" class="headerlink" title="4-bit NF4 量化的处理"></a>4-bit NF4 量化的处理</h4><p>4-bit NF4量化是QLoRA的基础核心技术，其核心目标是将16-bit全精度基座模型压缩为4-bit存储，同时最大限度减少精度损失。</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260507193933958.png" alt="image-20260507193933958"></p>
+<h4 id="二重量化"><a href="#二重量化" class="headerlink" title="二重量化"></a>二重量化</h4><p>在完成4-bit NF4量化后，虽然权重显存占用降低至原来的1&#x2F;4，但量化过程中产生的缩放因子scale会带来额外的显存开销，这也是QLoRA需要解决的第二个核心问题，具体细节结合下图说明：</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260507194424825.png" alt="image-20260507194424825"></p>
+<h4 id="分页优化器的使用"><a href="#分页优化器的使用" class="headerlink" title="分页优化器的使用"></a>分页优化器的使用</h4><p>解决了基座权重和缩放因子的显存问题后，微调过程中Adam优化器的状态占用成为新的显存瓶颈。Adam优化器的动量参数（m、v）需占用大量显存，尤其是在微调大模型时，优化器状态会导致显存峰值过高，甚至超出单卡显存上限，分页优化器正是为解决这一问题而生，具体操作结合下图展开：</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260507195416404.png" alt="image-20260507195416404"></p>
+
+    </div>
+  </article>
+  
+    <aside class="post-sidebar-toc">
+      <div class="post-sidebar-toc-inner">
+        <div class="post-sidebar-toc-title">Contents</div>
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%BE%AE%E8%B0%83"><span class="toc-number">1.</span> <span class="toc-text">大模型微调</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%BE%AE%E8%B0%83%E4%B9%8B%E5%85%A8%E9%87%8F%E5%BE%AE%E8%B0%83"><span class="toc-number">1.1.</span> <span class="toc-text">大模型微调之全量微调</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%BE%AE%E8%B0%83%E4%B9%8BLORA"><span class="toc-number">1.2.</span> <span class="toc-text">大模型微调之LORA</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%BE%AE%E8%B0%83%E4%B9%8BQLORA"><span class="toc-number">1.3.</span> <span class="toc-text">大模型微调之QLORA</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#4-bit-NF4-%E9%87%8F%E5%8C%96%E7%9A%84%E5%A4%84%E7%90%86"><span class="toc-number">1.3.1.</span> <span class="toc-text">4-bit NF4 量化的处理</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BA%8C%E9%87%8D%E9%87%8F%E5%8C%96"><span class="toc-number">1.3.2.</span> <span class="toc-text">二重量化</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%88%86%E9%A1%B5%E4%BC%98%E5%8C%96%E5%99%A8%E7%9A%84%E4%BD%BF%E7%94%A8"><span class="toc-number">1.3.3.</span> <span class="toc-text">分页优化器的使用</span></a></li></ol></li></ol></li></ol>
+      </div>
+    </aside>
+  
+</div>
+
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">首页</a></li>
+        
+          <li><a href="/archives/">归档</a></li>
+        
+          <li><a href="/tags/">标签</a></li>
+        
+          <li><a href="/categories/">分类</a></li>
+        
+          <li><a href="/links/">links</a></li>
+        
+          <li><a href="/about/">关于</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%BE%AE%E8%B0%83"><span class="toc-number">1.</span> <span class="toc-text">大模型微调</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%BE%AE%E8%B0%83%E4%B9%8B%E5%85%A8%E9%87%8F%E5%BE%AE%E8%B0%83"><span class="toc-number">1.1.</span> <span class="toc-text">大模型微调之全量微调</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%BE%AE%E8%B0%83%E4%B9%8BLORA"><span class="toc-number">1.2.</span> <span class="toc-text">大模型微调之LORA</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%BE%AE%E8%B0%83%E4%B9%8BQLORA"><span class="toc-number">1.3.</span> <span class="toc-text">大模型微调之QLORA</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#4-bit-NF4-%E9%87%8F%E5%8C%96%E7%9A%84%E5%A4%84%E7%90%86"><span class="toc-number">1.3.1.</span> <span class="toc-text">4-bit NF4 量化的处理</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BA%8C%E9%87%8D%E9%87%8F%E5%8C%96"><span class="toc-number">1.3.2.</span> <span class="toc-text">二重量化</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%88%86%E9%A1%B5%E4%BC%98%E5%8C%96%E5%99%A8%E7%9A%84%E4%BD%BF%E7%94%A8"><span class="toc-number">1.3.3.</span> <span class="toc-text">分页优化器的使用</span></a></li></ol></li></ol></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://dgxddd.github.io/2025/11/05/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%BE%AE%E8%B0%83/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://dgxddd.github.io/2025/11/05/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%BE%AE%E8%B0%83/&text=大模型微调"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://dgxddd.github.io/2025/11/05/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%BE%AE%E8%B0%83/&title=大模型微调"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://dgxddd.github.io/2025/11/05/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%BE%AE%E8%B0%83/&is_video=false&description=大模型微调"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=大模型微调&body=Check out this article: https://dgxddd.github.io/2025/11/05/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%BE%AE%E8%B0%83/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://dgxddd.github.io/2025/11/05/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%BE%AE%E8%B0%83/&title=大模型微调"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://dgxddd.github.io/2025/11/05/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%BE%AE%E8%B0%83/&title=大模型微调"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://dgxddd.github.io/2025/11/05/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%BE%AE%E8%B0%83/&title=大模型微调"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://dgxddd.github.io/2025/11/05/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%BE%AE%E8%B0%83/&title=大模型微调"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://dgxddd.github.io/2025/11/05/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%BE%AE%E8%B0%83/&name=大模型微调&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://dgxddd.github.io/2025/11/05/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%BE%AE%E8%B0%83/&t=大模型微调"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2016-2026
+    jxdgx
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/tags/">标签</a></li><!--
+     --><!--
+       --><li><a href="/categories/">分类</a></li><!--
+     --><!--
+       --><li><a href="/links/">links</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+<link rel="stylesheet" href="/css/custom.css">
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"复制到粘贴板！\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "复制成功！");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<script src="/js/custom.js"></script>
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+
+</body>
+</html>
