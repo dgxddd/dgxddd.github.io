@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="SFT，RLHF，DPO的真实边界SFT（监督微调）是使用标注的训练数据对预训练模型进行微调，使其在特定任务上性能更好。模型学习大量「输入 - 标准输出」标注对，通过自回归对数似然损失反向传播，迭代更新模型参数 θ，以便在给定输入下输出期望的结果。这种方法简单直接，适用于有大量高质量标注数据的任务。 主要公式如下：  主要意思是让其回答的更加接近我们的标准答案。 yt是 标准答案里的第t个 tok">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SFT，RLHF，DPO的真实边界">
+<meta property="og:url" content="https://dgxddd.github.io/2025/11/10/SFT%EF%BC%8CRLHF%EF%BC%8CDPO%E7%9A%84%E7%9C%9F%E5%AE%9E%E8%BE%B9%E7%95%8C/">
+<meta property="og:site_name" content="jxdgx">
+<meta property="og:description" content="SFT，RLHF，DPO的真实边界SFT（监督微调）是使用标注的训练数据对预训练模型进行微调，使其在特定任务上性能更好。模型学习大量「输入 - 标准输出」标注对，通过自回归对数似然损失反向传播，迭代更新模型参数 θ，以便在给定输入下输出期望的结果。这种方法简单直接，适用于有大量高质量标注数据的任务。 主要公式如下：  主要意思是让其回答的更加接近我们的标准答案。 yt是 标准答案里的第t个 tok">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260508172539174.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260508190644599.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260508192653176.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260508201222097.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260508202332247.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260508210810238.png">
+<meta property="article:published_time" content="2025-11-10T13:21:41.000Z">
+<meta property="article:modified_time" content="2026-05-08T13:50:52.178Z">
+<meta property="article:author" content="jxdgx">
+<meta property="article:tag" content="DPO">
+<meta property="article:tag" content="PPO">
+<meta property="article:tag" content="RLHF">
+<meta property="article:tag" content="SFT">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260508172539174.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/logo.png">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/logo.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/logo.png">
+        
+      
+    
+    <!-- title -->
+    <title>SFT，RLHF，DPO的真实边界 | jxdgx</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+<!-- mathjax -->
+
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+        inlineMath: [['$','$']],
+        displayMath: [['$$','$$'], ['\[','\]']]
+      }
+    });
+  </script>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML' async></script>
+
+<meta name="generator" content="Hexo 8.1.0"></head>
+
+<body class="max-width mx-auto px3 ltr is-post-page">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="顶部" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/tags/">标签</a></li><!--
+     --><!--
+       --><li><a href="/categories/">分类</a></li><!--
+     --><!--
+       --><li><a href="/links/">links</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="上一篇" href="/2026/04/28/AegisForge/"><i class="fa-solid fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="下一篇" href="/2025/11/05/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%BE%AE%E8%B0%83/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="返回顶部" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="分享文章" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://dgxddd.github.io/2025/11/10/SFT%EF%BC%8CRLHF%EF%BC%8CDPO%E7%9A%84%E7%9C%9F%E5%AE%9E%E8%BE%B9%E7%95%8C/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://dgxddd.github.io/2025/11/10/SFT%EF%BC%8CRLHF%EF%BC%8CDPO%E7%9A%84%E7%9C%9F%E5%AE%9E%E8%BE%B9%E7%95%8C/&text=SFT，RLHF，DPO的真实边界"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://dgxddd.github.io/2025/11/10/SFT%EF%BC%8CRLHF%EF%BC%8CDPO%E7%9A%84%E7%9C%9F%E5%AE%9E%E8%BE%B9%E7%95%8C/&title=SFT，RLHF，DPO的真实边界"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://dgxddd.github.io/2025/11/10/SFT%EF%BC%8CRLHF%EF%BC%8CDPO%E7%9A%84%E7%9C%9F%E5%AE%9E%E8%BE%B9%E7%95%8C/&is_video=false&description=SFT，RLHF，DPO的真实边界"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=SFT，RLHF，DPO的真实边界&body=Check out this article: https://dgxddd.github.io/2025/11/10/SFT%EF%BC%8CRLHF%EF%BC%8CDPO%E7%9A%84%E7%9C%9F%E5%AE%9E%E8%BE%B9%E7%95%8C/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://dgxddd.github.io/2025/11/10/SFT%EF%BC%8CRLHF%EF%BC%8CDPO%E7%9A%84%E7%9C%9F%E5%AE%9E%E8%BE%B9%E7%95%8C/&title=SFT，RLHF，DPO的真实边界"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://dgxddd.github.io/2025/11/10/SFT%EF%BC%8CRLHF%EF%BC%8CDPO%E7%9A%84%E7%9C%9F%E5%AE%9E%E8%BE%B9%E7%95%8C/&title=SFT，RLHF，DPO的真实边界"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://dgxddd.github.io/2025/11/10/SFT%EF%BC%8CRLHF%EF%BC%8CDPO%E7%9A%84%E7%9C%9F%E5%AE%9E%E8%BE%B9%E7%95%8C/&title=SFT，RLHF，DPO的真实边界"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://dgxddd.github.io/2025/11/10/SFT%EF%BC%8CRLHF%EF%BC%8CDPO%E7%9A%84%E7%9C%9F%E5%AE%9E%E8%BE%B9%E7%95%8C/&title=SFT，RLHF，DPO的真实边界"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://dgxddd.github.io/2025/11/10/SFT%EF%BC%8CRLHF%EF%BC%8CDPO%E7%9A%84%E7%9C%9F%E5%AE%9E%E8%BE%B9%E7%95%8C/&name=SFT，RLHF，DPO的真实边界&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://dgxddd.github.io/2025/11/10/SFT%EF%BC%8CRLHF%EF%BC%8CDPO%E7%9A%84%E7%9C%9F%E5%AE%9E%E8%BE%B9%E7%95%8C/&t=SFT，RLHF，DPO的真实边界"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#SFT%EF%BC%8CRLHF%EF%BC%8CDPO%E7%9A%84%E7%9C%9F%E5%AE%9E%E8%BE%B9%E7%95%8C"><span class="toc-number">1.</span> <span class="toc-text">SFT，RLHF，DPO的真实边界</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#SFT%EF%BC%88%E7%9B%91%E7%9D%A3%E5%BE%AE%E8%B0%83%EF%BC%89"><span class="toc-number">1.1.</span> <span class="toc-text">SFT（监督微调）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#RLHF"><span class="toc-number">1.2.</span> <span class="toc-text">RLHF</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#DPO"><span class="toc-number">1.3.</span> <span class="toc-text">DPO</span></a></li></ol></li></ol>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        
+<div class="post-layout">
+  <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+    <header>
+      
+    <h1 class="posttitle p-name" itemprop="name headline">
+        SFT，RLHF，DPO的真实边界
+    </h1>
+
+
+
+      <div class="meta meta-post">
+        
+    <div class="postdate">
+      
+        <time datetime="2025-11-10T13:21:41.000Z" class="dt-published" itemprop="datePublished">2025-11-10</time>
+        
+      
+    </div>
+
+
+        
+    <div class="article-category">
+        <i class="fa-solid fa-archive"></i>
+        <a class="category-link" href="/categories/AI%E5%AE%89%E5%85%A8/">AI安全</a>
+    </div>
+
+
+        
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/tags/DPO/" rel="tag">DPO</a>, <a class="p-category" href="/tags/PPO/" rel="tag">PPO</a>, <a class="p-category" href="/tags/RLHF/" rel="tag">RLHF</a>, <a class="p-category" href="/tags/SFT/" rel="tag">SFT</a>
+    </div>
+
+
+      </div>
+    </header>
+    
+
+    <div class="content e-content" itemprop="articleBody">
+      <h2 id="SFT，RLHF，DPO的真实边界"><a href="#SFT，RLHF，DPO的真实边界" class="headerlink" title="SFT，RLHF，DPO的真实边界"></a>SFT，RLHF，DPO的真实边界</h2><h3 id="SFT（监督微调）"><a href="#SFT（监督微调）" class="headerlink" title="SFT（监督微调）"></a>SFT（监督微调）</h3><p>是使用标注的训练数据对预训练模型进行微调，使其在特定任务上性能更好。模型学习大量「输入 - 标准输出」标注对，通过自回归对数似然损失反向传播，迭代更新模型参数 θ，以便在给定输入下输出期望的结果。这种方法简单直接，适用于有大量高质量标注数据的任务。</p>
+<p>主要公式如下：</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260508172539174.png" alt="image-20260508172539174"></p>
+<p>主要意思是让其回答的更加接近我们的标准答案。</p>
+<p>yt是 标准答案里的第t个 token，而y&lt;t是标准答案里第t个 token 之前的所有 token</p>
+<p>其中x是<strong>用户的输入 &#x2F; 指令</strong>（也就是 SFT 里的<code>instruction + input</code>）</p>
+<p>θ模型的所有参数（就是训练时要更新的权重）</p>
+<p>这是单轮指令微调标准数据集样本格式，后续会通过 Prompt 模板拼接成模型实际输入文本，再做损失计算。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;<span class="string">&quot;instruction&quot;</span>:<span class="string">&quot;问题&quot;</span>,<span class="string">&quot;input&quot;</span>:<span class="string">&quot;补充&quot;</span>,<span class="string">&quot;output&quot;</span>:<span class="string">&quot;标准答案&quot;</span>&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="RLHF"><a href="#RLHF" class="headerlink" title="RLHF"></a>RLHF</h3><p>RLHF的训练过程可以分解为三个核心步骤：</p>
+<p>步骤一：收集示范数据，训练监督策略 从提示词数据集采样提示词 → 标注人员给出符合预期的理想输出 → 用（指令-答案）数据监督微调GPT-3   (这个用的SFT)                         </p>
+<p>步骤二：收集对比数据，训练奖励模型 对同一提示词，指令微调模型生成多个回复 → 标注人员对回复从优到劣排序 → 用偏好对比数据训练奖励模型RM （训练奖励模型 RM）                       </p>
+<p>步骤三：基于奖励模型，强化学习优化策略 从数据集采样新提示词 → 策略模型生成回复 → 奖励模型打分 → 用PPO算法更新策略模型权重</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260508190644599.png" alt="image-20260508190644599"></p>
+<p>现在我们主要对训练奖励模型 RM以及ppo算法进行下面的说明。</p>
+<p>其中RM主要是对输入「用户问题 + 模型回答」，输出一个标量奖励分数<br>分数越高 &#x3D; 越符合人类喜好、越优质；<br>分数越低 &#x3D; 废话、跑偏、违规、人类不喜欢。</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260508192653176.png" alt="image-20260508192653176"></p>
+<p>PPO</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260508201222097.png" alt="image-20260508201222097"></p>
+<p>其中策略模型由训练好的 SFT 模型初始化而来，全程参与训练、参数一直在变。</p>
+<p>参考模型是原始 SFT 模型完整复制一份，全程冻结、参数永远不动</p>
+<p>GAE 就是用评论家模型的基线，把「当前奖励 + 未来多步奖励」揉在一起平滑计算，算出又准又稳的优势函数 A_t，专治 PPO 训练震荡、不稳定。</p>
+<p>其中PPO-clip裁剪损失计算。</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260508202332247.png" alt="image-20260508202332247"></p>
+<p>其中r<br>r_t(θ)：新策略 &#x2F; 旧策略 生成同一个 token 的概率比值，代表更新幅度。</p>
+<p>A_t：GAE 算出来的优势函数。其中A_t&gt;0（回答比基线好）：鼓励模型多沿用这种生成方式，但限制更新幅度，不能学太疯。</p>
+<p>A_t&lt;0 (回答比基线差）：抑制这种生成方式，同样控制修改力度</p>
+<p>ε：是超参数，用于控制裁剪幅度。</p>
+<h3 id="DPO"><a href="#DPO" class="headerlink" title="DPO"></a>DPO</h3><p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260508210810238.png" alt="image-20260508210810238"></p>
+<p>第一步</p>
+<ul>
+<li>输入提示：就是我们给模型的问题&#x2F;指令；</li>
+<li>优选高质量回复：人类认可、符合需求的好回答；</li>
+<li>劣选低质量回复：人类不认可、不符合需求的坏回答</li>
+</ul>
+<p>第二步</p>
+<ul>
+<li>参考模型（SFT模型）：就是我们提前训好的“基础版模型”，训练时固定它的参数（不改动），当作“基准线”；</li>
+<li>策略模型：就是我们要最终训练好的“对齐版模型”，只有它的参数会被更新</li>
+</ul>
+<p>第三步</p>
+<ul>
+<li>“最大化优选相对劣选的对数概率比值”：逼着模型让“好回答（Chosen）”的生成概率变高，让“坏回答（Rejected）”的生成概率变低，相当于直接告诉模型“选这个、不选那个”；</li>
+<li>“隐式等价学习奖励函数”：不用RM给回答打分，DPO通过这种“好坏对比”，会自动学会“什么是好、什么是坏”，相当于把“奖励模型的功能”藏在了对比训练里；</li>
+</ul>
+<p>第四步</p>
+<ul>
+<li>KL散度约束：简单说就是“衡量两个模型（策略模型和参考模型）输出差异的指标”；</li>
+<li>“控制偏移”：通过KL约束，让策略模型（要训的模型）的输出，不能和参考模型（基础模型）差太远</li>
+</ul>
+<p>第五步</p>
+<ul>
+<li>通过前面的“好坏对比”和“KL约束”，计算出模型参数需要调整的方向（梯度），逐步更新策略模型的参数</li>
+</ul>
+<p>DPO损失函数</p>
+<p>本质是通过DPO损失函数实现的——它是DPO训练的“指挥棒”，告诉模型“该怎么调整参数”，全程不用RM打分、不用PPO，核心公式（极简版，无复杂推导）如下：</p>
+<script type="math/tex; mode=display">\mathcal{L}_{DPO} = -\mathbb{E} \log \sigma\left( \beta \log \frac{\pi_\theta(y_w|x)}{\pi_{ref}(y_w|x)} - \beta \log \frac{\pi_\theta(y_l|x)}{\pi_{ref}(y_l|x)} \right)</script>
+<p>不用怕公式，逐部分用大白话拆解，结合前面的流程，一看就懂：</p>
+<ul>
+<li><script type="math/tex">\mathcal{L}_{DPO}</script>：就是DPO的损失值，训练的目标是“让这个损失值越小越好”，损失越小，模型越符合人类偏好；</li>
+<li><script type="math/tex">\pi_\theta(y_w|x)</script>：策略模型（我们要训的模型）在输入提示x下，生成好回答（y_w，即Chosen）的概率；</li>
+<li><script type="math/tex">\pi_{ref}(y_w|x)</script>：参考模型（冻结的SFT模型）在输入提示x下，生成好回答（y_w）的概率；</li>
+<li><script type="math/tex">\pi_\theta(y_l|x)</script>：策略模型在输入提示x下，生成坏回答（y_l，即Rejected）的概率；</li>
+<li><script type="math/tex">\pi_{ref}(y_l|x)</script>：参考模型在输入提示x下，生成坏回答（y_l）的概率；</li>
+<li><script type="math/tex">\beta</script>：就是前面提到的KL权重（默认0.1），核心作用是控制策略模型和参考模型的偏离程度，平衡“对齐偏好”和“避免崩坏”；</li>
+<li><script type="math/tex">\sigma(\cdot)</script>：Sigmoid函数，简单说就是“把计算结果压缩到0-1之间”，方便计算损失、判断模型的偏好学习效果。</li>
+</ul>
+<p>核心逻辑（对应第三步流程）：</p>
+<p>损失函数的核心是“让好回答的相对概率更高，坏回答的相对概率更低”——公式里的两个对数比值，其实就是在计算“策略模型比参考模型，更愿意生成好回答、更不愿意生成坏回答的程度”，再通过<script type="math/tex">\beta</script>控制这种“偏好倾向”不太过火（避免偏离参考模型太远），最后通过损失值的降低，逐步调整策略模型的参数</p>
+
+    </div>
+  </article>
+  
+    <aside class="post-sidebar-toc">
+      <div class="post-sidebar-toc-inner">
+        <div class="post-sidebar-toc-title">Contents</div>
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#SFT%EF%BC%8CRLHF%EF%BC%8CDPO%E7%9A%84%E7%9C%9F%E5%AE%9E%E8%BE%B9%E7%95%8C"><span class="toc-number">1.</span> <span class="toc-text">SFT，RLHF，DPO的真实边界</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#SFT%EF%BC%88%E7%9B%91%E7%9D%A3%E5%BE%AE%E8%B0%83%EF%BC%89"><span class="toc-number">1.1.</span> <span class="toc-text">SFT（监督微调）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#RLHF"><span class="toc-number">1.2.</span> <span class="toc-text">RLHF</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#DPO"><span class="toc-number">1.3.</span> <span class="toc-text">DPO</span></a></li></ol></li></ol>
+      </div>
+    </aside>
+  
+</div>
+
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">首页</a></li>
+        
+          <li><a href="/archives/">归档</a></li>
+        
+          <li><a href="/tags/">标签</a></li>
+        
+          <li><a href="/categories/">分类</a></li>
+        
+          <li><a href="/links/">links</a></li>
+        
+          <li><a href="/about/">关于</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#SFT%EF%BC%8CRLHF%EF%BC%8CDPO%E7%9A%84%E7%9C%9F%E5%AE%9E%E8%BE%B9%E7%95%8C"><span class="toc-number">1.</span> <span class="toc-text">SFT，RLHF，DPO的真实边界</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#SFT%EF%BC%88%E7%9B%91%E7%9D%A3%E5%BE%AE%E8%B0%83%EF%BC%89"><span class="toc-number">1.1.</span> <span class="toc-text">SFT（监督微调）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#RLHF"><span class="toc-number">1.2.</span> <span class="toc-text">RLHF</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#DPO"><span class="toc-number">1.3.</span> <span class="toc-text">DPO</span></a></li></ol></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://dgxddd.github.io/2025/11/10/SFT%EF%BC%8CRLHF%EF%BC%8CDPO%E7%9A%84%E7%9C%9F%E5%AE%9E%E8%BE%B9%E7%95%8C/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://dgxddd.github.io/2025/11/10/SFT%EF%BC%8CRLHF%EF%BC%8CDPO%E7%9A%84%E7%9C%9F%E5%AE%9E%E8%BE%B9%E7%95%8C/&text=SFT，RLHF，DPO的真实边界"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://dgxddd.github.io/2025/11/10/SFT%EF%BC%8CRLHF%EF%BC%8CDPO%E7%9A%84%E7%9C%9F%E5%AE%9E%E8%BE%B9%E7%95%8C/&title=SFT，RLHF，DPO的真实边界"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://dgxddd.github.io/2025/11/10/SFT%EF%BC%8CRLHF%EF%BC%8CDPO%E7%9A%84%E7%9C%9F%E5%AE%9E%E8%BE%B9%E7%95%8C/&is_video=false&description=SFT，RLHF，DPO的真实边界"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=SFT，RLHF，DPO的真实边界&body=Check out this article: https://dgxddd.github.io/2025/11/10/SFT%EF%BC%8CRLHF%EF%BC%8CDPO%E7%9A%84%E7%9C%9F%E5%AE%9E%E8%BE%B9%E7%95%8C/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://dgxddd.github.io/2025/11/10/SFT%EF%BC%8CRLHF%EF%BC%8CDPO%E7%9A%84%E7%9C%9F%E5%AE%9E%E8%BE%B9%E7%95%8C/&title=SFT，RLHF，DPO的真实边界"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://dgxddd.github.io/2025/11/10/SFT%EF%BC%8CRLHF%EF%BC%8CDPO%E7%9A%84%E7%9C%9F%E5%AE%9E%E8%BE%B9%E7%95%8C/&title=SFT，RLHF，DPO的真实边界"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://dgxddd.github.io/2025/11/10/SFT%EF%BC%8CRLHF%EF%BC%8CDPO%E7%9A%84%E7%9C%9F%E5%AE%9E%E8%BE%B9%E7%95%8C/&title=SFT，RLHF，DPO的真实边界"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://dgxddd.github.io/2025/11/10/SFT%EF%BC%8CRLHF%EF%BC%8CDPO%E7%9A%84%E7%9C%9F%E5%AE%9E%E8%BE%B9%E7%95%8C/&title=SFT，RLHF，DPO的真实边界"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://dgxddd.github.io/2025/11/10/SFT%EF%BC%8CRLHF%EF%BC%8CDPO%E7%9A%84%E7%9C%9F%E5%AE%9E%E8%BE%B9%E7%95%8C/&name=SFT，RLHF，DPO的真实边界&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://dgxddd.github.io/2025/11/10/SFT%EF%BC%8CRLHF%EF%BC%8CDPO%E7%9A%84%E7%9C%9F%E5%AE%9E%E8%BE%B9%E7%95%8C/&t=SFT，RLHF，DPO的真实边界"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2016-2026
+    jxdgx
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/tags/">标签</a></li><!--
+     --><!--
+       --><li><a href="/categories/">分类</a></li><!--
+     --><!--
+       --><li><a href="/links/">links</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+<link rel="stylesheet" href="/css/custom.css">
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"复制到粘贴板！\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "复制成功！");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<script src="/js/custom.js"></script>
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+
+</body>
+</html>
