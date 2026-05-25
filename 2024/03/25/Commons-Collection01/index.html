@@ -9,7 +9,7 @@
     <meta name="description" content="CC1调用链图解  InvokerTransformer类的transform方法首先我们在InvokerTransformer类中传入我们要传入的对象这样我们就可以实现对其控制 我们首先进行调试  我们首先进入InvokerTransformer类中对其进行赋值  我们在向下调试我们传入了获取到的Runtime类的实例，从而在向下调  这个时候调用到了Runtime中的exec方法，传入的iAr">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Commons-Collection01">
-<meta property="og:url" content="https://dgxddd.github.io/2025/04/22/Commons-Collection01/">
+<meta property="og:url" content="https://dgxddd.github.io/2024/03/25/Commons-Collection01/">
 <meta property="og:site_name" content="jxdgx">
 <meta property="og:description" content="CC1调用链图解  InvokerTransformer类的transform方法首先我们在InvokerTransformer类中传入我们要传入的对象这样我们就可以实现对其控制 我们首先进行调试  我们首先进入InvokerTransformer类中对其进行赋值  我们在向下调试我们传入了获取到的Runtime类的实例，从而在向下调  这个时候调用到了Runtime中的exec方法，传入的iAr">
 <meta property="og:locale" content="zh_CN">
@@ -51,8 +51,8 @@
 <meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231011183330476.png">
 <meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231011183321442.png">
 <meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231011184021589.png">
-<meta property="article:published_time" content="2025-04-22T13:46:20.000Z">
-<meta property="article:modified_time" content="2026-04-24T13:24:27.495Z">
+<meta property="article:published_time" content="2024-03-25T13:46:20.000Z">
+<meta property="article:modified_time" content="2026-05-25T12:21:48.023Z">
 <meta property="article:author" content="jxdgx">
 <meta property="article:tag" content="CC链">
 <meta name="twitter:card" content="summary">
@@ -136,7 +136,7 @@
     <span id="actions">
       <ul>
         
-        <li><a class="icon" aria-label="上一篇" href="/2025/07/10/HW%E6%8A%80%E6%88%98%E6%B3%951/"><i class="fa-solid fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="上一篇" href="/2024/03/27/CC1-LazyMap/"><i class="fa-solid fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
         
         
         <li><a class="icon" aria-label="下一篇" href="/2024/03/21/java%E5%8F%8D%E5%B0%84/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
@@ -152,17 +152,17 @@
     <br/>
     <div id="share" style="display: none">
       <ul>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://dgxddd.github.io/2025/04/22/Commons-Collection01/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://dgxddd.github.io/2025/04/22/Commons-Collection01/&text=Commons-Collection01"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://dgxddd.github.io/2025/04/22/Commons-Collection01/&title=Commons-Collection01"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://dgxddd.github.io/2025/04/22/Commons-Collection01/&is_video=false&description=Commons-Collection01"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="mailto:?subject=Commons-Collection01&body=Check out this article: https://dgxddd.github.io/2025/04/22/Commons-Collection01/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://dgxddd.github.io/2025/04/22/Commons-Collection01/&title=Commons-Collection01"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://dgxddd.github.io/2025/04/22/Commons-Collection01/&title=Commons-Collection01"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://dgxddd.github.io/2025/04/22/Commons-Collection01/&title=Commons-Collection01"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://dgxddd.github.io/2025/04/22/Commons-Collection01/&title=Commons-Collection01"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://dgxddd.github.io/2025/04/22/Commons-Collection01/&name=Commons-Collection01&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://dgxddd.github.io/2025/04/22/Commons-Collection01/&t=Commons-Collection01"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://dgxddd.github.io/2024/03/25/Commons-Collection01/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://dgxddd.github.io/2024/03/25/Commons-Collection01/&text=Commons-Collection01"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://dgxddd.github.io/2024/03/25/Commons-Collection01/&title=Commons-Collection01"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://dgxddd.github.io/2024/03/25/Commons-Collection01/&is_video=false&description=Commons-Collection01"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Commons-Collection01&body=Check out this article: https://dgxddd.github.io/2024/03/25/Commons-Collection01/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://dgxddd.github.io/2024/03/25/Commons-Collection01/&title=Commons-Collection01"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://dgxddd.github.io/2024/03/25/Commons-Collection01/&title=Commons-Collection01"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://dgxddd.github.io/2024/03/25/Commons-Collection01/&title=Commons-Collection01"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://dgxddd.github.io/2024/03/25/Commons-Collection01/&title=Commons-Collection01"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://dgxddd.github.io/2024/03/25/Commons-Collection01/&name=Commons-Collection01&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://dgxddd.github.io/2024/03/25/Commons-Collection01/&t=Commons-Collection01"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
 </ul>
 
     </div>
@@ -194,7 +194,7 @@
         
     <div class="postdate">
       
-        <time datetime="2025-04-22T13:46:20.000Z" class="dt-published" itemprop="datePublished">2025-04-22</time>
+        <time datetime="2024-03-25T13:46:20.000Z" class="dt-published" itemprop="datePublished">2024-03-25</time>
         
       
     </div>
@@ -375,17 +375,17 @@
 
     <div id="share-footer" style="display: none">
       <ul>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://dgxddd.github.io/2025/04/22/Commons-Collection01/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://dgxddd.github.io/2025/04/22/Commons-Collection01/&text=Commons-Collection01"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://dgxddd.github.io/2025/04/22/Commons-Collection01/&title=Commons-Collection01"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://dgxddd.github.io/2025/04/22/Commons-Collection01/&is_video=false&description=Commons-Collection01"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="mailto:?subject=Commons-Collection01&body=Check out this article: https://dgxddd.github.io/2025/04/22/Commons-Collection01/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://dgxddd.github.io/2025/04/22/Commons-Collection01/&title=Commons-Collection01"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://dgxddd.github.io/2025/04/22/Commons-Collection01/&title=Commons-Collection01"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://dgxddd.github.io/2025/04/22/Commons-Collection01/&title=Commons-Collection01"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://dgxddd.github.io/2025/04/22/Commons-Collection01/&title=Commons-Collection01"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://dgxddd.github.io/2025/04/22/Commons-Collection01/&name=Commons-Collection01&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://dgxddd.github.io/2025/04/22/Commons-Collection01/&t=Commons-Collection01"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://dgxddd.github.io/2024/03/25/Commons-Collection01/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://dgxddd.github.io/2024/03/25/Commons-Collection01/&text=Commons-Collection01"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://dgxddd.github.io/2024/03/25/Commons-Collection01/&title=Commons-Collection01"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://dgxddd.github.io/2024/03/25/Commons-Collection01/&is_video=false&description=Commons-Collection01"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Commons-Collection01&body=Check out this article: https://dgxddd.github.io/2024/03/25/Commons-Collection01/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://dgxddd.github.io/2024/03/25/Commons-Collection01/&title=Commons-Collection01"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://dgxddd.github.io/2024/03/25/Commons-Collection01/&title=Commons-Collection01"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://dgxddd.github.io/2024/03/25/Commons-Collection01/&title=Commons-Collection01"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://dgxddd.github.io/2024/03/25/Commons-Collection01/&title=Commons-Collection01"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://dgxddd.github.io/2024/03/25/Commons-Collection01/&name=Commons-Collection01&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://dgxddd.github.io/2024/03/25/Commons-Collection01/&t=Commons-Collection01"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
 </ul>
 
     </div>
