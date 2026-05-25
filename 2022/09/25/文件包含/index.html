@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="文件包含原理1文件包含漏洞是一种常见的web类型漏洞,因为很多脚本语言支持使用文件包含,也就是我们所说的文件包含函数，网站开发者经常会把一些代码插入到指定的地方,从而节省之间避免再次编写 ,这就是包含函数的基础解释 ,但是我们不光可以包含我们预先指定的文件，也可以包含我们服务器内部的其他文件，前提条件就是我们需要有可读的权限才能读取这些文件 ,所以这样就会导致文件包含漏洞  学习文件包含少不了的就">
+<meta property="og:type" content="article">
+<meta property="og:title" content="文件包含">
+<meta property="og:url" content="https://dgxddd.github.io/2022/09/25/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB/">
+<meta property="og:site_name" content="jxdgx">
+<meta property="og:description" content="文件包含原理1文件包含漏洞是一种常见的web类型漏洞,因为很多脚本语言支持使用文件包含,也就是我们所说的文件包含函数，网站开发者经常会把一些代码插入到指定的地方,从而节省之间避免再次编写 ,这就是包含函数的基础解释 ,但是我们不光可以包含我们预先指定的文件，也可以包含我们服务器内部的其他文件，前提条件就是我们需要有可读的权限才能读取这些文件 ,所以这样就会导致文件包含漏洞  学习文件包含少不了的就">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231021162515739.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231021162956798.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231021175647749.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231021183108068.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231021183729914.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231021184920490.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231021192923496.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231021193021803.png">
+<meta property="article:published_time" content="2022-09-25T12:53:35.000Z">
+<meta property="article:modified_time" content="2026-05-25T12:54:26.250Z">
+<meta property="article:author" content="jxdgx">
+<meta property="article:tag" content="文件包含">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231021162515739.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/logo.png">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/logo.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/logo.png">
+        
+      
+    
+    <!-- title -->
+    <title>文件包含 | jxdgx</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+<!-- mathjax -->
+
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+        inlineMath: [['$','$']],
+        displayMath: [['$$','$$'], ['\[','\]']]
+      }
+    });
+  </script>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML' async></script>
+
+<meta name="generator" content="Hexo 8.1.0"></head>
+
+<body class="max-width mx-auto px3 ltr is-post-page">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="顶部" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/tags/">标签</a></li><!--
+     --><!--
+       --><li><a href="/categories/">分类</a></li><!--
+     --><!--
+       --><li><a href="/links/">links</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="上一篇" href="/2022/12/25/RCE/"><i class="fa-solid fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="返回顶部" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="分享文章" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://dgxddd.github.io/2022/09/25/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://dgxddd.github.io/2022/09/25/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB/&text=文件包含"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://dgxddd.github.io/2022/09/25/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB/&title=文件包含"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://dgxddd.github.io/2022/09/25/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB/&is_video=false&description=文件包含"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=文件包含&body=Check out this article: https://dgxddd.github.io/2022/09/25/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://dgxddd.github.io/2022/09/25/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB/&title=文件包含"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://dgxddd.github.io/2022/09/25/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB/&title=文件包含"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://dgxddd.github.io/2022/09/25/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB/&title=文件包含"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://dgxddd.github.io/2022/09/25/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB/&title=文件包含"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://dgxddd.github.io/2022/09/25/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB/&name=文件包含&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://dgxddd.github.io/2022/09/25/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB/&t=文件包含"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB"><span class="toc-number">1.</span> <span class="toc-text">文件包含</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8E%9F%E7%90%86"><span class="toc-number">1.1.</span> <span class="toc-text">原理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#GDOUCTF-2023-%E6%B3%84%E9%9C%B2%E7%9A%84%E4%BC%AA%E8%A3%85"><span class="toc-number">1.2.</span> <span class="toc-text">[GDOUCTF 2023]泄露的伪装</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%A2%98%E7%9B%AE%E9%93%BE%E6%8E%A5%EF%BC%9A"><span class="toc-number">1.2.1.</span> <span class="toc-text">题目链接：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%A2%98%E7%9B%AE%E8%80%83%E7%82%B9"><span class="toc-number">1.2.2.</span> <span class="toc-text">题目考点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%80%BB%E7%BB%93%EF%BC%9A"><span class="toc-number">1.2.3.</span> <span class="toc-text">总结：</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%B9%8F%E5%9F%8E%E6%9D%AF-2022-%E7%AE%80%E5%8D%95%E5%8C%85%E5%90%AB"><span class="toc-number">1.3.</span> <span class="toc-text">[鹏城杯 2022]简单包含</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%A2%98%E7%9B%AE%E9%93%BE%E6%8E%A5"><span class="toc-number">1.3.1.</span> <span class="toc-text">题目链接:</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%A2%98%E7%9B%AE%E8%80%83%E7%82%B9-1"><span class="toc-number">1.3.2.</span> <span class="toc-text">题目考点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%80%BB%E7%BB%93%EF%BC%9A-1"><span class="toc-number">1.3.3.</span> <span class="toc-text">总结：</span></a></li></ol></li></ol></li></ol>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        
+<div class="post-layout">
+  <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+    <header>
+      
+    <h1 class="posttitle p-name" itemprop="name headline">
+        文件包含
+    </h1>
+
+
+
+      <div class="meta meta-post">
+        
+    <div class="postdate">
+      
+        <time datetime="2022-09-25T12:53:35.000Z" class="dt-published" itemprop="datePublished">2022-09-25</time>
+        
+      
+    </div>
+
+
+        
+    <div class="article-category">
+        <i class="fa-solid fa-archive"></i>
+        <a class="category-link" href="/categories/web%E5%AE%89%E5%85%A8/">web安全</a>
+    </div>
+
+
+        
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/tags/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB/" rel="tag">文件包含</a>
+    </div>
+
+
+      </div>
+    </header>
+    
+
+    <div class="content e-content" itemprop="articleBody">
+      <h1 id="文件包含"><a href="#文件包含" class="headerlink" title="文件包含"></a>文件包含</h1><h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">文件包含漏洞是一种常见的web类型漏洞,因为很多脚本语言支持使用文件包含,也就是我们所说的文件包含函数，网站开发者经常会把一些代码插入到指定的地方,从而节省之间避免再次编写 ,这就是包含函数的基础解释 ,但是我们不光可以包含我们预先指定的文件，也可以包含我们服务器内部的其他文件，前提条件就是我们需要有可读的权限才能读取这些文件 ,所以这样就会导致文件包含漏洞</span><br></pre></td></tr></table></figure>
+
+<p>学习文件包含少不了的就是php伪协议这个很多我们在这里不介绍了这里给出了链接大家可以去观看。<a target="_blank" rel="noopener" href="https://blog.csdn.net/cosmoslin/article/details/120695429">【精选】PHP伪协议详解-CSDN博客</a></p>
+<p>我们看一个例子</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="keyword">if</span>(<span class="keyword">isset</span>(<span class="variable">$_GET</span>[<span class="string">&#x27;file&#x27;</span>]))&#123;</span><br><span class="line"><span class="variable">$file</span> = <span class="variable">$_GET</span>[<span class="string">&#x27;file&#x27;</span>];</span><br><span class="line"><span class="keyword">include</span>(<span class="variable">$file</span>);</span><br><span class="line">&#125;<span class="keyword">else</span>&#123;</span><br><span class="line"><span class="title function_ invoke__">highlight_file</span>(<span class="keyword">__FILE__</span>);<span class="comment">//这个是高光在页面上显示出来</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>我们在phpstudy上开启apache服务并在我们的目录下有index.php和flag.php.</p>
+<p>我们以get方式传参php:&#x2F;&#x2F;filter&#x2F;read&#x3D;convert.base64-encode&#x2F;resource&#x3D;flag.php。<code>php://filter</code>: 这是一个特殊的输入流处理器。<code>ead=convert.base64-encode</code>: 这是过滤器链，它告诉 PHP 在读取文件内容时应用一个过滤器，即将文件内容转换为Base64编码格式。指定的文件为flag.php文件</p>
+<p>这个意思是我们读取的文件会bas64加密然后在显示出来。这个时候我们发现是读取出来了然后我们在对base64解密得到我们应该有的flag文件。</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231021162515739.png" alt="image-20231021162515739"></p>
+<p>得到我们想要得到的flag</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231021162956798.png" alt="image-20231021162956798"></p>
+<h2 id="GDOUCTF-2023-泄露的伪装"><a href="#GDOUCTF-2023-泄露的伪装" class="headerlink" title="[GDOUCTF 2023]泄露的伪装"></a>[GDOUCTF 2023]泄露的伪装</h2><h3 id="题目链接："><a href="#题目链接：" class="headerlink" title="题目链接："></a>题目链接：</h3><p>[<a target="_blank" rel="noopener" href="https://www.nssctf.cn/problem/3700">GDOUCTF 2023]泄露的伪装 | NSSCTF</a></p>
+<h3 id="题目考点"><a href="#题目考点" class="headerlink" title="题目考点"></a>题目考点</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">源码泄露，我们通过扫描隐藏目录得到了泄露的源码然后我们在通过分析源码得到了使用不同的协议去读取文件得到flag。</span><br></pre></td></tr></table></figure>
+
+<p>我们得到这个题目先点进去得到了一句话you can not see me but you can see me。这个意思就是说，你看不到我，但你可以看到我。</p>
+<p>这个时候我们点击ctrl u看前端有没有可以利用的这个时候我们发现是没有的。这个时候我们想到是不是有隐藏的目录文件这个时候我们在进行用扫描工具dirsearch来扫描一下这个时候我们测试一下。扫描到了两个文件</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231021175647749.png" alt="image-20231021175647749"></p>
+<p>我们访问test.txt给出了我们源码我们分析一下</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="title function_ invoke__">error_reporting</span>(<span class="number">0</span>);</span><br><span class="line"><span class="keyword">if</span>(<span class="keyword">isset</span>(<span class="variable">$_GET</span>[<span class="string">&#x27;cxk&#x27;</span>]))&#123;</span><br><span class="line">    <span class="variable">$cxk</span>=<span class="variable">$_GET</span>[<span class="string">&#x27;cxk&#x27;</span>];</span><br><span class="line">    <span class="keyword">if</span>(<span class="title function_ invoke__">file_get_contents</span>(<span class="variable">$cxk</span>)==<span class="string">&quot;ctrl&quot;</span>)&#123;</span><br><span class="line">        <span class="keyword">echo</span> <span class="variable">$flag</span>;</span><br><span class="line">    &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">        <span class="keyword">echo</span> <span class="string">&quot;娲楁礂鐫″惂&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;<span class="keyword">else</span>&#123;</span><br><span class="line">    <span class="keyword">echo</span> <span class="string">&quot;nononoononoonono&quot;</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>这个意思就是我们传入一个东西不能为空而且传入的东西如果经过file_get_contents()这个函数等于ctrl就可以得到flag。</p>
+<p>file_get_contents()这是一个读取文件内容的函数，我们这个时候可以用data协议来进行读取?cxk&#x3D;data:&#x2F;&#x2F;text&#x2F;plain,ctrl</p>
+<p>这个时候我们发现是不可以的因为这只是一个txt文件不是可以执行的我们想到了一开始我们访问得到的<a target="_blank" rel="noopener" href="http://www.rar文件,我们去进行访问/">www.rar文件，我们去进行访问</a></p>
+<p>解压得到了gift.txt文件中的&#x2F;orzorz.php文件这个时候我们访问这个文件得到了和原来一样的源码</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231021183108068.png" alt="image-20231021183108068"></p>
+<p>这个时候我们还是如原来一样去传参这样我们可以得到flag</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://node5.anna.nssctf.cn:28778/orzorz.php?cxk=data://text/plain,ctrl</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231021183729914.png" alt="image-20231021183729914"></p>
+<h3 id="总结："><a href="#总结：" class="headerlink" title="总结："></a>总结：</h3><p>这是一个简单的文件泄露以及我们后续利用文件包含来实现得到flag这个就是帮助我们更好的去理解文件包含的实验原理。希望可以去线下练习一下。</p>
+<h2 id="鹏城杯-2022-简单包含"><a href="#鹏城杯-2022-简单包含" class="headerlink" title="[鹏城杯 2022]简单包含"></a>[鹏城杯 2022]简单包含</h2><h3 id="题目链接"><a href="#题目链接" class="headerlink" title="题目链接:"></a>题目链接:</h3><p>[<a target="_blank" rel="noopener" href="https://www.nssctf.cn/problem/2422">鹏城杯 2022]简单包含 | NSSCTF</a></p>
+<h3 id="题目考点-1"><a href="#题目考点-1" class="headerlink" title="题目考点"></a>题目考点</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">通过上简单的waf将这个题变得不一样这个时候我们更好的使用了绕过waf来实现文件包含</span><br></pre></td></tr></table></figure>
+
+<p>这个题比较开门见山了我们点击进去就得到了源码而且给出了我们flag文件路径</p>
+<p>这个时候我们直接使用php伪协议来实现对文件的包含，这个时候我们发现是被上了waf不可以包含</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">POST：flag=php://filter/read=convert.base64-encode/resource=flag.php</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231021184920490.png" alt="image-20231021184920490"></p>
+<p>这个时候我们去想看能不能包含他的index.php文件，因为一般上waf会对他主要文件去保护这个时候我们使用php伪协议去包含index.php这个文件，这个时候我们得到了base64加密的字符串，这个时候我们解密得到了源码文件</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line"></span><br><span class="line">$path = $_POST[&quot;flag&quot;];</span><br><span class="line"></span><br><span class="line">if (strlen(file_get_contents(&#x27;php://input&#x27;)) &lt; 800 &amp;&amp; preg_match(&#x27;/flag/&#x27;, $path)) &#123;</span><br><span class="line">    echo &#x27;nssctf waf!&#x27;;</span><br><span class="line">&#125; else &#123;</span><br><span class="line">    @include($path);</span><br><span class="line">&#125;</span><br><span class="line">?&gt;</span><br><span class="line"></span><br><span class="line">&lt;code&gt;&lt;span style=&quot;color: #000000&quot;&gt;</span><br><span class="line">&lt;span style=&quot;color: #0000BB&quot;&gt;&amp;lt;?php&amp;nbsp;&lt;br /&gt;highlight_file&lt;/span&gt;&lt;span style=&quot;color: #007700&quot;&gt;(&lt;/span&gt;&lt;span style=&quot;color: #0000BB&quot;&gt;__FILE__&lt;/span&gt;&lt;span style=&quot;color: #007700&quot;&gt;);&lt;br /&gt;include(&lt;/span&gt;&lt;span style=&quot;color: #0000BB&quot;&gt;$_POST&lt;/span&gt;&lt;span style=&quot;color: #007700&quot;&gt;[&lt;/span&gt;&lt;span style=&quot;color: #DD0000&quot;&gt;&quot;flag&quot;&lt;/span&gt;&lt;span style=&quot;color: #007700&quot;&gt;]);&lt;br /&gt;&lt;/span&gt;&lt;span style=&quot;color: #FF8000&quot;&gt;//flag&amp;nbsp;in&amp;nbsp;/var/www/html/flag.php;&lt;/span&gt;</span><br><span class="line">&lt;/span&gt;</span><br><span class="line">&lt;/code&gt;&lt;br /&gt;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>我们分析一下源码这个是我们用post方式传入参数然后会对进行一个判断，上面意思是如果在POST上面传参&lt;800这个时候则是错误的而且我们传参中不能含有flag这个字样如果这两个有一个不满足就会返回nssctf waf!，如果这两个都满足就可以实现文件包含。</p>
+<p>首先第一个我们可以用脏数据来填充比如400个1&#x3D;400个1，然而最后不包含flag，我们可以使用php伪协议对其base64加密绕过</p>
+<p>最后的pylaod就是</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111=1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111</span><br><span class="line">&amp;flag=php://filter/read=convert.base64-encode/resource=flag.php</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>这样的传参就满足了大于800而且传参的方式是没有flag的这个后面的flag.php是经过base64加密的。得到base64加密的</p>
+<p>PD9waHAgPSdOU1NDVEZ7MTllNDQ4MTktNTkyNy00ZTg2LTlhYTUtMWI2ODQ0YjAyMTAyfSc7Cg&#x3D;&#x3D;解密得到flag</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231021192923496.png" alt="image-20231021192923496"></p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/test/image-20231021193021803.png" alt="image-20231021193021803"></p>
+<h3 id="总结：-1"><a href="#总结：-1" class="headerlink" title="总结："></a>总结：</h3><p>这两道题都是简单的文件包含，主要是对php协议的理解以及对题目的理解，这个时候我们一般就是要尽可能多的知道一些可以知道的协议从而更好的领会贯通。</p>
+
+    </div>
+  </article>
+  
+    <aside class="post-sidebar-toc">
+      <div class="post-sidebar-toc-inner">
+        <div class="post-sidebar-toc-title">Contents</div>
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB"><span class="toc-number">1.</span> <span class="toc-text">文件包含</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8E%9F%E7%90%86"><span class="toc-number">1.1.</span> <span class="toc-text">原理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#GDOUCTF-2023-%E6%B3%84%E9%9C%B2%E7%9A%84%E4%BC%AA%E8%A3%85"><span class="toc-number">1.2.</span> <span class="toc-text">[GDOUCTF 2023]泄露的伪装</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%A2%98%E7%9B%AE%E9%93%BE%E6%8E%A5%EF%BC%9A"><span class="toc-number">1.2.1.</span> <span class="toc-text">题目链接：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%A2%98%E7%9B%AE%E8%80%83%E7%82%B9"><span class="toc-number">1.2.2.</span> <span class="toc-text">题目考点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%80%BB%E7%BB%93%EF%BC%9A"><span class="toc-number">1.2.3.</span> <span class="toc-text">总结：</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%B9%8F%E5%9F%8E%E6%9D%AF-2022-%E7%AE%80%E5%8D%95%E5%8C%85%E5%90%AB"><span class="toc-number">1.3.</span> <span class="toc-text">[鹏城杯 2022]简单包含</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%A2%98%E7%9B%AE%E9%93%BE%E6%8E%A5"><span class="toc-number">1.3.1.</span> <span class="toc-text">题目链接:</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%A2%98%E7%9B%AE%E8%80%83%E7%82%B9-1"><span class="toc-number">1.3.2.</span> <span class="toc-text">题目考点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%80%BB%E7%BB%93%EF%BC%9A-1"><span class="toc-number">1.3.3.</span> <span class="toc-text">总结：</span></a></li></ol></li></ol></li></ol>
+      </div>
+    </aside>
+  
+</div>
+
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">首页</a></li>
+        
+          <li><a href="/archives/">归档</a></li>
+        
+          <li><a href="/tags/">标签</a></li>
+        
+          <li><a href="/categories/">分类</a></li>
+        
+          <li><a href="/links/">links</a></li>
+        
+          <li><a href="/about/">关于</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB"><span class="toc-number">1.</span> <span class="toc-text">文件包含</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8E%9F%E7%90%86"><span class="toc-number">1.1.</span> <span class="toc-text">原理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#GDOUCTF-2023-%E6%B3%84%E9%9C%B2%E7%9A%84%E4%BC%AA%E8%A3%85"><span class="toc-number">1.2.</span> <span class="toc-text">[GDOUCTF 2023]泄露的伪装</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%A2%98%E7%9B%AE%E9%93%BE%E6%8E%A5%EF%BC%9A"><span class="toc-number">1.2.1.</span> <span class="toc-text">题目链接：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%A2%98%E7%9B%AE%E8%80%83%E7%82%B9"><span class="toc-number">1.2.2.</span> <span class="toc-text">题目考点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%80%BB%E7%BB%93%EF%BC%9A"><span class="toc-number">1.2.3.</span> <span class="toc-text">总结：</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%B9%8F%E5%9F%8E%E6%9D%AF-2022-%E7%AE%80%E5%8D%95%E5%8C%85%E5%90%AB"><span class="toc-number">1.3.</span> <span class="toc-text">[鹏城杯 2022]简单包含</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%A2%98%E7%9B%AE%E9%93%BE%E6%8E%A5"><span class="toc-number">1.3.1.</span> <span class="toc-text">题目链接:</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%A2%98%E7%9B%AE%E8%80%83%E7%82%B9-1"><span class="toc-number">1.3.2.</span> <span class="toc-text">题目考点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%80%BB%E7%BB%93%EF%BC%9A-1"><span class="toc-number">1.3.3.</span> <span class="toc-text">总结：</span></a></li></ol></li></ol></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://dgxddd.github.io/2022/09/25/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://dgxddd.github.io/2022/09/25/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB/&text=文件包含"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://dgxddd.github.io/2022/09/25/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB/&title=文件包含"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://dgxddd.github.io/2022/09/25/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB/&is_video=false&description=文件包含"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=文件包含&body=Check out this article: https://dgxddd.github.io/2022/09/25/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://dgxddd.github.io/2022/09/25/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB/&title=文件包含"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://dgxddd.github.io/2022/09/25/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB/&title=文件包含"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://dgxddd.github.io/2022/09/25/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB/&title=文件包含"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://dgxddd.github.io/2022/09/25/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB/&title=文件包含"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://dgxddd.github.io/2022/09/25/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB/&name=文件包含&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://dgxddd.github.io/2022/09/25/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB/&t=文件包含"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2016-2026
+    jxdgx
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/tags/">标签</a></li><!--
+     --><!--
+       --><li><a href="/categories/">分类</a></li><!--
+     --><!--
+       --><li><a href="/links/">links</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+<link rel="stylesheet" href="/css/custom.css">
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"复制到粘贴板！\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "复制成功！");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<script src="/js/custom.js"></script>
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+
+</body>
+</html>
