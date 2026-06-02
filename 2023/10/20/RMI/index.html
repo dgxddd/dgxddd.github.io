@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="RMIRMI（Remote Method Invocation，远程方法调用） 是 Java 原生的分布式通信技术，允许一台 JVM 上的对象，调用另一台 JVM 上对象的方法，就像调用本地方法一样简单。 远程接口继承 Remote 123public interface HelloRemote extends Remote &#123;    String sayHello(String nam">
+<meta property="og:type" content="article">
+<meta property="og:title" content="RMI">
+<meta property="og:url" content="https://dgxddd.github.io/2023/10/20/RMI/">
+<meta property="og:site_name" content="jxdgx">
+<meta property="og:description" content="RMIRMI（Remote Method Invocation，远程方法调用） 是 Java 原生的分布式通信技术，允许一台 JVM 上的对象，调用另一台 JVM 上对象的方法，就像调用本地方法一样简单。 远程接口继承 Remote 123public interface HelloRemote extends Remote &#123;    String sayHello(String nam">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260531193600218.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260531204112743.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260531204250302.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260531204449590.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260531211217450.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260531212040771.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260531212939138.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260531220311794.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260531221257154.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260531221428308.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260531221521980.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260531231012198.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260531231217346.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260531231359835.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260531231954096.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260601150820033.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260601151627952.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260601152144392.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260601154101922.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260601161002742.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260601161646479.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260601161835289.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260601162021760.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260601162655076.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260601205054950.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260601172830458.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260601173047070.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260601173303410.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260601210036362.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260601210415282.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260601211458349.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260601212147957.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260601212404071.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260601212506080.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260601212646061.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260601213047321.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260601214312566.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260601214819345.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260601215440495.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260601220238615.png">
+<meta property="article:published_time" content="2023-10-20T05:35:21.000Z">
+<meta property="article:modified_time" content="2026-06-02T05:44:03.415Z">
+<meta property="article:author" content="jxdgx">
+<meta property="article:tag" content="RMI">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260531193600218.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/logo.png">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/logo.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/logo.png">
+        
+      
+    
+    <!-- title -->
+    <title>RMI | jxdgx</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+<!-- mathjax -->
+
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+        inlineMath: [['$','$']],
+        displayMath: [['$$','$$'], ['\[','\]']]
+      }
+    });
+  </script>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML' async></script>
+
+<meta name="generator" content="Hexo 8.1.0"></head>
+
+<body class="max-width mx-auto px3 ltr is-post-page">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="顶部" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/tags/">标签</a></li><!--
+     --><!--
+       --><li><a href="/categories/">分类</a></li><!--
+     --><!--
+       --><li><a href="/links/">links</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="上一篇" href="/2023/10/28/jdk7u21%E5%8E%9F%E7%94%9F%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/"><i class="fa-solid fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="下一篇" href="/2023/10/15/CC7/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="返回顶部" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="分享文章" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://dgxddd.github.io/2023/10/20/RMI/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://dgxddd.github.io/2023/10/20/RMI/&text=RMI"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://dgxddd.github.io/2023/10/20/RMI/&title=RMI"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://dgxddd.github.io/2023/10/20/RMI/&is_video=false&description=RMI"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=RMI&body=Check out this article: https://dgxddd.github.io/2023/10/20/RMI/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://dgxddd.github.io/2023/10/20/RMI/&title=RMI"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://dgxddd.github.io/2023/10/20/RMI/&title=RMI"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://dgxddd.github.io/2023/10/20/RMI/&title=RMI"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://dgxddd.github.io/2023/10/20/RMI/&title=RMI"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://dgxddd.github.io/2023/10/20/RMI/&name=RMI&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://dgxddd.github.io/2023/10/20/RMI/&t=RMI"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#RMI"><span class="toc-number">1.</span> <span class="toc-text">RMI</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B5%81%E7%A8%8B%E5%9B%BE"><span class="toc-number">1.1.</span> <span class="toc-text">流程图</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#RMI-%E9%80%9A%E4%BF%A1%E5%88%86%E6%9E%90"><span class="toc-number">1.2.</span> <span class="toc-text">RMI 通信分析</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%9B%E5%BB%BA%E8%BF%9C%E7%A8%8B%E6%9C%8D%E5%8A%A1"><span class="toc-number">1.2.1.</span> <span class="toc-text">创建远程服务</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%9B%E5%BB%BA%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83"><span class="toc-number">1.2.2.</span> <span class="toc-text">创建注册中心</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9C%8D%E5%8A%A1%E7%AB%AF%E8%8E%B7%E5%8F%96-Registry-%E4%BB%A3%E7%90%86%E5%AF%B9%E8%B1%A1"><span class="toc-number">1.2.3.</span> <span class="toc-text">服务端获取 Registry 代理对象</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Server-%E7%AB%AF%E5%92%8C-Registry-%E5%9C%A8%E5%90%8C%E4%B8%80%E7%AB%AF"><span class="toc-number">1.2.3.1.</span> <span class="toc-text">Server 端和 Registry 在同一端</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Server-%E7%AB%AF%E5%92%8C-Registry-%E4%B8%8D%E5%90%8C%E7%AB%AF"><span class="toc-number">1.2.3.2.</span> <span class="toc-text">Server 端和 Registry 不同端</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%A2%E6%88%B7%E7%AB%AF%E7%9A%84%E6%9C%8D%E5%8A%A1%E8%B0%83%E7%94%A8"><span class="toc-number">1.2.4.</span> <span class="toc-text">客户端的服务调用</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E7%AB%A0"><span class="toc-number">1.3.</span> <span class="toc-text">参考文章</span></a></li></ol></li></ol>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        
+<div class="post-layout">
+  <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+    <header>
+      
+    <h1 class="posttitle p-name" itemprop="name headline">
+        RMI
+    </h1>
+
+
+
+      <div class="meta meta-post">
+        
+    <div class="postdate">
+      
+        <time datetime="2023-10-20T05:35:21.000Z" class="dt-published" itemprop="datePublished">2023-10-20</time>
+        
+      
+    </div>
+
+
+        
+    <div class="article-category">
+        <i class="fa-solid fa-archive"></i>
+        <a class="category-link" href="/categories/JAVA%E5%AE%89%E5%85%A8/">JAVA安全</a>
+    </div>
+
+
+        
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/tags/RMI/" rel="tag">RMI</a>
+    </div>
+
+
+      </div>
+    </header>
+    
+
+    <div class="content e-content" itemprop="articleBody">
+      <h1 id="RMI"><a href="#RMI" class="headerlink" title="RMI"></a>RMI</h1><p><strong>RMI（Remote Method Invocation，远程方法调用）</strong> 是 Java 原生的<strong>分布式通信技术</strong>，允许<strong>一台 JVM 上的对象，调用另一台 JVM 上对象的方法</strong>，就像调用本地方法一样简单。</p>
+<p>远程接口继承 Remote</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">HelloRemote</span> <span class="keyword">extends</span> <span class="title class_">Remote</span> &#123;</span><br><span class="line">    String <span class="title function_">sayHello</span><span class="params">(String name)</span> <span class="keyword">throws</span> RemoteException;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>实现类</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">HelloRemoteImpl</span> <span class="keyword">extends</span> <span class="title class_">UnicastRemoteObject</span> <span class="keyword">implements</span> <span class="title class_">HelloRemote</span> &#123;</span><br><span class="line">    <span class="keyword">protected</span> <span class="title function_">HelloRemoteImpl</span><span class="params">()</span> <span class="keyword">throws</span> RemoteException &#123;</span><br><span class="line">        <span class="built_in">super</span>();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">sayHello</span><span class="params">(String name)</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;Hello, &quot;</span> + name + <span class="string">&quot;! 来自 RMI 服务端&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>服务端启动类（注册服务）</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">RMIServer</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="type">HelloRemote</span> <span class="variable">hello</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">HelloRemoteImpl</span>();</span><br><span class="line">            <span class="type">Registry</span> <span class="variable">registry</span> <span class="operator">=</span> LocateRegistry.createRegistry(<span class="number">1099</span>);</span><br><span class="line">            registry.rebind(<span class="string">&quot;HelloService&quot;</span>, hello);</span><br><span class="line">            System.out.println(<span class="string">&quot;RMI 服务端启动成功，等待客户端调用...&quot;</span>);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>客户端启动类,找到 RMI 注册中心,根据名字拿到<strong>远程服务代理</strong>,调用方法，像调用本地一样简单</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">RMIClient</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="type">Registry</span> <span class="variable">registry</span> <span class="operator">=</span> LocateRegistry.getRegistry(<span class="string">&quot;127.0.0.1&quot;</span>, <span class="number">1099</span>);</span><br><span class="line">            <span class="type">HelloRemote</span> <span class="variable">service</span> <span class="operator">=</span> (HelloRemote) registry.lookup(<span class="string">&quot;HelloService&quot;</span>);</span><br><span class="line">            <span class="type">String</span> <span class="variable">result</span> <span class="operator">=</span> service.sayHello(<span class="string">&quot;jxdgx&quot;</span>);</span><br><span class="line">            System.out.println(<span class="string">&quot;客户端接收结果：&quot;</span> + result);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="流程图"><a href="#流程图" class="headerlink" title="流程图"></a>流程图</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">【客户端 JVM】                【网络】                【服务端 JVM】</span><br><span class="line">   RMIClient</span><br><span class="line">       │</span><br><span class="line">       │ 1. 连接 127.0.0.1:1099</span><br><span class="line">       ▼</span><br><span class="line">  RMI注册中心(客户端侧) ────────────────────────→ RMI注册中心(服务端侧):1099</span><br><span class="line">       │                                            │</span><br><span class="line">       │ 2. lookup(&quot;HelloService&quot;)                  │</span><br><span class="line">       ▼                                            ▼</span><br><span class="line">  拿到远程代理对象 ←─────────────────────── 已注册的服务 HelloService</span><br><span class="line">       │</span><br><span class="line">       │ 3. 调用 service.sayHello(&quot;jxdgx&quot;)</span><br><span class="line">       │    (参数网络传输)</span><br><span class="line">       ▼                                            ▼</span><br><span class="line">  等待返回结果 ←─────────────────────── HelloRemoteImpl 执行方法</span><br><span class="line">                                                   拼装返回字符串</span><br><span class="line">       │</span><br><span class="line">       │ 4. 接收结果并打印</span><br><span class="line">       ▼</span><br><span class="line">  程序结束</span><br></pre></td></tr></table></figure>
+
+<p>首先运行RMIServer，然后运行RMIClient</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260531193600218.png" alt="image-20260531193600218"></p>
+<h2 id="RMI-通信分析"><a href="#RMI-通信分析" class="headerlink" title="RMI 通信分析"></a>RMI 通信分析</h2><h3 id="创建远程服务"><a href="#创建远程服务" class="headerlink" title="创建远程服务"></a>创建远程服务</h3><p>首先创建远程服务对象本身</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260531204112743.png" alt="image-20260531204112743"></p>
+<p>然后会进入该类构造方法，<code>super()</code>调用父类<code>UnicastRemoteObject</code>构造</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260531204250302.png" alt="image-20260531204250302"></p>
+<p>进入UnicastRemoteObject构造函数中并对port 传入了 0。其中port&#x3D;0 不是使用端口 0，而是让系统自动分配一个可用的随机端口。</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260531204449590.png" alt="image-20260531204449590"></p>
+<p>如果服务端的实现类没有继承 UnicastRemoteObject ，则需要手动调用 UnicastRemoteObject 的 exportObject 方法。跟进exportObject。把普通 Java 对象变成<strong>可远程调用</strong>的对象，<code>port</code> 传 0 就是<strong>自动分配端口</strong>，最终返回一个<strong>可被远程访问的代理对象</strong></p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260531211217450.png" alt="image-20260531211217450"></p>
+<p>继续跟进exportObject，先判断对象是否为 UnicastRemoteObject 实例，若是则将负责网络通信的核心 UnicastServerRef 赋值给对象的 ref 属性，为其绑定通信能力，然后继续调用 sref.exportObject</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260531212040771.png" alt="image-20260531212040771"></p>
+<p>跟进sun.rmi.server.UnicastServerRef#exportObject(java.rmi.Remote, java.lang.Object, boolean)，并在createProxy中创建一个能通过网络调用服务端方法的 “远程替身对象。</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260531212939138.png" alt="image-20260531212939138"></p>
+<p>首先获取这个实现类实现的<strong>远程接口</strong>，如果没实现任何远程接口，直接抛异常。 判断是否使用固定编译好的Stub类，如果需要，就创建传统Stub。然后获取获取类加载器，获取实现类的<strong>所有远程接口</strong>，创建调用处理器：真正负责网络通信、发请求、收结果。最后用JDK动态代理，生成远程代理对象。</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260531220311794.png" alt="image-20260531220311794"></p>
+<p>然后回到exportObject 方法，然后封装 Target 对象：把【服务实例、通信器、代理、对象ID】打包成一个目标。后开启网络监听、端口绑定、发布服务。分析一下如何开启的</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260531221257154.png" alt="image-20260531221257154"></p>
+<p>然后跟进sun.rmi.transport.LiveRef#exportObject，可以知道ep是TCPEndpoint对象</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260531221428308.png" alt="image-20260531221428308"></p>
+<p>继续跟进sun.rmi.transport.tcp.TCPEndpoint#exportObject其中又调用了TCPTransport的exportObject方法</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260531221521980.png" alt="image-20260531221521980"></p>
+<p>继续跟进sun.rmi.transport.tcp.TCPTransport#exportObject，主要做了，启动服务器Socket，开始监听端口。调用父类方法，把Target注册到全局服务表。</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260531231012198.png" alt="image-20260531231012198"></p>
+<p>首先跟进sun.rmi.transport.tcp.TCPTransport#listen，<strong>验证线程锁 → 创建 ServerSocket 并绑定端口（port&#x3D;0 自动分配）→ 启动专门的接收线程循环监听客户端连接</strong>，同时处理端口占用、监听失败等异常，是服务端真正开启网络服务的核心操作。</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260531231217346.png" alt="image-20260531231217346"></p>
+<p>跟进sun.rmi.transport.Transport#exportObject ，给 target 设置当前传输通道（TCP 通信层），标记服务由当前传输层提供，将服务目标存入 RMI 全局对象表</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260531231359835.png" alt="image-20260531231359835"></p>
+<h3 id="创建注册中心"><a href="#创建注册中心" class="headerlink" title="创建注册中心"></a>创建注册中心</h3><p>首先来到java.rmi.registry.LocateRegistry#createRegistry(int)，我们跟进RegistryImpl这个对象中去。</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260531231954096.png" alt="image-20260531231954096"></p>
+<p><strong>判断是否在 RMI 注册中心端口（1099）上启动监听，且启用了安全管理器</strong>，是 RMI 对注册中心做的<strong>专属安全校验逻辑</strong></p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260601150820033.png" alt="image-20260601150820033"></p>
+<p>如果没开安全管理器，它创建了一个<code>LiveRef</code>，以及创建了一个新的<code>UnicastServerRef</code>，跟进之后发现和之前是一样的，也是先赋值，然后进行<code>exportObject()</code>方法的调用。</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260601151627952.png" alt="image-20260601151627952"></p>
+<p>继续跟进sun.rmi.server.UnicastServerRef#exportObject(java.rmi.Remote, java.lang.Object, boolean)，获取服务实现类的 Class 对象，并创建远程代理 Stub，再将服务实例、通信引用、代理封装成Target，通过底层引用完成端口监听与服务注册，最后返回代理对象供客户端远程调用。</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260601152144392.png" alt="image-20260601152144392"></p>
+<p>跟进sun.rmi.server.Util#createProxy查看一下如何创建的过程，其中forceStubUse和ignoreStubClasses默认为falsestubClassExists(remoteClass)检查是否存在 XXX_Stub.class 类，比如 remoteClass&#x3D;RegistryImpl就检查 RegistryImpl_Stub 是否存在。然后进去找到、加载、创建出 RegistryImpl_Stub 这个类的实例，然后返回给调用方</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260601154101922.png" alt="image-20260601154101922"></p>
+<p>跟进sun.rmi.server.Util#createStub，主要通过反射加载并实例化 XXX_Stub 静态类，返回一个带通信信息的远程代理对象</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260601161002742.png" alt="image-20260601161002742"></p>
+<p>继续回到sun.rmi.server.UnicastServerRef#exportObject(java.rmi.Remote, java.lang.Object, boolean)，如果当前生成的代理对象是【老式静态 Stub】（比如 RegistryImpl_Stub），那就给服务端安装【骨架 Skeleton】。</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260601161646479.png" alt="image-20260601161646479"></p>
+<p>跟进sun.rmi.server.UnicastServerRef#setSkeleton。然后这里有一个<code>createSkeleton()</code>方法，一看名字就知道是用来创建 Skeleton 的</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260601161835289.png" alt="image-20260601161835289"></p>
+<p>跟进sun.rmi.server.Util#createSkeleton，这个方法就是给老式 RMI 服务端，按固定命名规则（类名_Skel）找服务端骨架调度类</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260601162021760.png" alt="image-20260601162021760"></p>
+<p>继续返回到sun.rmi.server.UnicastServerRef#exportObject(java.rmi.Remote, java.lang.Object, boolean)继续执行来到Target 的地方，Target 部分的作用也与之前一样，用于储存封装的数据，并在这里也封装了skel</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260601162655076.png" alt="image-20260601162655076"></p>
+<h3 id="服务端获取-Registry-代理对象"><a href="#服务端获取-Registry-代理对象" class="headerlink" title="服务端获取 Registry 代理对象"></a>服务端获取 Registry 代理对象</h3><p><strong>bind</strong> 是<strong>首次注册</strong>，如果服务名已经存在，会直接抛出<strong>AlreadyBoundException</strong>异常，不允许覆盖；</p>
+<p><strong>rebind</strong> 是<strong>覆盖注册</strong>，无论服务名是否已存在，都会用新的服务对象替换掉旧的，<strong>不会抛异常，直接覆盖</strong>。</p>
+<h4 id="Server-端和-Registry-在同一端"><a href="#Server-端和-Registry-在同一端" class="headerlink" title="Server 端和 Registry 在同一端"></a>Server 端和 Registry 在同一端</h4><p>Server 端通过本地调用获取 Registry 对象。此时，Server 端获取到的 Registry 对象是 RegistryImpl 类的实例，这是 RMI 的默认实现类。服务器大多数情况下与注册中心 Registry 在同一端。其中这里的 registry 就是 RegistryImpl 对象</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260601205054950.png" alt="image-20260601205054950"></p>
+<p>安全校验，确保调用者有权限注册</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260601172830458.png" alt="image-20260601172830458"></p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260601173047070.png" alt="image-20260601173047070"></p>
+<p>我们使用的rebind看看是如何添加的，跟进java.util.Hashtable#put，将远程对象放入了 RegistryImpl 内部的 HashTable 集合中。</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260601173303410.png" alt="image-20260601173303410"></p>
+<h4 id="Server-端和-Registry-不同端"><a href="#Server-端和-Registry-不同端" class="headerlink" title="Server 端和 Registry 不同端"></a>Server 端和 Registry 不同端</h4><p>当 RMI 服务端（Server）与注册中心（Registry）部署在不同进程或不同机器时，服务端无法直接获取 Registry 真实对象，只能通过网络<strong>获取一个代表远程注册中心的代理对象</strong>。这个对象就是 <strong>RegistryImpl_Stub</strong>，它是 RMI 内置的静态代理类，内部封装了 Registry 的通信地址、端口与远程调用逻辑。</p>
+<p>在不通端的时候可以发现获取的是RegistryImpl_Stub对象</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260601210036362.png" alt="image-20260601210036362"></p>
+<p>跟进 RegistryImpl_Stub 的 rebind 方法，先通过<code>RemoteRef</code>创建<code>RemoteCall</code>远程调用对象，通过序列化流将服务名、远程服务对象转为字节数据，随后调用<code>invoke</code>，<code>done</code></p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260601210415282.png" alt="image-20260601210415282"></p>
+<p>UnicastRef 的 newCall 方法返回一个 RemoteCall 对象，用来给 invoke 方法提供参数</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260601211458349.png" alt="image-20260601211458349"></p>
+<p>服务端通过调用 RegistryImpl_Stub 的 rebind 方法，将参数序列化发送到 Registry 端，来完成将服务接口绑定到注册表的操作。</p>
+<p>当服务端与注册中心处于不同节点时，服务端通过<code>RegistryImpl_Stub</code>发起的远程请求会经由网络发送至 Registry 端，<strong><code>sun.rmi.transport.tcp.TCPTransport#handleMessages</code></strong> 作为 RMI 底层网络处理入口负责持续监听端口、接收 TCP 连接与数据流，并将接收到的请求转交给<code>serviceCall</code>方法</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260601212147957.png" alt="image-20260601212147957"></p>
+<p>跟进sun.rmi.transport.Transport#serviceCall，serviceCall 是 Registry 端远程请求分发核心方法，它从客户端请求流中读取 ObjID 定位目标远程对象，通过 ObjectTable 获取对应的服务目标与 Dispatcher 调度器，在权限与类加载器上下文校验后，调用 disp.dispatch(impl, call)</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260601212404071.png" alt="image-20260601212404071"></p>
+<p>dispatch 方法又调用 UnicastServerRef 自身的 oldDispatch 方法，跟进 UnicastServerRef 的 oldDispatch 方法：</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260601212506080.png" alt="image-20260601212506080"></p>
+<p>oldDispatch 是 Registry 端远程方法调度的核心实现，它从客户端请求流中读取调用标识与方法编号，校验通信一致性后，将请求转交给 RegistryImpl_Skel</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260601212646061.png" alt="image-20260601212646061"></p>
+<p>这是 <strong>RegistryImpl_Skel#dispatch</strong> 中处理 <code>rebind</code> 注册服务的核心逻辑：先从客户端请求流中<strong>反序列化</strong>出服务名称与远程服务对象，调用真实注册中心实现 <code>RegistryImpl.rebind()</code> 将服务存入内存 Map 完成绑定。</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260601213047321.png" alt="image-20260601213047321"></p>
+<h3 id="客户端的服务调用"><a href="#客户端的服务调用" class="headerlink" title="客户端的服务调用"></a>客户端的服务调用</h3><p>客户端获取 Registry 对象的方法与服务端远程获取 Registry 的方法一样</p>
+<p>其中客户获取的也是RegistryImpl_Stub 对象</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260601214312566.png" alt="image-20260601214312566"></p>
+<p><code>RegistryImpl_Stub</code>的<code>lookup</code>客户端实现，通过<code>RemoteRef</code>创建远程调用对象，将客户端需要查询的<strong>服务名</strong>序列化并通过网络发送至注册中心；调用<code>invoke</code>发起远程请求后，等待并<strong>反序列化</strong>注册中心返回的<strong>服务端 Stub 对象</strong></p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260601214819345.png" alt="image-20260601214819345"></p>
+<p>同样来关注 Registry 端的处理逻辑，与 Server 端调用 rebind 方法时 Registry 端的处理逻辑相同，最终都是调用 RegistryImpl_Skel 的 dispatch 方法来处理。lookup 方法对应的是 RegistryImpl_Skel 的 dispatch 方法中的 2 号处理逻辑</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260601215440495.png" alt="image-20260601215440495"></p>
+<p>调用流程</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">RegistryImpl_Stub.lookup()   打包服务名 → 发网络</span><br><span class="line">   ↓</span><br><span class="line">TCPTransport.handleMessages() 接收</span><br><span class="line">   ↓</span><br><span class="line">TCPTransport.serviceCall()  分发</span><br><span class="line">   ↓</span><br><span class="line">UnicastServerRef.dispatch() 调度</span><br><span class="line">   ↓</span><br><span class="line">RegistryImpl_Skel.dispatch() case 2 反序列化</span><br><span class="line">   ↓</span><br><span class="line">RegistryImpl.lookup() 查Map → 返回服务Stub</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/image-20260601220238615.png" alt="image-20260601220238615"></p>
+<p>代理对象的任意方法被调用，都会触发 RemoteObjectInvocationHandler 的 invoke 方法RemoteObjectInvocationHandler 的 invoke 方法最终其实是调用 RemoteRef 的实现类 UnicastRef 的 invoke 方法。UnicastRef 中保存了服务端的地址和端口信息，这些信息是在服务端导出远程对象时设置的。因此 Client 端直接与 Server 端进行通信。</p>
+<h2 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h2><p>[基础篇 - RMI 协议详解 - 妙尽璇机](<a target="_blank" rel="noopener" href="https://changeyourway.github.io/2024/07/08/Java">https://changeyourway.github.io/2024/07/08/Java</a> 安全&#x2F;基础篇-RMI远程方法调用协议&#x2F;)</p>
+<p><a target="_blank" rel="noopener" href="https://su18.org/post/rmi-attack/#%E9%9B%B6-%E5%89%8D%E8%A8%80">Java RMI 攻击由浅入深 | 素十八</a></p>
+<p><a target="_blank" rel="noopener" href="https://drun1baby.top/2022/07/19/Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E4%B9%8BRMI%E4%B8%93%E9%A2%9801-RMI%E5%9F%BA%E7%A1%80/#Java-%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E4%B9%8B-RMI-%E4%B8%93%E9%A2%98-01-RMI-%E5%9F%BA%E7%A1%80">Java反序列化之RMI专题01-RMI基础 | Drunkbaby’s Blog</a></p>
+
+    </div>
+  </article>
+  
+    <aside class="post-sidebar-toc">
+      <div class="post-sidebar-toc-inner">
+        <div class="post-sidebar-toc-title">Contents</div>
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#RMI"><span class="toc-number">1.</span> <span class="toc-text">RMI</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B5%81%E7%A8%8B%E5%9B%BE"><span class="toc-number">1.1.</span> <span class="toc-text">流程图</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#RMI-%E9%80%9A%E4%BF%A1%E5%88%86%E6%9E%90"><span class="toc-number">1.2.</span> <span class="toc-text">RMI 通信分析</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%9B%E5%BB%BA%E8%BF%9C%E7%A8%8B%E6%9C%8D%E5%8A%A1"><span class="toc-number">1.2.1.</span> <span class="toc-text">创建远程服务</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%9B%E5%BB%BA%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83"><span class="toc-number">1.2.2.</span> <span class="toc-text">创建注册中心</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9C%8D%E5%8A%A1%E7%AB%AF%E8%8E%B7%E5%8F%96-Registry-%E4%BB%A3%E7%90%86%E5%AF%B9%E8%B1%A1"><span class="toc-number">1.2.3.</span> <span class="toc-text">服务端获取 Registry 代理对象</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Server-%E7%AB%AF%E5%92%8C-Registry-%E5%9C%A8%E5%90%8C%E4%B8%80%E7%AB%AF"><span class="toc-number">1.2.3.1.</span> <span class="toc-text">Server 端和 Registry 在同一端</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Server-%E7%AB%AF%E5%92%8C-Registry-%E4%B8%8D%E5%90%8C%E7%AB%AF"><span class="toc-number">1.2.3.2.</span> <span class="toc-text">Server 端和 Registry 不同端</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%A2%E6%88%B7%E7%AB%AF%E7%9A%84%E6%9C%8D%E5%8A%A1%E8%B0%83%E7%94%A8"><span class="toc-number">1.2.4.</span> <span class="toc-text">客户端的服务调用</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E7%AB%A0"><span class="toc-number">1.3.</span> <span class="toc-text">参考文章</span></a></li></ol></li></ol>
+      </div>
+    </aside>
+  
+</div>
+
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">首页</a></li>
+        
+          <li><a href="/archives/">归档</a></li>
+        
+          <li><a href="/tags/">标签</a></li>
+        
+          <li><a href="/categories/">分类</a></li>
+        
+          <li><a href="/links/">links</a></li>
+        
+          <li><a href="/about/">关于</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#RMI"><span class="toc-number">1.</span> <span class="toc-text">RMI</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B5%81%E7%A8%8B%E5%9B%BE"><span class="toc-number">1.1.</span> <span class="toc-text">流程图</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#RMI-%E9%80%9A%E4%BF%A1%E5%88%86%E6%9E%90"><span class="toc-number">1.2.</span> <span class="toc-text">RMI 通信分析</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%9B%E5%BB%BA%E8%BF%9C%E7%A8%8B%E6%9C%8D%E5%8A%A1"><span class="toc-number">1.2.1.</span> <span class="toc-text">创建远程服务</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%9B%E5%BB%BA%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83"><span class="toc-number">1.2.2.</span> <span class="toc-text">创建注册中心</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9C%8D%E5%8A%A1%E7%AB%AF%E8%8E%B7%E5%8F%96-Registry-%E4%BB%A3%E7%90%86%E5%AF%B9%E8%B1%A1"><span class="toc-number">1.2.3.</span> <span class="toc-text">服务端获取 Registry 代理对象</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Server-%E7%AB%AF%E5%92%8C-Registry-%E5%9C%A8%E5%90%8C%E4%B8%80%E7%AB%AF"><span class="toc-number">1.2.3.1.</span> <span class="toc-text">Server 端和 Registry 在同一端</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Server-%E7%AB%AF%E5%92%8C-Registry-%E4%B8%8D%E5%90%8C%E7%AB%AF"><span class="toc-number">1.2.3.2.</span> <span class="toc-text">Server 端和 Registry 不同端</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%A2%E6%88%B7%E7%AB%AF%E7%9A%84%E6%9C%8D%E5%8A%A1%E8%B0%83%E7%94%A8"><span class="toc-number">1.2.4.</span> <span class="toc-text">客户端的服务调用</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E7%AB%A0"><span class="toc-number">1.3.</span> <span class="toc-text">参考文章</span></a></li></ol></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://dgxddd.github.io/2023/10/20/RMI/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://dgxddd.github.io/2023/10/20/RMI/&text=RMI"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://dgxddd.github.io/2023/10/20/RMI/&title=RMI"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://dgxddd.github.io/2023/10/20/RMI/&is_video=false&description=RMI"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=RMI&body=Check out this article: https://dgxddd.github.io/2023/10/20/RMI/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://dgxddd.github.io/2023/10/20/RMI/&title=RMI"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://dgxddd.github.io/2023/10/20/RMI/&title=RMI"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://dgxddd.github.io/2023/10/20/RMI/&title=RMI"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://dgxddd.github.io/2023/10/20/RMI/&title=RMI"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://dgxddd.github.io/2023/10/20/RMI/&name=RMI&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://dgxddd.github.io/2023/10/20/RMI/&t=RMI"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2016-2026
+    jxdgx
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/tags/">标签</a></li><!--
+     --><!--
+       --><li><a href="/categories/">分类</a></li><!--
+     --><!--
+       --><li><a href="/links/">links</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+<link rel="stylesheet" href="/css/custom.css">
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"复制到粘贴板！\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "复制成功！");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<script src="/js/custom.js"></script>
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+
+</body>
+</html>
