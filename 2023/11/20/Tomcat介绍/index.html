@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="Tomcat介绍Java Web 三大件 Java Web 三大件，也就是 Servlet，Filter，Listener 当 Tomcat 接收到请求时候，依次会经过 Listener -&gt; Filter -&gt; Servlet ListenerJavaWeb开发中的监听器（Listener）就是Application、Session和Request三大对象创建、销毁或者往其中添加、修">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Tomcat介绍">
+<meta property="og:url" content="https://dgxddd.github.io/2023/11/20/Tomcat%E4%BB%8B%E7%BB%8D/">
+<meta property="og:site_name" content="jxdgx">
+<meta property="og:description" content="Tomcat介绍Java Web 三大件 Java Web 三大件，也就是 Servlet，Filter，Listener 当 Tomcat 接收到请求时候，依次会经过 Listener -&gt; Filter -&gt; Servlet ListenerJavaWeb开发中的监听器（Listener）就是Application、Session和Request三大对象创建、销毁或者往其中添加、修">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/TomcatStage.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/1644902471_620b384758e36bf58fbf3.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/TomcatConnector.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/20220217164552.png">
+<meta property="og:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/TomcatContainer.png">
+<meta property="article:published_time" content="2023-11-20T11:11:01.000Z">
+<meta property="article:modified_time" content="2026-06-04T11:12:47.961Z">
+<meta property="article:author" content="jxdgx">
+<meta property="article:tag" content="内存马">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://jxdgx.oss-cn-beijing.aliyuncs.com/TomcatStage.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/logo.png">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/logo.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/logo.png">
+        
+      
+    
+    <!-- title -->
+    <title>Tomcat介绍 | jxdgx</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+<!-- mathjax -->
+
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+        inlineMath: [['$','$']],
+        displayMath: [['$$','$$'], ['\[','\]']]
+      }
+    });
+  </script>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML' async></script>
+
+<meta name="generator" content="Hexo 8.1.0"></head>
+
+<body class="max-width mx-auto px3 ltr is-post-page">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="顶部" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/tags/">标签</a></li><!--
+     --><!--
+       --><li><a href="/categories/">分类</a></li><!--
+     --><!--
+       --><li><a href="/links/">links</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="上一篇" href="/2024/01/02/unzip-2023%E5%9B%BD%E8%B5%9B/"><i class="fa-solid fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="下一篇" href="/2023/11/15/Hessian%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="返回顶部" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="分享文章" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://dgxddd.github.io/2023/11/20/Tomcat%E4%BB%8B%E7%BB%8D/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://dgxddd.github.io/2023/11/20/Tomcat%E4%BB%8B%E7%BB%8D/&text=Tomcat介绍"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://dgxddd.github.io/2023/11/20/Tomcat%E4%BB%8B%E7%BB%8D/&title=Tomcat介绍"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://dgxddd.github.io/2023/11/20/Tomcat%E4%BB%8B%E7%BB%8D/&is_video=false&description=Tomcat介绍"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Tomcat介绍&body=Check out this article: https://dgxddd.github.io/2023/11/20/Tomcat%E4%BB%8B%E7%BB%8D/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://dgxddd.github.io/2023/11/20/Tomcat%E4%BB%8B%E7%BB%8D/&title=Tomcat介绍"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://dgxddd.github.io/2023/11/20/Tomcat%E4%BB%8B%E7%BB%8D/&title=Tomcat介绍"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://dgxddd.github.io/2023/11/20/Tomcat%E4%BB%8B%E7%BB%8D/&title=Tomcat介绍"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://dgxddd.github.io/2023/11/20/Tomcat%E4%BB%8B%E7%BB%8D/&title=Tomcat介绍"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://dgxddd.github.io/2023/11/20/Tomcat%E4%BB%8B%E7%BB%8D/&name=Tomcat介绍&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://dgxddd.github.io/2023/11/20/Tomcat%E4%BB%8B%E7%BB%8D/&t=Tomcat介绍"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Tomcat%E4%BB%8B%E7%BB%8D"><span class="toc-number">1.</span> <span class="toc-text">Tomcat介绍</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Java-Web-%E4%B8%89%E5%A4%A7%E4%BB%B6"><span class="toc-number">1.1.</span> <span class="toc-text">Java Web 三大件</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Listener"><span class="toc-number">1.1.1.</span> <span class="toc-text">Listener</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%94%A8%E9%80%94"><span class="toc-number">1.1.1.1.</span> <span class="toc-text">用途</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Filter"><span class="toc-number">1.1.2.</span> <span class="toc-text">Filter</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%AE%80%E4%BB%8B"><span class="toc-number">1.1.2.1.</span> <span class="toc-text">简介</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%9F%BA%E6%9C%AC%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86"><span class="toc-number">1.1.2.2.</span> <span class="toc-text">基本工作原理</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#filter%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F"><span class="toc-number">1.1.2.3.</span> <span class="toc-text">filter的生命周期</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Filter%E9%93%BE"><span class="toc-number">1.1.2.4.</span> <span class="toc-text">Filter链</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Servlet"><span class="toc-number">1.1.3.</span> <span class="toc-text">Servlet</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Servlet%E7%AE%80%E4%BB%8B"><span class="toc-number">1.1.3.1.</span> <span class="toc-text">Servlet简介</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%AF%B7%E6%B1%82%E7%9A%84%E5%A4%84%E7%90%86%E8%BF%87%E7%A8%8B"><span class="toc-number">1.1.3.2.</span> <span class="toc-text">请求的处理过程</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#servlet%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F"><span class="toc-number">1.1.3.3.</span> <span class="toc-text">servlet生命周期</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Tomcat-%E6%9E%B6%E6%9E%84"><span class="toc-number">1.2.</span> <span class="toc-text">Tomcat 架构</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#server"><span class="toc-number">1.2.1.</span> <span class="toc-text">server</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#service"><span class="toc-number">1.2.2.</span> <span class="toc-text">service</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#connecter"><span class="toc-number">1.2.3.</span> <span class="toc-text">connecter</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Container"><span class="toc-number">1.2.4.</span> <span class="toc-text">Container</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E7%AB%A0"><span class="toc-number">1.3.</span> <span class="toc-text">参考文章</span></a></li></ol></li></ol>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        
+<div class="post-layout">
+  <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+    <header>
+      
+    <h1 class="posttitle p-name" itemprop="name headline">
+        Tomcat介绍
+    </h1>
+
+
+
+      <div class="meta meta-post">
+        
+    <div class="postdate">
+      
+        <time datetime="2023-11-20T11:11:01.000Z" class="dt-published" itemprop="datePublished">2023-11-20</time>
+        
+      
+    </div>
+
+
+        
+    <div class="article-category">
+        <i class="fa-solid fa-archive"></i>
+        <a class="category-link" href="/categories/JAVA%E5%AE%89%E5%85%A8/">JAVA安全</a>
+    </div>
+
+
+        
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/tags/%E5%86%85%E5%AD%98%E9%A9%AC/" rel="tag">内存马</a>
+    </div>
+
+
+      </div>
+    </header>
+    
+
+    <div class="content e-content" itemprop="articleBody">
+      <h1 id="Tomcat介绍"><a href="#Tomcat介绍" class="headerlink" title="Tomcat介绍"></a>Tomcat介绍</h1><h2 id="Java-Web-三大件"><a href="#Java-Web-三大件" class="headerlink" title="Java Web 三大件"></a>Java Web 三大件</h2><p> Java Web 三大件，也就是 Servlet，Filter，Listener</p>
+<p>当 Tomcat 接收到请求时候，依次会经过 Listener -&gt; Filter -&gt; Servlet</p>
+<h3 id="Listener"><a href="#Listener" class="headerlink" title="Listener"></a>Listener</h3><p>JavaWeb开发中的监听器（Listener）就是Application、Session和Request三大对象创建、销毁或者往其中添加、修改、删除属性时自动执行代码的功能组件。</p>
+<p>ServletContextListener：对Servlet上下文的创建和销毁进行监听； ServletContextAttributeListener：监听Servlet上下文属性的添加、删除和替换；</p>
+<p>HttpSessionListener：对Session的创建和销毁进行监听。Session的销毁有两种情况，一个中Session超时，还有一种是通过调用Session对象的invalidate()方法使session失效。</p>
+<p>HttpSessionAttributeListener：对Session对象中属性的添加、删除和替换进行监听；</p>
+<p>ServletRequestListener：对请求对象的初始化和销毁进行监听； ServletRequestAttributeListener：对请求对象属性的添加、删除和替换进行监听。</p>
+<h4 id="用途"><a href="#用途" class="headerlink" title="用途"></a>用途</h4><p>可以使用监听器监听客户端的请求、服务端的操作等。通过监听器，可以自动出发一些动作，比如监听在线的用户数量，统计网站访问量、网站访问监控等。</p>
+<h3 id="Filter"><a href="#Filter" class="headerlink" title="Filter"></a>Filter</h3><h4 id="简介"><a href="#简介" class="headerlink" title="简介"></a><strong>简介</strong></h4><p>filter 也称之为过滤器，是对 Servlet 技术的一个强补充，其主要功能是在 HttpServletRequest 到达 Servlet 之前，拦截客户的 HttpServletRequest ，根据需要检查 HttpServletRequest，也可以修改 HttpServletRequest 头和数据；在 HttpServletResponse 到达客户端之前，拦截 HttpServletResponse ，根据需要检查 HttpServletResponse，也可以修改 HttpServletResponse 头和数据。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">请求进来</span><br><span class="line">    ↓</span><br><span class="line">Listener（请求创建）</span><br><span class="line">    ↓</span><br><span class="line">Filter 1 → Filter 2 → Filter 3（顺序执行）</span><br><span class="line">    ↓</span><br><span class="line">Servlet（真正业务）</span><br><span class="line">    ↓</span><br><span class="line">Filter 3 → Filter 2 → Filter 1（逆序返回）</span><br><span class="line">    ↓</span><br><span class="line">Listener（请求销毁）</span><br><span class="line">    ↓</span><br><span class="line">响应回到客户端</span><br></pre></td></tr></table></figure>
+
+<h4 id="基本工作原理"><a href="#基本工作原理" class="headerlink" title="基本工作原理"></a><strong>基本工作原理</strong></h4><p>1、Filter 程序是一个实现了特殊接口的 Java 类，与 Servlet 类似，也是由 Servlet 容器进行调用和执行的。</p>
+<p>2、当在 web.xml 注册了一个 Filter 来对某个 Servlet 程序进行拦截处理时，它可以决定是否将请求继续传递给 Servlet 程序，以及对请求和响应消息是否进行修改。</p>
+<p>3、当 Servlet 容器开始调用某个 Servlet 程序时，如果发现已经注册了一个 Filter 程序来对该 Servlet 进行拦截，那么容器不再直接调用 Servlet 的 service 方法，而是调用 Filter 的 doFilter 方法，再由 doFilter 方法决定是否去激活 service 方法。</p>
+<p>4、但在 Filter.doFilter 方法中不能直接调用 Servlet 的 service 方法，而是调用 FilterChain.doFilter 方法来激活目标 Servlet 的 service 方法，FilterChain 对象时通过 Filter.doFilter 方法的参数传递进来的。</p>
+<p>5、只要在 Filter.doFilter 方法中调用 FilterChain.doFilter 方法的语句前后增加某些程序代码，这样就可以在 Servlet 进行响应前后实现某些特殊功能。</p>
+<p>6、如果在 Filter.doFilter 方法中没有调用 FilterChain.doFilter 方法，则目标 Servlet 的 service 方法不会被执行，这样通过 Filter 就可以阻止某些非法的访问请求。</p>
+<p>总体来说Filter 由容器调用，在 Servlet 执行前拦截请求，通过 FilterChain.doFilter () 控制是否放行；可在放行前后处理请求与响应，不调用放行则请求被拦截。</p>
+<h4 id="filter的生命周期"><a href="#filter的生命周期" class="headerlink" title="filter的生命周期"></a><strong>filter的生命周期</strong></h4><p>Filter 生命周期一共 3 个阶段</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">服务器启动</span><br><span class="line">    ↓</span><br><span class="line">1. init() 初始化（只执行 1 次）</span><br><span class="line">    ↓</span><br><span class="line">请求访问</span><br><span class="line">    ↓</span><br><span class="line">2. doFilter() 过滤（每次请求都执行）</span><br><span class="line">    ↓</span><br><span class="line">服务器关闭</span><br><span class="line">    ↓</span><br><span class="line">3. destroy() 销毁（只执行 1 次）</span><br></pre></td></tr></table></figure>
+
+<p>与 servlet 一样，Filter 的创建和销毁也由 Web 容器负责。Web 应用程序启动时，Web 服务器将创建 Filter 的实例对象，并调用其 init() 方法，读取 web.xml 配置，完成对象的初始化功能，从而为后续的用户请求作好拦截的准备工作（filter 对象只会创建一次，init 方法也只会执行一次）。开发人员通过init方法的参数，可获得代表当前filter配置信息的FilterConfig对象。 Filter 对象创建后会驻留在内存，当 Web 应用移除或服务器停止时才销毁。在 Web 容器卸载 Filter 对象之前被调用。该方法在 Filter 的生命周期中仅执行一次。在这个方法中，可以释放过滤器使用的资源。</p>
+<h4 id="Filter链"><a href="#Filter链" class="headerlink" title="Filter链"></a>Filter链</h4><p><strong>多个过滤器同时存在，就组成了 Filter 链。</strong></p>
+<ol>
+<li><strong>执行顺序</strong>：Web 服务器根据 Filter 在 <strong>web.xml 中的注册顺序（从上到下）</strong> 决定调用顺序。</li>
+<li><strong>FilterChain 对象</strong>：容器在调用第一个 Filter 的 <code>doFilter()</code> 时，会创建 <strong>FilterChain</strong> 对象并传入。</li>
+<li>执行机制<ul>
+<li>调用 <code>chain.doFilter()</code> 时，容器会判断<strong>过滤链中是否还有下一个 Filter</strong></li>
+<li>有 → 继续执行下一个 Filter</li>
+<li>没有 → 最终执行目标 Servlet</li>
+</ul>
+</li>
+<li>流程特点<ul>
+<li>请求时：<strong>按配置顺序正向执行</strong></li>
+<li>响应时：<strong>逆序返回</strong></li>
+</ul>
+</li>
+</ol>
+<h3 id="Servlet"><a href="#Servlet" class="headerlink" title="Servlet"></a>Servlet</h3><h4 id="Servlet简介"><a href="#Servlet简介" class="headerlink" title="Servlet简介"></a>Servlet简介</h4><p>Servlet 是运行在 Web 服务器或应用服务器上的程序，它是作为来自 HTTP 客户端的请求和 HTTP 服务器上的数据库或应用程序之间的中间层。它负责处理用户的请求，并根据请求生成相应的返回信息提供给用户。</p>
+<h4 id="请求的处理过程"><a href="#请求的处理过程" class="headerlink" title="请求的处理过程"></a><strong>请求的处理过程</strong></h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">客户端GET请求</span><br><span class="line">     ↓</span><br><span class="line">Tomcat容器封装：HttpServletRequest、HttpServletResponse</span><br><span class="line">     ↓</span><br><span class="line">首次访问：执行init()【仅1次】</span><br><span class="line">非首次：跳过init</span><br><span class="line">     ↓</span><br><span class="line">调用service() → 判断请求方式GET → 执行doGet()</span><br><span class="line">     ↓</span><br><span class="line">doGet()执行自定义业务逻辑</span><br><span class="line">     ↓</span><br><span class="line">业务数据写入response</span><br><span class="line">     ↓</span><br><span class="line">容器把response数据组装成HTTP响应返回客户端</span><br><span class="line">     ↓</span><br><span class="line">项目关停 → 触发destroy()【仅1次，释放资源】</span><br></pre></td></tr></table></figure>
+
+<h4 id="servlet生命周期"><a href="#servlet生命周期" class="headerlink" title="servlet生命周期"></a><strong>servlet生命周期</strong></h4><p>1）服务器启动时(web.xml中配置load-on-startup&#x3D;1，默认为0)或者第一次请求该servlet时，就会初始化一个Servlet对象，也就是会执行初始化方法init(ServletConfig conf)。</p>
+<p>2）servlet对象去处理所有客户端请求，在service(ServletRequest req，ServletResponse res)方法中执行</p>
+<p>3）服务器关闭时，销毁这个servlet对象，执行destroy()方法。</p>
+<p>4）由JVM进行垃圾回收。</p>
+<h2 id="Tomcat-架构"><a href="#Tomcat-架构" class="headerlink" title="Tomcat 架构"></a>Tomcat 架构</h2><p>Tomcat 的框架如下图所示，主要有 server、service、connector、container 四个部分</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/TomcatStage.png" alt="img"></p>
+<p>Tomcat 两大核心</p>
+<ol>
+<li><p><strong>Connector（连接器）</strong></p>
+<p>负责<strong>接收请求、建立连接、解析协议</strong>（HTTP、AJP）</p>
+<p>→ 把 Socket 数据封装成 Request、Response</p>
+</li>
+<li><p><strong>Container（容器）</strong></p>
+<p>负责<strong>管理和运行 Servlet、Filter、Listener</strong></p>
+<p>→ 处理业务逻辑</p>
+</li>
+</ol>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/1644902471_620b384758e36bf58fbf3.png" alt="img"></p>
+<h3 id="server"><a href="#server" class="headerlink" title="server"></a>server</h3><ul>
+<li><strong>Server</strong> Server 服务器的意思，代表整个 tomcat 服务器，一个 tomcat 只有一个 Server Server 中包含至少一个 Service 组件，用于提供具体服务。</li>
+</ul>
+<h3 id="service"><a href="#service" class="headerlink" title="service"></a>service</h3><p>Service 主要是为了关联 Connector 和 Container，同时会初始化它下面的其它组件，在 Connector 和 Container 外面多包一层，把它们组装在一起，向外面提供服务，一个 Service 可以设置多个 Connector，但是只能有一个 Container 容器。</p>
+<p>Tomcat 中 Service 接口的标准实现类是 StandardService ，它不仅实现了 Service 借口同时还实现了 Lifecycle 接口，这样它就可以控制它下面的组件的生命周期了</p>
+<h3 id="connecter"><a href="#connecter" class="headerlink" title="connecter"></a>connecter</h3><p>连接器主要完成以下三个核心功能：</p>
+<ul>
+<li>socket 通信，也就是网络编程</li>
+<li>解析处理应用层协议，封装成一个 Request 对象</li>
+<li>将 Request 转换为 ServletRequest，将 Response 转换为 ServletResponse</li>
+</ul>
+<p>以上分别对应三个组件 EndPoint、Processor、Adapter 来完成。Endpoint 负责提供请求字节流给Processor，Processor 负责提供 Tomcat 定义的 Request 对象给 Adapter，Adapter 负责提供标准的 ServletRequest 对象给 Servlet 容器。</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/TomcatConnector.png" alt="img"></p>
+<h3 id="Container"><a href="#Container" class="headerlink" title="Container"></a>Container</h3><p><code>Container</code> 是 Tomcat 中用于处理请求的核心组件。它负责解析和处理通过 <code>Connector</code> 接收到的请求，并生成相应的响应。</p>
+<p>层级结构</p>
+<p>Container 包含四种子容器（Engine、Host、Context 和 Wrapper）：</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/20220217164552.png" alt="img"></p>
+<ul>
+<li><strong>Engine</strong>：最顶层的容器，表示整个 Servlet 引擎。它负责处理通过 <code>Connector</code> 接收到的所有请求。一个 Tomcat 实例通常只包含一个 <code>Engine</code>，它在接受请求后将其分发到相应的 <code>Host</code>。</li>
+<li><strong>Host</strong>：表示一个虚拟主机。一个 <code>Host</code> 代表一个能够承载多个应用的虚拟主机，通常与一个域名相对应。它允许 Tomcat 在同一台服务器上支持多个域名（虚拟主机）。</li>
+<li><strong>Context</strong>：代表单个 Web 应用，管理该应用的生命周期。所有的 Servlet、过滤器、监听器等都运行在 <code>Context</code> 中。</li>
+<li><strong>Wrapper</strong>：包装一个具体的 Servlet，处理最终的请求。</li>
+</ul>
+<p>举个例子，a.com和b.com分别对应着两个Host</p>
+<p><img src="https://jxdgx.oss-cn-beijing.aliyuncs.com/TomcatContainer.png" alt="img"></p>
+<h2 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h2><p><a target="_blank" rel="noopener" href="https://github.com/Y4tacker/JavaSec/blob/main/5.%E5%86%85%E5%AD%98%E9%A9%AC%E5%AD%A6%E4%B9%A0/Tomcat/Tomcat%E4%BB%8B%E7%BB%8D/Tomcat%E4%BB%8B%E7%BB%8D.md">JavaSec&#x2F;5.内存马学习&#x2F;Tomcat&#x2F;Tomcat介绍&#x2F;Tomcat介绍.md at main · Y4tacker&#x2F;JavaSec</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_34101364/article/details/120856415">https://blog.csdn.net/qq_34101364/article/details/120856415</a></p>
+
+    </div>
+  </article>
+  
+    <aside class="post-sidebar-toc">
+      <div class="post-sidebar-toc-inner">
+        <div class="post-sidebar-toc-title">Contents</div>
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Tomcat%E4%BB%8B%E7%BB%8D"><span class="toc-number">1.</span> <span class="toc-text">Tomcat介绍</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Java-Web-%E4%B8%89%E5%A4%A7%E4%BB%B6"><span class="toc-number">1.1.</span> <span class="toc-text">Java Web 三大件</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Listener"><span class="toc-number">1.1.1.</span> <span class="toc-text">Listener</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%94%A8%E9%80%94"><span class="toc-number">1.1.1.1.</span> <span class="toc-text">用途</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Filter"><span class="toc-number">1.1.2.</span> <span class="toc-text">Filter</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%AE%80%E4%BB%8B"><span class="toc-number">1.1.2.1.</span> <span class="toc-text">简介</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%9F%BA%E6%9C%AC%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86"><span class="toc-number">1.1.2.2.</span> <span class="toc-text">基本工作原理</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#filter%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F"><span class="toc-number">1.1.2.3.</span> <span class="toc-text">filter的生命周期</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Filter%E9%93%BE"><span class="toc-number">1.1.2.4.</span> <span class="toc-text">Filter链</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Servlet"><span class="toc-number">1.1.3.</span> <span class="toc-text">Servlet</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Servlet%E7%AE%80%E4%BB%8B"><span class="toc-number">1.1.3.1.</span> <span class="toc-text">Servlet简介</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%AF%B7%E6%B1%82%E7%9A%84%E5%A4%84%E7%90%86%E8%BF%87%E7%A8%8B"><span class="toc-number">1.1.3.2.</span> <span class="toc-text">请求的处理过程</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#servlet%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F"><span class="toc-number">1.1.3.3.</span> <span class="toc-text">servlet生命周期</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Tomcat-%E6%9E%B6%E6%9E%84"><span class="toc-number">1.2.</span> <span class="toc-text">Tomcat 架构</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#server"><span class="toc-number">1.2.1.</span> <span class="toc-text">server</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#service"><span class="toc-number">1.2.2.</span> <span class="toc-text">service</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#connecter"><span class="toc-number">1.2.3.</span> <span class="toc-text">connecter</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Container"><span class="toc-number">1.2.4.</span> <span class="toc-text">Container</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E7%AB%A0"><span class="toc-number">1.3.</span> <span class="toc-text">参考文章</span></a></li></ol></li></ol>
+      </div>
+    </aside>
+  
+</div>
+
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">首页</a></li>
+        
+          <li><a href="/archives/">归档</a></li>
+        
+          <li><a href="/tags/">标签</a></li>
+        
+          <li><a href="/categories/">分类</a></li>
+        
+          <li><a href="/links/">links</a></li>
+        
+          <li><a href="/about/">关于</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Tomcat%E4%BB%8B%E7%BB%8D"><span class="toc-number">1.</span> <span class="toc-text">Tomcat介绍</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Java-Web-%E4%B8%89%E5%A4%A7%E4%BB%B6"><span class="toc-number">1.1.</span> <span class="toc-text">Java Web 三大件</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Listener"><span class="toc-number">1.1.1.</span> <span class="toc-text">Listener</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%94%A8%E9%80%94"><span class="toc-number">1.1.1.1.</span> <span class="toc-text">用途</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Filter"><span class="toc-number">1.1.2.</span> <span class="toc-text">Filter</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%AE%80%E4%BB%8B"><span class="toc-number">1.1.2.1.</span> <span class="toc-text">简介</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%9F%BA%E6%9C%AC%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86"><span class="toc-number">1.1.2.2.</span> <span class="toc-text">基本工作原理</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#filter%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F"><span class="toc-number">1.1.2.3.</span> <span class="toc-text">filter的生命周期</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Filter%E9%93%BE"><span class="toc-number">1.1.2.4.</span> <span class="toc-text">Filter链</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Servlet"><span class="toc-number">1.1.3.</span> <span class="toc-text">Servlet</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Servlet%E7%AE%80%E4%BB%8B"><span class="toc-number">1.1.3.1.</span> <span class="toc-text">Servlet简介</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%AF%B7%E6%B1%82%E7%9A%84%E5%A4%84%E7%90%86%E8%BF%87%E7%A8%8B"><span class="toc-number">1.1.3.2.</span> <span class="toc-text">请求的处理过程</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#servlet%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F"><span class="toc-number">1.1.3.3.</span> <span class="toc-text">servlet生命周期</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Tomcat-%E6%9E%B6%E6%9E%84"><span class="toc-number">1.2.</span> <span class="toc-text">Tomcat 架构</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#server"><span class="toc-number">1.2.1.</span> <span class="toc-text">server</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#service"><span class="toc-number">1.2.2.</span> <span class="toc-text">service</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#connecter"><span class="toc-number">1.2.3.</span> <span class="toc-text">connecter</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Container"><span class="toc-number">1.2.4.</span> <span class="toc-text">Container</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E7%AB%A0"><span class="toc-number">1.3.</span> <span class="toc-text">参考文章</span></a></li></ol></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://dgxddd.github.io/2023/11/20/Tomcat%E4%BB%8B%E7%BB%8D/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://dgxddd.github.io/2023/11/20/Tomcat%E4%BB%8B%E7%BB%8D/&text=Tomcat介绍"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://dgxddd.github.io/2023/11/20/Tomcat%E4%BB%8B%E7%BB%8D/&title=Tomcat介绍"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://dgxddd.github.io/2023/11/20/Tomcat%E4%BB%8B%E7%BB%8D/&is_video=false&description=Tomcat介绍"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Tomcat介绍&body=Check out this article: https://dgxddd.github.io/2023/11/20/Tomcat%E4%BB%8B%E7%BB%8D/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://dgxddd.github.io/2023/11/20/Tomcat%E4%BB%8B%E7%BB%8D/&title=Tomcat介绍"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://dgxddd.github.io/2023/11/20/Tomcat%E4%BB%8B%E7%BB%8D/&title=Tomcat介绍"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://dgxddd.github.io/2023/11/20/Tomcat%E4%BB%8B%E7%BB%8D/&title=Tomcat介绍"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://dgxddd.github.io/2023/11/20/Tomcat%E4%BB%8B%E7%BB%8D/&title=Tomcat介绍"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://dgxddd.github.io/2023/11/20/Tomcat%E4%BB%8B%E7%BB%8D/&name=Tomcat介绍&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://dgxddd.github.io/2023/11/20/Tomcat%E4%BB%8B%E7%BB%8D/&t=Tomcat介绍"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2016-2026
+    jxdgx
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/tags/">标签</a></li><!--
+     --><!--
+       --><li><a href="/categories/">分类</a></li><!--
+     --><!--
+       --><li><a href="/links/">links</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+<link rel="stylesheet" href="/css/custom.css">
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"复制到粘贴板！\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "复制成功！");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<script src="/js/custom.js"></script>
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+
+</body>
+</html>
